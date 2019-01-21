@@ -1,5 +1,10 @@
 #pragma once
 
+/*
+* @date : 2018/01/07
+* @author : jihang
+*/
+
 #ifndef TOOLWIDGET_H
 #define TOOLWIDGET_H
 

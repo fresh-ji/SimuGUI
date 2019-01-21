@@ -22,26 +22,36 @@ class Modeling : public IMode {
 public:
 	explicit Modeling(QWidget *parent = 0);
 
-signals:
-	void deleteModelRequest(QString);
-
-public slots:
-	void addModel(QString, QString);
-
-	void receiveMes(QString);
-
-private slots:
-	void deleteOne();
-
 private:
 	void createWindow();
 	void createToolStack();
 	void createModelStack();
 	void createModelList();
+	void createInterfaceList();
+
+public slots:
+	//接收增加模型
+	void slotAddModel(QString, QString);
+signals:
+	//点击删除模型
+	void signalDeleteModel(QString);
+public slots:
+	//接收模型点击改变
+	void slotModelChange(QString);
+signals:
+	//模型改变
+	void signalModelChange(QString);
+public slots:
+	void slotReceiveMessage(QString);
+
+private slots:
+	void pSlotDeleteOne();
+	void pSlotModelItemChanged();
 
 private:
 	ToolDragStack *m_pToolStack;
 	DropLabel *m_pModelLabel;
 	QTableWidget *m_pModelList;
+	QTableWidget *m_pInterfaceList;
 };
 #endif // MODELING_H

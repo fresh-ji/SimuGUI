@@ -1,21 +1,28 @@
 #pragma once
 
+/*
+* @date : 2018/01/14
+* @author : jihang
+*/
+
 #ifndef DROPLABEL_H
 #define DROPLABEL_H
 
+//QSet不好用
 #include <set>
 
 #include "cwidgets.h"
 #include "fancybutton.h"
 
-#define CType "C"
-#define MatlabType "Matlab"
-#define AdamsType "Adams"
+constexpr auto CTYPE = "C";
+constexpr auto MATLABTYPE = "Matlab";
+constexpr auto ADAMSTYPE = "Adams";
 
-#define DRAG_MOVE "Drag_Move"
-#define DRAP_COPY "Drag_Copy"
+constexpr auto DRAG_MOVE = "Drag_Move";
+constexpr auto DRAG_COPY = "Drag_Copy";
 
 struct modelInfo {
+	//初始化name = type + "Model_" + count
 	QString name;
 	QString type;
 	int count;
@@ -29,28 +36,42 @@ class DropLabel :public QLabel {
 public:
 	explicit DropLabel(QWidget *p = 0);
 
+	//copy
 	virtual void dragEnterEvent(QDragEnterEvent*);
 	virtual void dropEvent(QDropEvent*);
 
-	virtual void mousePressEvent(QMouseEvent *);
-	virtual void dragMoveEvent(QDragMoveEvent *);
+	//move
+	virtual void mousePressEvent(QMouseEvent*);
+	virtual void dragMoveEvent(QDragMoveEvent*);
 
 signals:
-	void addModelRequest(QString, QString);
-	void sendMes(QString);
-
+	//拖动增加模型，前端接收
+	void signalAddModel(QString, QString);
 public slots:
-	void deleteModel(QString);
+	//接收前端删除模型
+	void slotDeleteModel(QString);
+signals:
+	//模型选择改变，前端接收
+	void signalModelChange(QString);
+public slots:
+	//接收前端模型选择改变
+	void slotModelChange(QString);
+signals:
+	//像前端发送消息
+	void signalSendMessage(QString);
 
 private:
-	//名命引擎
+	//私有命名引擎
 	modelInfo getModel(QString);
+	QMap<QString, std::set<int>> namingMap;
 
-private:
+	//模型列表
 	QList<modelInfo> modelList;
-	std::set<int> CNameSet;
-	std::set<int> MatlabNameSet;
-	std::set<int> AdamsNameSet;
-};
 
+	//被选中模型
+	QLabel *selectedLabel;
+
+	//总线
+	QLabel *principalLabel;
+};
 #endif // DROPLABEL_H

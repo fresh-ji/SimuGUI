@@ -1,4 +1,9 @@
 
+/*
+* @date : 2018/01/07
+* @author : jihang
+*/
+
 #include "ToolDragStack.h"
 
 #include "DropLabel.h"
@@ -51,15 +56,15 @@ void ToolDragStack::mousePressEvent(QMouseEvent *event) {
 
 		if (m_cLabel->geometry().contains(point)) {
 			m_dragLabel = m_cLabel;
-			modelType = CType;
+			modelType = CTYPE;
 		}
 		else if (m_matlabLabel->geometry().contains(point)) {
 			m_dragLabel = m_matlabLabel;
-			modelType = MatlabType;
+			modelType = MATLABTYPE;
 		}
 		else if (m_adamsLabel->geometry().contains(point)) {
 			m_dragLabel = m_adamsLabel;
-			modelType = AdamsType;
+			modelType = ADAMSTYPE;
 		}
 		else {
 			return;
@@ -70,7 +75,7 @@ void ToolDragStack::mousePressEvent(QMouseEvent *event) {
 
 		QMimeData *md = new QMimeData;
 		md->setImageData(m_dragLabel->pixmap()->toImage());
-		md->setText(DRAP_COPY);
+		md->setText(DRAG_COPY);
 		md->setObjectName(modelType);
 		dg->setMimeData(md);
 		dg->exec();
