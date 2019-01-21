@@ -8,4 +8,6 @@
 模型管理表name可变、其他不可变；
 IO的设定；
 结果XML的生成。
+
+![Image text](https://raw.github.com/fresh-ji/SimuGUI/master/SimuGUI/img/1.PNG)
  
