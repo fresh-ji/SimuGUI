@@ -9,5 +9,5 @@
 IO的设定；
 结果XML的生成。
 
-![Image text](https://raw.github.com/fresh-ji/SimuGUI/master/SimuGUI/img/1.PNG)
+![Image text](https://github.com/fresh-ji/SimuGUI/blob/master/img/1.PNG)
  
