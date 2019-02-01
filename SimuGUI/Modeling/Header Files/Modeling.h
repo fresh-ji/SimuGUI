@@ -11,9 +11,10 @@
 #include "imode.h"
 
 #include "cwidgets.h"
-#include "ministack.h"
-#include "DropLabel.h"
 #include "ToolDragStack.h"
+#include "DropLabel.h"
+#include "ModelInfoStack.h"
+#include "InterfaceInfoStack.h"
 
 class Modeling : public IMode {
 
@@ -24,34 +25,18 @@ public:
 
 private:
 	void createWindow();
-	void createToolStack();
-	void createModelStack();
-	void createModelList();
-	void createInterfaceList();
+	void createToolDragStack();
+	void createDropLabel();
+	void createModelInfoStack();
+	void createInterfaceInfoStack();
 
-public slots:
-	//接收增加模型
-	void slotAddModel(QString, QString);
-signals:
-	//点击删除模型
-	void signalDeleteModel(QString);
-public slots:
-	//接收模型点击改变
-	void slotModelChange(QString);
-signals:
-	//模型改变
-	void signalModelChange(QString);
 public slots:
 	void slotReceiveMessage(QString);
 
-private slots:
-	void pSlotDeleteOne();
-	void pSlotModelItemChanged();
-
 private:
-	ToolDragStack *m_pToolStack;
-	DropLabel *m_pModelLabel;
-	QTableWidget *m_pModelList;
-	QTableWidget *m_pInterfaceList;
+	ToolDragStack *m_pToolDragStack;
+	DropLabel *m_pDropLabel;
+	ModelInfoStack *m_pModelInfoStack;
+	InterfaceInfoStack *m_pInterfaceInfoStack;
 };
 #endif // MODELING_H

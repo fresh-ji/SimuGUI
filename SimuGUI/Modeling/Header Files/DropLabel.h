@@ -29,7 +29,7 @@ struct modelInfo {
 	QLabel *label;
 };
 
-class DropLabel :public QLabel {
+class DropLabel : public QLabel {
 
 	Q_OBJECT
 

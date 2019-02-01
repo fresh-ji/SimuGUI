@@ -147,6 +147,11 @@ void DropLabel::slotDeleteModel(QString name) {
 }
 
 void DropLabel::slotModelChange(QString name) {
+	//NULL的情况为：dropLabel给model发null，null给interface的null
+	//但是这里也接受到了,信息多余,所以直接返回
+	if (name == NULL) {
+		return;
+	}
 	if (selectedLabel) {
 		selectedLabel->setStyleSheet("border:1px solid gray;");
 	}

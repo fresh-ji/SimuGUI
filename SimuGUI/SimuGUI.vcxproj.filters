@@ -104,11 +104,14 @@
     <Filter Include="Modeling">
       <UniqueIdentifier>{adda8292-726f-4c56-84c5-8d3bc65211a7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Modeling\Header Files">
-      <UniqueIdentifier>{ae8f7a44-7ed0-43a5-ac13-0278a7d03bd0}</UniqueIdentifier>
+    <Filter Include="Modeling\ui">
+      <UniqueIdentifier>{88669efe-2f1f-4316-a27f-70c4164efd80}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Modeling\SourceFiles">
-      <UniqueIdentifier>{5e595635-da64-4e11-8db0-89fe6de5748c}</UniqueIdentifier>
+    <Filter Include="Modeling\model">
+      <UniqueIdentifier>{f4a4de11-baa7-4f2c-bd47-a5746a885ab2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modeling\interface">
+      <UniqueIdentifier>{37f42ee6-f389-4611-b175-92cd35eb3562}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -290,14 +293,23 @@
     <QtMoc Include="FMIAdvance\Header Files\FMIAdvance.h">
       <Filter>FMIAdvance\Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="Modeling\Header Files\DropLabel.h">
+      <Filter>Modeling\ui</Filter>
+    </QtMoc>
     <QtMoc Include="Modeling\Header Files\Modeling.h">
-      <Filter>Modeling\Header Files</Filter>
+      <Filter>Modeling\ui</Filter>
     </QtMoc>
-    <QtMoc Include="DropLabel.h">
-      <Filter>Modeling\Header Files</Filter>
+    <QtMoc Include="Modeling\Header Files\ToolDragStack.h">
+      <Filter>Modeling\ui</Filter>
     </QtMoc>
-    <QtMoc Include="ToolDragStack.h">
-      <Filter>Modeling\Header Files</Filter>
+    <QtMoc Include="Modeling\Header Files\EditInterfaceDialog.h">
+      <Filter>Modeling\interface</Filter>
+    </QtMoc>
+    <QtMoc Include="Modeling\Header Files\InterfaceInfoStack.h">
+      <Filter>Modeling\interface</Filter>
+    </QtMoc>
+    <QtMoc Include="Modeling\Header Files\ModelInfoStack.h">
+      <Filter>Modeling\model</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -457,13 +469,22 @@
       <Filter>FMIAdvance\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Modeling\Source Files\Modeling.cpp">
-      <Filter>Modeling\SourceFiles</Filter>
+      <Filter>Modeling\ui</Filter>
     </ClCompile>
-    <ClCompile Include="ToolDragStack.cpp">
-      <Filter>Modeling\SourceFiles</Filter>
+    <ClCompile Include="Modeling\Source Files\DropLabel.cpp">
+      <Filter>Modeling\ui</Filter>
     </ClCompile>
-    <ClCompile Include="DropLabel.cpp">
-      <Filter>Modeling\SourceFiles</Filter>
+    <ClCompile Include="Modeling\Source Files\ToolDragStack.cpp">
+      <Filter>Modeling\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Modeling\Source Files\EditInterfaceDialog.cpp">
+      <Filter>Modeling\interface</Filter>
+    </ClCompile>
+    <ClCompile Include="Modeling\Source Files\InterfaceInfoStack.cpp">
+      <Filter>Modeling\interface</Filter>
+    </ClCompile>
+    <ClCompile Include="Modeling\Source Files\ModelInfoStack.cpp">
+      <Filter>Modeling\model</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

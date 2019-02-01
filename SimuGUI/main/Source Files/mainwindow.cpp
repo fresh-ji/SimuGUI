@@ -28,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent) : FancyWindow(parent) {
 
 	setWindowTitle(QString::fromUtf8("Simulation Center"));
 	setWindowIcon(QIcon("./Icon/main/workhub"));
-	setMinimumSize(QSize(600, 400));
+	setMinimumSize(QSize(1000, 800));
 	setMouseTracking(true);
 
 	updateTheme();

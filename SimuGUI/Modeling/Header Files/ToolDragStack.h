@@ -5,8 +5,8 @@
 * @author : jihang
 */
 
-#ifndef TOOLWIDGET_H
-#define TOOLWIDGET_H
+#ifndef TOOLDRAGSTACK_H
+#define TOOLDRAGSTACK_H
 
 #include "cwidgets.h"
 #include "ministack.h"
@@ -24,6 +24,7 @@ public:
 
 	virtual void mousePressEvent(QMouseEvent *e);
 
+private:
 	QLabel* m_cLabel;
 	QLabel* m_matlabLabel;
 	QLabel* m_adamsLabel;
@@ -34,4 +35,4 @@ private:
 	void putImage(QString, QLabel *);
 };
 
-#endif // TOOLWIDGET_H
+#endif // TOOLDRAGSTACK_H
