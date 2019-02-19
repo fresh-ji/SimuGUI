@@ -1,5 +1,10 @@
 #pragma once
 
+/*
+* @date : 2018/02/18
+* @author : jihang
+*/
+
 #ifndef INTERFACEINFOSTACK_H
 #define INTERFACEINFOSTACK_H
 
@@ -10,47 +15,57 @@
 #include "ministack.h"
 #include "fancybutton.h"
 
-#include "EditInterfaceDialog.h"
+#include "EditOutputDialog.h"
 
-constexpr auto outputType = "output";
-constexpr auto inputType = "input";
+//constexpr auto outputType = "output";
+//constexpr auto inputType = "input";
 
-class InterfaceInfoStack :public MiniStack {
+class InterfaceInfoStack : public MiniStack {
 
 	Q_OBJECT
 
 public:
-
 	explicit InterfaceInfoStack(QWidget *p = 0);
 	~InterfaceInfoStack() {};
+
+private slots:
+	//添加输出，订阅输入，编辑，删除
+	void pSlotAddOutput();
+	void pSlotEditOutput();
+	void pSlotDeleteOutput();
+	void pSlotSubscribeInput();
+	void pSlotDeleteInput();
+
+public slots:
+	void slotNameCheck(bool, int, QString);
+signals:
+	void nameValid();
+public slots:
+	void slotRefreshOutput(bool, int, interfaceInfo);
+	//void slotRefreshInput(interfaceInfo, bool);
 
 public slots:
 	//接收表格内模型改变
 	void slotModelChange(QString);
-public slots:
-	void slotRefreshInterface(interfaceInfo, bool);
-private slots:
-	//添加输出，订阅输入，编辑，删除
-	void pSlotAddInterface();
-	void pSlotSubscribeInterface();
-	void pSlotEditInterface();
-	void pSlotDeleteInterface();
+
 signals:
 	void signalSendMessage(QString);
 public slots:
-	//从dialog来的，被转发到center
 	void slotMessageFromDialog(QString);
 
 private:
-	QTableWidget *m_pInterfaceList;
+	//主表
+	QTableWidget *m_pOutputList;
+	QTableWidget *m_pInputList;
+
+	//改发布接口对话框
+	EditOutputDialog *dialog;
 
 	//被选中模型
 	QString selectedModel;
 
+public:
 	//core
 	std::set<interfaceInfo> interfaceSet;
-
-	//改发布接口对话框
-	EditInterfaceDialog *dialog;
 };
 #endif // INTERFACEINFOSTACK_H

@@ -14,22 +14,22 @@ ToolDragStack::ToolDragStack(QWidget *p) : MiniStack(p) {
 	putImage("c", m_cLabel);
 	//m_cLabel->setStyleSheet("background-color:gray");
 	m_cLabel->setCursor(QCursor(Qt::PointingHandCursor));
-	m_cLabel->setFixedHeight(80);
-	m_cLabel->setFixedWidth(80);
+	m_cLabel->setFixedHeight(60);
+	m_cLabel->setFixedWidth(60);
 
 	m_matlabLabel = new QLabel();
 	putImage("matlab", m_matlabLabel);
 	//m_matlabLabel->setStyleSheet("background-color:gray");
 	m_matlabLabel->setCursor(QCursor(Qt::PointingHandCursor));
-	m_matlabLabel->setFixedHeight(80);
-	m_matlabLabel->setFixedWidth(80);
+	m_matlabLabel->setFixedHeight(60);
+	m_matlabLabel->setFixedWidth(60);
 
 	m_adamsLabel = new QLabel();
 	putImage("adams", m_adamsLabel);
 	//m_adamsLabel->setStyleSheet("background-color:gray");
 	m_adamsLabel->setCursor(QCursor(Qt::PointingHandCursor));
-	m_adamsLabel->setFixedHeight(80);
-	m_adamsLabel->setFixedWidth(80);
+	m_adamsLabel->setFixedHeight(60);
+	m_adamsLabel->setFixedWidth(60);
 
 	QGridLayout *layout = new QGridLayout();
 	layout->setMargin(10);
@@ -39,6 +39,8 @@ ToolDragStack::ToolDragStack(QWidget *p) : MiniStack(p) {
 	layout->addWidget(m_adamsLabel, 2, 0, 1, 1, Qt::AlignTop);
 	QWidget *toolWidget = new QWidget();
 	toolWidget->setLayout(layout);
+
+	this->setFixedWidth(200);
 
 	addTab(tr("tool"), toolWidget);
 

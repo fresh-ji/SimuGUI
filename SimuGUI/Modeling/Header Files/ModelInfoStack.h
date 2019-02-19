@@ -36,6 +36,8 @@ private slots:
 	void pSlotModelItemChanged();
 	void pSlotEditModel();
 	void pSlotDeleteModel();
+signals:
+	void signalSendMessage(QString);
 
 private:
 	QTableWidget *m_pModelList;

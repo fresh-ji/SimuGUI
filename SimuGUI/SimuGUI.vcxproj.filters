@@ -113,6 +113,9 @@
     <Filter Include="Modeling\interface">
       <UniqueIdentifier>{37f42ee6-f389-4611-b175-92cd35eb3562}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Modeling\dataType">
+      <UniqueIdentifier>{75367c2b-5d47-42a6-aa46-afcfbd2b319b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="SimuGUI.ui">
@@ -299,17 +302,23 @@
     <QtMoc Include="Modeling\Header Files\Modeling.h">
       <Filter>Modeling\ui</Filter>
     </QtMoc>
-    <QtMoc Include="Modeling\Header Files\ToolDragStack.h">
-      <Filter>Modeling\ui</Filter>
-    </QtMoc>
-    <QtMoc Include="Modeling\Header Files\EditInterfaceDialog.h">
-      <Filter>Modeling\interface</Filter>
-    </QtMoc>
     <QtMoc Include="Modeling\Header Files\InterfaceInfoStack.h">
       <Filter>Modeling\interface</Filter>
     </QtMoc>
     <QtMoc Include="Modeling\Header Files\ModelInfoStack.h">
       <Filter>Modeling\model</Filter>
+    </QtMoc>
+    <QtMoc Include="DataTypeStack.h">
+      <Filter>Modeling\dataType</Filter>
+    </QtMoc>
+    <QtMoc Include="Modeling\Header Files\ToolDragStack.h">
+      <Filter>Modeling\model</Filter>
+    </QtMoc>
+    <QtMoc Include="EditDataTypeDialog.h">
+      <Filter>Modeling\dataType</Filter>
+    </QtMoc>
+    <QtMoc Include="Modeling\Header Files\EditOutputDialog.h">
+      <Filter>Modeling\interface</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -474,17 +483,23 @@
     <ClCompile Include="Modeling\Source Files\DropLabel.cpp">
       <Filter>Modeling\ui</Filter>
     </ClCompile>
-    <ClCompile Include="Modeling\Source Files\ToolDragStack.cpp">
-      <Filter>Modeling\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="Modeling\Source Files\EditInterfaceDialog.cpp">
-      <Filter>Modeling\interface</Filter>
-    </ClCompile>
     <ClCompile Include="Modeling\Source Files\InterfaceInfoStack.cpp">
       <Filter>Modeling\interface</Filter>
     </ClCompile>
     <ClCompile Include="Modeling\Source Files\ModelInfoStack.cpp">
       <Filter>Modeling\model</Filter>
+    </ClCompile>
+    <ClCompile Include="DataTypeStack.cpp">
+      <Filter>Modeling\dataType</Filter>
+    </ClCompile>
+    <ClCompile Include="EditDataTypeDialog.cpp">
+      <Filter>Modeling\dataType</Filter>
+    </ClCompile>
+    <ClCompile Include="Modeling\Source Files\ToolDragStack.cpp">
+      <Filter>Modeling\model</Filter>
+    </ClCompile>
+    <ClCompile Include="Modeling\Source Files\EditOutputDialog.cpp">
+      <Filter>Modeling\interface</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

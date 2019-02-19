@@ -13,6 +13,7 @@
 #include "cwidgets.h"
 #include "ToolDragStack.h"
 #include "DropLabel.h"
+#include "DataTypeStack.h"
 #include "ModelInfoStack.h"
 #include "InterfaceInfoStack.h"
 
@@ -27,6 +28,7 @@ private:
 	void createWindow();
 	void createToolDragStack();
 	void createDropLabel();
+	void createDateTypeStack();
 	void createModelInfoStack();
 	void createInterfaceInfoStack();
 
@@ -36,7 +38,11 @@ public slots:
 private:
 	ToolDragStack *m_pToolDragStack;
 	DropLabel *m_pDropLabel;
+
+	DataTypeStack *m_pDataTypeStack;
+
 	ModelInfoStack *m_pModelInfoStack;
+
 	InterfaceInfoStack *m_pInterfaceInfoStack;
 };
 #endif // MODELING_H

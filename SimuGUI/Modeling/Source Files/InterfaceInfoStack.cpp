@@ -3,77 +3,196 @@
 #include "InterfaceInfoStack.h"
 
 InterfaceInfoStack::InterfaceInfoStack(QWidget *p) : MiniStack(p) {
-	m_pInterfaceList = new QTableWidget();
+
+	//输出表
+	m_pOutputList = new QTableWidget();
 
 	//表头
-	m_pInterfaceList->setColumnCount(3);
-	m_pInterfaceList->horizontalHeader()->setSectionsClickable(false);
-	m_pInterfaceList->setColumnWidth(0, 70);
-	m_pInterfaceList->setColumnWidth(1, 90);
-	m_pInterfaceList->setColumnWidth(2, 90);
+	m_pOutputList->setColumnCount(2);
+	m_pOutputList->horizontalHeader()->setSectionsClickable(false);
+	m_pOutputList->setColumnWidth(0, 160);
+	m_pOutputList->setColumnWidth(1, 160);
 
 	QFont font;
 	font.setBold(true);
-	m_pInterfaceList->horizontalHeader()->setFont(font);
-	m_pInterfaceList->horizontalHeader()->setStyleSheet("QHeaderView::section{background:skyblue;}");
+	m_pOutputList->horizontalHeader()->setFont(font);
+	m_pOutputList->horizontalHeader()->setStyleSheet("QHeaderView::section{background:skyblue;}");
 	QStringList header;
-	header << "I/O" << "Name" << "Type";
-	m_pInterfaceList->setHorizontalHeaderLabels(header);
+	header << "Name" << "Type";
+	m_pOutputList->setHorizontalHeaderLabels(header);
 
 	//列头
-	m_pInterfaceList->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-	m_pInterfaceList->verticalHeader()->setVisible(false);
+	m_pOutputList->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+	m_pOutputList->verticalHeader()->setVisible(false);
 
 	//选择模式
-	m_pInterfaceList->setSelectionBehavior(QAbstractItemView::SelectRows);
-	m_pInterfaceList->setSelectionMode(QAbstractItemView::SingleSelection);
-	m_pInterfaceList->setStyleSheet("selection-background-color:lightblue;");
+	m_pOutputList->setSelectionBehavior(QAbstractItemView::SelectRows);
+	m_pOutputList->setSelectionMode(QAbstractItemView::SingleSelection);
+	m_pOutputList->setStyleSheet("selection-background-color:lightblue;");
 
 	//滚动条
-	m_pInterfaceList->horizontalScrollBar()->setStyleSheet("QScrollBar{background:transparent; height:10px;}"
+	m_pOutputList->horizontalScrollBar()->setStyleSheet("QScrollBar{background:transparent; height:10px;}"
 		"QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
 		"QScrollBar::handle:hover{background:gray;}"
 		"QScrollBar::sub-line{background:transparent;}"
 		"QScrollBar::add-line{background:transparent;}");
-	m_pInterfaceList->verticalScrollBar()->setStyleSheet("QScrollBar{background:transparent; width: 10px;}"
+	m_pOutputList->verticalScrollBar()->setStyleSheet("QScrollBar{background:transparent; width: 10px;}"
 		"QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
 		"QScrollBar::handle:hover{background:gray;}"
 		"QScrollBar::sub-line{background:transparent;}"
 		"QScrollBar::add-line{background:transparent;}");
 
-	FancyButton *addButton = new FancyButton();
-	addButton->setIcon(QIcon("./Icon/tools/add"));
-	addButton->setCursor(QCursor(Qt::PointingHandCursor));
-	connect(addButton, SIGNAL(clicked()), this, SLOT(pSlotAddInterface()));
+	FancyButton *addOutputButton = new FancyButton();
+	addOutputButton->setIcon(QIcon("./Icon/tools/add"));
+	addOutputButton->setCursor(QCursor(Qt::PointingHandCursor));
+	connect(addOutputButton, SIGNAL(clicked()), this, SLOT(pSlotAddOutput()));
 
-	FancyButton *subscribeButton = new FancyButton();
-	subscribeButton->setIcon(QIcon("./Icon/tools/subscribe"));
-	subscribeButton->setCursor(QCursor(Qt::PointingHandCursor));
-	connect(subscribeButton, SIGNAL(clicked()), this, SLOT(pSlotSubscribeInterface()));
+	FancyButton *editOutputButton = new FancyButton();
+	editOutputButton->setIcon(QIcon("./Icon/tools/edit"));
+	editOutputButton->setCursor(QCursor(Qt::PointingHandCursor));
+	connect(editOutputButton, SIGNAL(clicked()), this, SLOT(pSlotEditOutput()));
 
-	FancyButton *editButton = new FancyButton();
-	editButton->setIcon(QIcon("./Icon/tools/edit"));
-	editButton->setCursor(QCursor(Qt::PointingHandCursor));
-	connect(editButton, SIGNAL(clicked()), this, SLOT(pSlotEditInterface()));
+	FancyButton *deleteOutputButton = new FancyButton();
+	deleteOutputButton->setIcon(QIcon("./Icon/tools/delete"));
+	deleteOutputButton->setCursor(QCursor(Qt::PointingHandCursor));
+	connect(deleteOutputButton, SIGNAL(clicked()), this, SLOT(pSlotDeleteOutput()));
 
-	FancyButton *deleteButton = new FancyButton();
-	deleteButton->setIcon(QIcon("./Icon/tools/delete"));
-	deleteButton->setCursor(QCursor(Qt::PointingHandCursor));
-	connect(deleteButton, SIGNAL(clicked()), this, SLOT(pSlotDeleteInterface()));
-
-	QWidget *buttons = new QWidget();
+	QWidget *outputButtons = new QWidget();
 	QHBoxLayout *layout = new QHBoxLayout();
-	layout->addWidget(addButton);
-	layout->addWidget(subscribeButton);
-	layout->addWidget(editButton);
-	layout->addWidget(deleteButton);
-	buttons->setLayout(layout);
+	layout->addWidget(addOutputButton);
+	layout->addWidget(editOutputButton);
+	layout->addWidget(deleteOutputButton);
+	outputButtons->setLayout(layout);
 
-	addTab(tr("interfaceList"), m_pInterfaceList, buttons);
+	addTab(tr("OUTPUT"), m_pOutputList, outputButtons);
+
+	//输入表
+	m_pInputList = new QTableWidget();
+
+	//表头
+	m_pInputList->setColumnCount(3);
+	m_pInputList->horizontalHeader()->setSectionsClickable(false);
+	m_pInputList->setColumnWidth(0, 100);
+	m_pInputList->setColumnWidth(1, 110);
+	m_pInputList->setColumnWidth(2, 110);
+
+	m_pInputList->horizontalHeader()->setFont(font);
+	m_pInputList->horizontalHeader()->setStyleSheet("QHeaderView::section{background:skyblue;}");
+	QStringList header2;
+	header2 << "Name" << "Type" << "Publisher";
+	m_pInputList->setHorizontalHeaderLabels(header2);
+
+	//列头
+	m_pInputList->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+	m_pInputList->verticalHeader()->setVisible(false);
+
+	//选择模式
+	m_pInputList->setSelectionBehavior(QAbstractItemView::SelectRows);
+	m_pInputList->setSelectionMode(QAbstractItemView::SingleSelection);
+	m_pInputList->setStyleSheet("selection-background-color:lightblue;");
+
+	//滚动条
+	m_pInputList->horizontalScrollBar()->setStyleSheet("QScrollBar{background:transparent; height:10px;}"
+		"QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
+		"QScrollBar::handle:hover{background:gray;}"
+		"QScrollBar::sub-line{background:transparent;}"
+		"QScrollBar::add-line{background:transparent;}");
+	m_pInputList->verticalScrollBar()->setStyleSheet("QScrollBar{background:transparent; width: 10px;}"
+		"QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
+		"QScrollBar::handle:hover{background:gray;}"
+		"QScrollBar::sub-line{background:transparent;}"
+		"QScrollBar::add-line{background:transparent;}");
+
+	FancyButton *subscribeInputButton = new FancyButton();
+	subscribeInputButton->setIcon(QIcon("./Icon/tools/subscribe"));
+	subscribeInputButton->setCursor(QCursor(Qt::PointingHandCursor));
+	connect(subscribeInputButton, SIGNAL(clicked()), this, SLOT(pSlotSubscribeInput()));
+
+	FancyButton *deleteInputButton = new FancyButton();
+	deleteInputButton->setIcon(QIcon("./Icon/tools/delete"));
+	deleteInputButton->setCursor(QCursor(Qt::PointingHandCursor));
+	connect(deleteInputButton, SIGNAL(clicked()), this, SLOT(pSlotDeleteInput()));
+
+	QWidget *inputButtons = new QWidget();
+	QHBoxLayout *layout2 = new QHBoxLayout();
+	layout2->addWidget(subscribeInputButton);
+	layout2->addWidget(deleteInputButton);
+	inputButtons->setLayout(layout2);
+
+	addTab(tr("INPUT"), m_pInputList, inputButtons);
+}
+
+void InterfaceInfoStack::pSlotAddOutput() {
+	if (selectedModel != NULL) {
+		interfaceInfo iInfo;
+		iInfo.publisher = selectedModel;
+		dialog = new EditOutputDialog(iInfo);
+		connect(dialog, SIGNAL(nameCheck(bool, int, QString)),
+			this, SLOT(slotNameCheck(bool, int, QString)));
+		connect(this, SIGNAL(nameValid()), dialog, SLOT(slotNameValid()));
+		connect(dialog, SIGNAL(refreshOutput(bool, int, interfaceInfo)),
+			this, SLOT(slotRefreshOutput(bool, int, interfaceInfo)));
+		//暂无消息
+		//connect(dialog, SIGNAL(signalSendMessage(QString)),
+		//	this, SLOT(slotMessageFromDialog(QString)));
+		dialog->exec();
+	}
+	else {
+		QMessageBox::information(NULL, "warning", "no model selected",
+			QMessageBox::Yes, QMessageBox::Yes);
+	}
+}
+
+void InterfaceInfoStack::pSlotEditOutput() {
+	
+}
+void InterfaceInfoStack::pSlotDeleteOutput() {}
+void InterfaceInfoStack::pSlotSubscribeInput() {}
+void InterfaceInfoStack::pSlotDeleteInput() {}
+
+
+void InterfaceInfoStack::slotNameCheck(bool isAdd, int index, QString name) {
+	if (isAdd) {
+		for (interfaceInfo i : interfaceSet) {
+			if (i.iName == name) {
+				QMessageBox::information(ERROR, "error", "name already used",
+					QMessageBox::Yes, QMessageBox::Yes);
+				return;
+			}
+		}
+		//通过名称检测
+		emit nameValid();
+	}
+}
+
+void InterfaceInfoStack::slotRefreshOutput(bool isAdd, int index, interfaceInfo iInfo) {
+	if (isAdd) {
+		//如果主键存在则不会插入，且second = false
+		auto ret = interfaceSet.insert(iInfo);
+		if (ret.second == 0) {
+			//默认不会出现的情况
+			QMessageBox::information(ERROR, "error", "name valid but can not insert",
+				QMessageBox::Yes, QMessageBox::Yes);
+		}
+		else {
+			//成功
+			int row = m_pOutputList->rowCount();
+			m_pOutputList->insertRow(row);
+
+			QTableWidgetItem *item;
+
+			item = new QTableWidgetItem(iInfo.iName);
+			item->setFlags(item->flags() & (~Qt::ItemIsEditable));
+			m_pOutputList->setItem(row, 0, item);
+
+			item = new QTableWidgetItem(iInfo.iDataType);
+			item->setFlags(item->flags() & (~Qt::ItemIsEditable));
+			m_pOutputList->setItem(row, 1, item);
+		}
+	}
 }
 
 void InterfaceInfoStack::slotModelChange(QString modelName) {
-
 	if (selectedModel == modelName) {
 		return;
 	}
@@ -81,99 +200,34 @@ void InterfaceInfoStack::slotModelChange(QString modelName) {
 	//有可能是NULL
 	selectedModel = modelName;
 
-	m_pInterfaceList->setRowCount(0);
-	m_pInterfaceList->clearContents();
+	m_pOutputList->setRowCount(0);
+	m_pOutputList->clearContents();
+
+	m_pInputList->setRowCount(0);
+	m_pInputList->clearContents();
 
 	if (selectedModel != NULL) {
 		for (interfaceInfo i : interfaceSet) {
+			//输出表
 			if (i.publisher == modelName) {
-				int row = m_pInterfaceList->rowCount();
-				m_pInterfaceList->insertRow(row);
+				int row = m_pOutputList->rowCount();
+				m_pOutputList->insertRow(row);
 
 				QTableWidgetItem *item;
 
-				item = new QTableWidgetItem(outputType);
-				item->setFlags(item->flags() & (~Qt::ItemIsEditable));
-				m_pInterfaceList->setItem(row, 0, item);
-
 				item = new QTableWidgetItem(i.iName);
 				item->setFlags(item->flags() & (~Qt::ItemIsEditable));
-				m_pInterfaceList->setItem(row, 1, item);
+				m_pOutputList->setItem(row, 0, item);
 
 				item = new QTableWidgetItem(i.iDataType);
 				item->setFlags(item->flags() & (~Qt::ItemIsEditable));
-				m_pInterfaceList->setItem(row, 2, item);
+				m_pOutputList->setItem(row, 1, item);
 			}
-			//订阅关系
-			//if (i.subscribers) {
-			//
-			//}
+			//输入表
 		}
-	}
-}
-
-void InterfaceInfoStack::pSlotAddInterface() {
-	if (selectedModel != NULL) {
-		interfaceInfo iInfo;
-		iInfo.publisher = selectedModel;
-		dialog = new EditInterfaceDialog(iInfo, true);
-		connect(dialog, SIGNAL(refreshInterface(interfaceInfo, bool)),
-			this, SLOT(slotRefreshInterface(interfaceInfo, bool)));
-		connect(dialog, SIGNAL(signalSendMessage(QString)),
-			this, SLOT(slotMessageFromDialog(QString)));
-		dialog->exec();
-	}
-}
-
-void InterfaceInfoStack::pSlotSubscribeInterface() {
-
-}
-
-void InterfaceInfoStack::pSlotEditInterface() {
-
-}
-
-void InterfaceInfoStack::pSlotDeleteInterface() {
-
-}
-
-void InterfaceInfoStack::slotRefreshInterface(interfaceInfo iInfo, bool isAdd) {
-	if (isAdd) {
-		auto ret = interfaceSet.insert(iInfo);
-		if (ret.second == 0) {
-			emit signalSendMessage("name already used");
-			dialog = new EditInterfaceDialog(iInfo, true);
-			connect(dialog, SIGNAL(refreshInterface(interfaceInfo, bool)),
-				this, SLOT(slotRefreshInterface(interfaceInfo, bool)));
-			connect(dialog, SIGNAL(signalSendMessage(QString)),
-				this, SLOT(slotMessageFromDialog(QString)));
-			dialog->exec();
-		}
-		else {
-			//添加成功
-			int row = m_pInterfaceList->rowCount();
-			m_pInterfaceList->insertRow(row);
-
-			QTableWidgetItem *item;
-
-			item = new QTableWidgetItem(outputType);
-			item->setFlags(item->flags() & (~Qt::ItemIsEditable));
-			m_pInterfaceList->setItem(row, 0, item);
-
-			item = new QTableWidgetItem(iInfo.iName);
-			item->setFlags(item->flags() & (~Qt::ItemIsEditable));
-			m_pInterfaceList->setItem(row, 1, item);
-
-			item = new QTableWidgetItem(iInfo.iDataType);
-			item->setFlags(item->flags() & (~Qt::ItemIsEditable));
-			m_pInterfaceList->setItem(row, 2, item);
-		}
-	}
-	else {
-		//edit
 	}
 }
 
 void InterfaceInfoStack::slotMessageFromDialog(QString message) {
-	emit signalSendMessage(message);
+	//
 }

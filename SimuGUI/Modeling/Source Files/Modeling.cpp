@@ -25,16 +25,20 @@ void Modeling::createWindow() {
 
 	createToolDragStack();
 	createDropLabel();
+	createDateTypeStack();
 	createModelInfoStack();
 	createInterfaceInfoStack();
 
 	//接收消息发送
 	connect(m_pDropLabel, SIGNAL(signalSendMessage(QString)),
 		this, SLOT(slotReceiveMessage(QString)));
+	connect(m_pDataTypeStack, SIGNAL(signalSendMessage(QString)),
+		this, SLOT(slotReceiveMessage(QString)));
 	connect(m_pModelInfoStack, SIGNAL(signalSendMessage(QString)),
 		this, SLOT(slotReceiveMessage(QString)));
 	connect(m_pInterfaceInfoStack, SIGNAL(signalSendMessage(QString)),
 		this, SLOT(slotReceiveMessage(QString)));
+
 
 	//添加模型，拖动进入时向模型列表中发送
 	connect(m_pDropLabel, SIGNAL(signalAddModel(QString, QString)),
@@ -61,8 +65,10 @@ void Modeling::createWindow() {
 	layout->setColumnStretch(0, 1);
 	layout->setColumnStretch(1, 9);
 	layout->addWidget(title, 0, 0, 1, 3, Qt::AlignCenter);
-	layout->addWidget(m_pToolDragStack, 1, 0, 2, 1);
+
+	layout->addWidget(m_pToolDragStack, 1, 0, 1, 1);
 	layout->addWidget(m_pDropLabel, 1, 1, 2, 1);
+	layout->addWidget(m_pDataTypeStack, 2, 0, 1, 1);
 	layout->addWidget(m_pModelInfoStack, 1, 2, 1, 1);
 	layout->addWidget(m_pInterfaceInfoStack, 2, 2, 1, 1);
 
@@ -72,7 +78,6 @@ void Modeling::createWindow() {
 
 void Modeling::createToolDragStack() {
 	m_pToolDragStack = new ToolDragStack();
-	m_pToolDragStack->setMinimumWidth(100);
 	m_pToolDragStack->setTitle("Tools");
 }
 
@@ -80,6 +85,11 @@ void Modeling::createDropLabel() {
 	m_pDropLabel = new DropLabel();
 	m_pDropLabel->setStyleSheet("border:2px solid black;");
 	m_pDropLabel->setAcceptDrops(true);
+}
+
+void Modeling::createDateTypeStack() {
+	m_pDataTypeStack = new DataTypeStack();
+	m_pDataTypeStack->setTitle("DATA");
 }
 
 void Modeling::createModelInfoStack() {

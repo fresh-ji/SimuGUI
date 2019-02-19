@@ -139,7 +139,8 @@ void MiniStackPrivate::createWindow()
     pTitleLayout->addStretch();
     pTitleLayout->addWidget(m_pTabBar);
     pTitleLayout->addSpacing(2);
-    pTitleLayout->addWidget(m_pToolBar);
+	//edit by jh，去掉了两个小按钮
+    //pTitleLayout->addWidget(m_pToolBar);
     m_pTitleWidget->setLayout(pTitleLayout);
 
     m_pSpacer = new QWidget();

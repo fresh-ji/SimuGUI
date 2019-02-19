@@ -7,8 +7,8 @@ ModelInfoStack::ModelInfoStack(QWidget *p) : MiniStack(p) {
 	//±íÍ·
 	m_pModelList->setColumnCount(2);
 	m_pModelList->horizontalHeader()->setSectionsClickable(false);
-	m_pModelList->setColumnWidth(0, 150);
-	m_pModelList->setColumnWidth(1, 100);
+	m_pModelList->setColumnWidth(0, 160);
+	m_pModelList->setColumnWidth(1, 160);
 	QFont font;
 	font.setBold(true);
 	m_pModelList->horizontalHeader()->setFont(font);
