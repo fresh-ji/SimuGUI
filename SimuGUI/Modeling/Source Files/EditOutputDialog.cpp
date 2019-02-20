@@ -6,24 +6,23 @@
 
 #include "EditOutputDialog.h"
 
-EditOutputDialog::EditOutputDialog(interfaceInfo iInfo, QWidget *p) : FancyDialog(p) {
+EditOutputDialog::EditOutputDialog(QString pub, QWidget *p) : FancyDialog(p) {
 	isAdd = true;
-	setIndex = -1;
-	setWindowTitle("Add Output for " + iInfo.publisher);
-	publisher = iInfo.publisher;
+	preName = "";
+	setWindowTitle("Add Output for " + pub);
+	publisher = pub;
 	createTemplate();
 }
 
-EditOutputDialog::EditOutputDialog(interfaceInfo iInfo, int index, QWidget *p) : FancyDialog(p) {
+EditOutputDialog::EditOutputDialog(outputInfo oInfo, QWidget *p) : FancyDialog(p) {
 	isAdd = false;
-	setIndex = index;
-	setWindowTitle("Edit Output for " + iInfo.publisher);
-	publisher = iInfo.publisher;
+	preName = oInfo.oName;
+	setWindowTitle("Edit Output for " + oInfo.oPublisher);
+	publisher = oInfo.oPublisher;
 	createTemplate();
 
-	nameText->setText(iInfo.iName);
-
-	//设置类型
+	nameText->setText(oInfo.oName);
+	typeBox->setCurrentText(oInfo.oDataType);
 }
 
 void EditOutputDialog::createTemplate() {
@@ -71,8 +70,22 @@ void EditOutputDialog::createTemplate() {
 }
 
 void EditOutputDialog::pSlotFinish() {
-	if (nameText->text() != NULL && !(nameText->text().contains(" "))) {
-		emit nameCheck(isAdd, setIndex, nameText->text());
+	QString newName = nameText->text();
+	//命名规范
+	if (newName != NULL && !(newName.contains(" "))) {
+		//是否修改key
+		if (newName == preName) {
+			//没改名
+			outputInfo oInfo;
+			oInfo.oName = newName;
+			oInfo.oDataType = typeBox->currentText();
+			oInfo.oPublisher = publisher;
+			close();
+			emit refreshOutput(isAdd, preName, oInfo);
+		}
+		else {
+			emit nameCheck(newName);
+		}
 	}
 	else {
 		QMessageBox::information(ERROR, "error", "contains wrong charactors",
@@ -81,10 +94,11 @@ void EditOutputDialog::pSlotFinish() {
 }
 
 void EditOutputDialog::slotNameValid() {
-	interfaceInfo iInfo;
-	iInfo.iName = nameText->text();
-	iInfo.iDataType = typeBox->currentText();
-	iInfo.publisher = publisher;
+	//改名且可用
+	outputInfo oInfo;
+	oInfo.oName = nameText->text();
+	oInfo.oDataType = typeBox->currentText();
+	oInfo.oPublisher = publisher;
 	close();
-	emit refreshOutput(isAdd, setIndex, iInfo);
+	emit refreshOutput(isAdd, preName, oInfo);
 }

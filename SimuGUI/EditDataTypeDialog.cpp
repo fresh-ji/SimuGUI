@@ -9,20 +9,20 @@
 EditDataTypeDialog::EditDataTypeDialog(QWidget *p) : FancyDialog(p) {
 
 	isAdd = true;
-	setIndex = -1;
+	preName = "";
 	setWindowTitle("Add Data Type");
 	createTemplate();
 
 }
 
-EditDataTypeDialog::EditDataTypeDialog(dataTypeInfo dInfo, int index, QWidget *p) : FancyDialog(p) {
+EditDataTypeDialog::EditDataTypeDialog(QString key, dataTypeInfo dInfo, QWidget *p) : FancyDialog(p) {
 
 	isAdd = false;
-	setIndex = index;
-	setWindowTitle("Edit Data Type : " + dInfo.dName);
+	preName = key;
+	setWindowTitle("Edit Data Type : " + key);
 	createTemplate();
 
-	nameText->setText(dInfo.dName);
+	nameText->setText(key);
 
 }
 
@@ -57,8 +57,19 @@ void EditDataTypeDialog::createTemplate() {
 }
 
 void EditDataTypeDialog::pSlotFinish() {
-	if (nameText->text() != NULL && !(nameText->text().contains(" "))) {
-		emit nameCheck(isAdd, setIndex, nameText->text());
+	QString newName = nameText->text();
+	//命名规范
+	if (newName != NULL && !(newName.contains(" "))) {
+		//是否修改key
+		if (newName == preName) {
+			//没改名
+			dataTypeInfo dInfo;
+			close();
+			emit refreshDataType(isAdd, preName, newName, dInfo);
+		}
+		else {
+			emit nameCheck(newName);
+		}
 	}
 	else {
 		QMessageBox::information(ERROR, "error", "contains wrong charactors",
@@ -67,8 +78,8 @@ void EditDataTypeDialog::pSlotFinish() {
 }
 
 void EditDataTypeDialog::slotNameValid() {
+	//改名且可用
 	dataTypeInfo dInfo;
-	dInfo.dName = nameText->text();
 	close();
-	emit refreshDataType(isAdd, setIndex, dInfo);
+	emit refreshDataType(isAdd, preName, nameText->text(), dInfo);
 }

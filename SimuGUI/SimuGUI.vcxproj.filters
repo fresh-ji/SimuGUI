@@ -320,6 +320,9 @@
     <QtMoc Include="Modeling\Header Files\EditOutputDialog.h">
       <Filter>Modeling\interface</Filter>
     </QtMoc>
+    <QtMoc Include="EditInputDialog.h">
+      <Filter>Modeling\interface</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CanPool\Header Files\cursor.h">
@@ -499,6 +502,9 @@
       <Filter>Modeling\model</Filter>
     </ClCompile>
     <ClCompile Include="Modeling\Source Files\EditOutputDialog.cpp">
+      <Filter>Modeling\interface</Filter>
+    </ClCompile>
+    <ClCompile Include="EditInputDialog.cpp">
       <Filter>Modeling\interface</Filter>
     </ClCompile>
   </ItemGroup>

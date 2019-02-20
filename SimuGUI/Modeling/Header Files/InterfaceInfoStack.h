@@ -8,7 +8,6 @@
 #ifndef INTERFACEINFOSTACK_H
 #define INTERFACEINFOSTACK_H
 
-//QSet不好用
 #include <set>
 
 #include "cwidgets.h"
@@ -16,9 +15,13 @@
 #include "fancybutton.h"
 
 #include "EditOutputDialog.h"
+#include "EditInputDialog.h"
 
-//constexpr auto outputType = "output";
-//constexpr auto inputType = "input";
+struct interfaceInfo {
+	QString dataType;
+	QString publisher;
+	std::set<QString> subscribers;
+};
 
 class InterfaceInfoStack : public MiniStack {
 
@@ -37,11 +40,11 @@ private slots:
 	void pSlotDeleteInput();
 
 public slots:
-	void slotNameCheck(bool, int, QString);
+	void slotNameCheck(QString);
 signals:
 	void nameValid();
 public slots:
-	void slotRefreshOutput(bool, int, interfaceInfo);
+	void slotRefreshOutput(bool, QString, outputInfo);
 	//void slotRefreshInput(interfaceInfo, bool);
 
 public slots:
@@ -61,11 +64,14 @@ private:
 	//改发布接口对话框
 	EditOutputDialog *dialog;
 
+	//改订阅接口对话框
+	EditInputDialog *dialog_in;
+
 	//被选中模型
 	QString selectedModel;
 
 public:
 	//core
-	std::set<interfaceInfo> interfaceSet;
+	QMap<QString, interfaceInfo> interfaceMap;
 };
 #endif // INTERFACEINFOSTACK_H

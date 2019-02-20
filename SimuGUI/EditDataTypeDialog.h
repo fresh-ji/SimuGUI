@@ -8,18 +8,12 @@
 #ifndef EDITDATATYPEDIALOG_H
 #define EDITDATATYPEDIALOG_H
 
-#include <set>
-
 #include "cwidgets.h"
 #include "fancydialog.h"
 
 struct dataTypeInfo {
-	QString dName;
-	//TODO:内容这块待定
-
-	bool operator < (const dataTypeInfo& d) const {
-		return this->dName < d.dName;
-	}
+	int count;
+	//TODO:内容待定
 };
 
 class EditDataTypeDialog : public FancyDialog {
@@ -30,18 +24,18 @@ public:
 	//增加一项的构造器
 	explicit EditDataTypeDialog(QWidget *p = 0);
 	//修改一项的构造器
-	explicit EditDataTypeDialog(dataTypeInfo, int, QWidget *p = 0);
+	explicit EditDataTypeDialog(QString, dataTypeInfo, QWidget *p = 0);
 	//析构器
 	~EditDataTypeDialog() {};
 
 private slots:
 	void pSlotFinish();
 signals:
-	void nameCheck(bool, int, QString);
+	void nameCheck(QString);
 public slots:
 	void slotNameValid();
 signals:
-	void refreshDataType(bool, int, dataTypeInfo);
+	void refreshDataType(bool, QString, QString, dataTypeInfo);
 signals:
 	//消息信号，目前没用到
 	void signalSendMessage(QString);
@@ -53,8 +47,8 @@ private:
 	//是否添加
 	bool isAdd;
 
-	//修改时记录在set中位置
-	int setIndex;
+	//修改时记录之前的key
+	QString preName;
 
 	//数据名
 	QLineEdit *nameText;

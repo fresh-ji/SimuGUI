@@ -8,20 +8,13 @@
 #ifndef EDITOUTPUTDIALOG_H
 #define EDITOUTPUTDIALOG_H
 
-#include <set>
-
 #include "cwidgets.h"
 #include "fancydialog.h"
 
-struct interfaceInfo {
-	QString iName;
-	QString iDataType;
-	QString publisher;
-	std::set<QString> subscribers;
-
-	bool operator < (const interfaceInfo& i) const {
-		return this->iName < i.iName;
-	}
+struct outputInfo {
+	QString oName;
+	QString oDataType;
+	QString oPublisher;
 };
 
 class EditOutputDialog : public FancyDialog {
@@ -30,20 +23,20 @@ class EditOutputDialog : public FancyDialog {
 
 public:
 	//增加一项的构造器
-	explicit EditOutputDialog(interfaceInfo, QWidget *p = 0);
+	explicit EditOutputDialog(QString, QWidget *p = 0);
 	//修改一项的构造器
-	explicit EditOutputDialog(interfaceInfo, int, QWidget *p = 0);
+	explicit EditOutputDialog(outputInfo, QWidget *p = 0);
 	//析构器
 	~EditOutputDialog() {};
 
 private slots:
 	void pSlotFinish();
 signals:
-	void nameCheck(bool, int, QString);
+	void nameCheck(QString);
 public slots:
 	void slotNameValid();
 signals:
-	void refreshOutput(bool, int, interfaceInfo);
+	void refreshOutput(bool, QString, outputInfo);
 signals:
 	//消息信号，目前没用到
 	void signalSendMessage(QString);
@@ -55,8 +48,8 @@ private:
 	//是否添加
 	bool isAdd;
 
-	//修改时记录在set中位置
-	int setIndex;
+	//修改时记录之前的key
+	QString preName;
 
 	//发布者
 	QString publisher;

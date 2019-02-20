@@ -124,14 +124,12 @@ InterfaceInfoStack::InterfaceInfoStack(QWidget *p) : MiniStack(p) {
 
 void InterfaceInfoStack::pSlotAddOutput() {
 	if (selectedModel != NULL) {
-		interfaceInfo iInfo;
-		iInfo.publisher = selectedModel;
-		dialog = new EditOutputDialog(iInfo);
-		connect(dialog, SIGNAL(nameCheck(bool, int, QString)),
-			this, SLOT(slotNameCheck(bool, int, QString)));
+		dialog = new EditOutputDialog(selectedModel);
+		connect(dialog, SIGNAL(nameCheck(QString)),
+			this, SLOT(slotNameCheck(QString)));
 		connect(this, SIGNAL(nameValid()), dialog, SLOT(slotNameValid()));
-		connect(dialog, SIGNAL(refreshOutput(bool, int, interfaceInfo)),
-			this, SLOT(slotRefreshOutput(bool, int, interfaceInfo)));
+		connect(dialog, SIGNAL(refreshOutput(bool, QString, outputInfo)),
+			this, SLOT(slotRefreshOutput(bool, QString, outputInfo)));
 		//暂无消息
 		//connect(dialog, SIGNAL(signalSendMessage(QString)),
 		//	this, SLOT(slotMessageFromDialog(QString)));
@@ -144,51 +142,124 @@ void InterfaceInfoStack::pSlotAddOutput() {
 }
 
 void InterfaceInfoStack::pSlotEditOutput() {
-	
+	QString name;
+	if (!m_pOutputList->currentItem()) {
+		return;
+	}
+	if (m_pOutputList->currentItem()->isSelected()) {
+
+		int row = m_pOutputList->currentItem()->row();
+		QString name = m_pOutputList->item(row, 0)->text();
+
+		outputInfo oInfo;
+		oInfo.oName = name;
+		oInfo.oDataType = interfaceMap.value(name).dataType;
+		oInfo.oPublisher = interfaceMap.value(name).publisher;
+
+		dialog = new EditOutputDialog(oInfo);
+		connect(dialog, SIGNAL(nameCheck(QString)),
+			this, SLOT(slotNameCheck(QString)));
+		connect(this, SIGNAL(nameValid()), dialog, SLOT(slotNameValid()));
+		connect(dialog, SIGNAL(refreshOutput(bool, QString, outputInfo)),
+			this, SLOT(slotRefreshOutput(bool, QString, outputInfo)));
+		//暂无消息
+		//connect(dialog, SIGNAL(signalSendMessage(QString)),
+		//	this, SLOT(slotMessageFromDialog(QString)));
+		dialog->exec();
+	}
 }
-void InterfaceInfoStack::pSlotDeleteOutput() {}
-void InterfaceInfoStack::pSlotSubscribeInput() {}
-void InterfaceInfoStack::pSlotDeleteInput() {}
+void InterfaceInfoStack::pSlotDeleteOutput() {
+	if (!m_pOutputList->currentItem()) {
+		return;
+	}
+	if (m_pOutputList->currentItem()->isSelected()) {
+		int row = m_pOutputList->currentItem()->row();
+		QString name = m_pOutputList->item(row, 0)->text();
+		//在map中删除
+		interfaceMap.remove(name);
+		//在列表中删除
+		m_pOutputList->removeRow(row);
+	}
+}
 
+void InterfaceInfoStack::pSlotSubscribeInput() {
+	if (selectedModel != NULL) {
+		dialog_in = new EditInputDialog(selectedModel);
+		//暂无消息
+		//connect(dialog_in, SIGNAL(signalSendMessage(QString)),
+		//	this, SLOT(slotMessageFromDialog(QString)));
+		dialog_in->exec();
+	}
+	else {
+		QMessageBox::information(NULL, "warning", "no model selected",
+			QMessageBox::Yes, QMessageBox::Yes);
+	}
+}
 
-void InterfaceInfoStack::slotNameCheck(bool isAdd, int index, QString name) {
-	if (isAdd) {
-		for (interfaceInfo i : interfaceSet) {
-			if (i.iName == name) {
-				QMessageBox::information(ERROR, "error", "name already used",
-					QMessageBox::Yes, QMessageBox::Yes);
-				return;
-			}
-		}
+void InterfaceInfoStack::pSlotDeleteInput() {
+
+}
+
+void InterfaceInfoStack::slotNameCheck(QString newName) {
+	//不管增加还是修改，name一定是新的
+	if (interfaceMap.contains(newName)) {
+		QMessageBox::information(ERROR, "error", "name already used",
+			QMessageBox::Yes, QMessageBox::Yes);
+	}
+	else {
 		//通过名称检测
 		emit nameValid();
 	}
 }
 
-void InterfaceInfoStack::slotRefreshOutput(bool isAdd, int index, interfaceInfo iInfo) {
+void InterfaceInfoStack::slotRefreshOutput(bool isAdd, QString preName, outputInfo oInfo) {
+
 	if (isAdd) {
-		//如果主键存在则不会插入，且second = false
-		auto ret = interfaceSet.insert(iInfo);
-		if (ret.second == 0) {
+		if (interfaceMap.contains(oInfo.oName)) {
 			//默认不会出现的情况
 			QMessageBox::information(ERROR, "error", "name valid but can not insert",
 				QMessageBox::Yes, QMessageBox::Yes);
 		}
 		else {
-			//成功
+			//添加map
+			interfaceInfo iInfo;
+			iInfo.dataType = oInfo.oDataType;
+			iInfo.publisher = oInfo.oPublisher;
+			interfaceMap.insert(oInfo.oName, iInfo);
+			//添加列表
 			int row = m_pOutputList->rowCount();
 			m_pOutputList->insertRow(row);
 
 			QTableWidgetItem *item;
 
-			item = new QTableWidgetItem(iInfo.iName);
+			item = new QTableWidgetItem(oInfo.oName);
 			item->setFlags(item->flags() & (~Qt::ItemIsEditable));
 			m_pOutputList->setItem(row, 0, item);
 
-			item = new QTableWidgetItem(iInfo.iDataType);
+			item = new QTableWidgetItem(oInfo.oDataType);
 			item->setFlags(item->flags() & (~Qt::ItemIsEditable));
 			m_pOutputList->setItem(row, 1, item);
 		}
+	}
+	else {
+		//edit
+		interfaceInfo iInfo = interfaceMap.value(preName);
+		iInfo.dataType = oInfo.oDataType;
+		if (preName != oInfo.oName) {
+			interfaceMap.remove(preName);
+		}
+		interfaceMap.insert(oInfo.oName, iInfo);
+
+		//成功
+		QTableWidgetItem *item;
+
+		item = new QTableWidgetItem(oInfo.oName);
+		item->setFlags(item->flags() & (~Qt::ItemIsEditable));
+		m_pOutputList->setItem(m_pOutputList->currentItem()->row(), 0, item);
+
+		item = new QTableWidgetItem(oInfo.oDataType);
+		item->setFlags(item->flags() & (~Qt::ItemIsEditable));
+		m_pOutputList->setItem(m_pOutputList->currentItem()->row(), 1, item);
 	}
 }
 
@@ -207,23 +278,23 @@ void InterfaceInfoStack::slotModelChange(QString modelName) {
 	m_pInputList->clearContents();
 
 	if (selectedModel != NULL) {
-		for (interfaceInfo i : interfaceSet) {
+		QMap<QString, interfaceInfo>::iterator iter;
+		for (iter = interfaceMap.begin(); iter != interfaceMap.end(); ++iter) {
 			//输出表
-			if (i.publisher == modelName) {
+			if (iter.value().publisher == modelName) {
 				int row = m_pOutputList->rowCount();
 				m_pOutputList->insertRow(row);
 
 				QTableWidgetItem *item;
 
-				item = new QTableWidgetItem(i.iName);
+				item = new QTableWidgetItem(iter.key());
 				item->setFlags(item->flags() & (~Qt::ItemIsEditable));
 				m_pOutputList->setItem(row, 0, item);
 
-				item = new QTableWidgetItem(i.iDataType);
+				item = new QTableWidgetItem(iter.value().dataType);
 				item->setFlags(item->flags() & (~Qt::ItemIsEditable));
 				m_pOutputList->setItem(row, 1, item);
 			}
-			//输入表
 		}
 	}
 }

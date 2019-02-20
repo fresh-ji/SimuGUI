@@ -29,11 +29,11 @@ private slots:
 	void pSlotDeleteDataType();
 
 public slots:
-	void slotNameCheck(bool, int, QString);
+	void slotNameCheck(QString);
 signals:
 	void nameValid();
 public slots:
-	void slotRefreshDataType(bool, int, dataTypeInfo);
+	void slotRefreshDataType(bool, QString, QString, dataTypeInfo);
 
 signals:
 	void signalSendMessage(QString);
@@ -49,7 +49,7 @@ private:
 
 public:
 	//core
-	std::set<dataTypeInfo> dataTypeSet;
+	QMap<QString, dataTypeInfo> dataTypeMap;
 };
 
 #endif //  DATATYPESTACK_H

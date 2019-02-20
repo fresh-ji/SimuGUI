@@ -9,7 +9,7 @@ DataTypeStack::DataTypeStack(QWidget *p) : MiniStack(p) {
 	m_pDataTypeList->setColumnCount(2);
 	m_pDataTypeList->horizontalHeader()->setSectionsClickable(false);
 	m_pDataTypeList->setColumnWidth(0, 200);
-	m_pDataTypeList->setColumnWidth(1, 20);
+	m_pDataTypeList->setColumnWidth(1, 10);
 
 	QFont font;
 	font.setBold(true);
@@ -69,11 +69,11 @@ DataTypeStack::DataTypeStack(QWidget *p) : MiniStack(p) {
 
 void DataTypeStack::pSlotAddDataType() {
 	dialog = new EditDataTypeDialog();
-	connect(dialog, SIGNAL(nameCheck(bool, int, QString)),
-		this, SLOT(slotNameCheck(bool, int, QString)));
+	connect(dialog, SIGNAL(nameCheck(QString)),
+		this, SLOT(slotNameCheck(QString)));
 	connect(this, SIGNAL(nameValid()), dialog, SLOT(slotNameValid()));
-	connect(dialog, SIGNAL(refreshDataType(bool, int, dataTypeInfo)),
-		this, SLOT(slotRefreshDataType(bool, int, dataTypeInfo)));
+	connect(dialog, SIGNAL(refreshDataType(bool, QString, QString, dataTypeInfo)),
+		this, SLOT(slotRefreshDataType(bool, QString, QString, dataTypeInfo)));
 	//暂无消息
 	//connect(dialog, SIGNAL(signalSendMessage(QString)),
 	//	this, SLOT(slotMessageFromDialog(QString)));
@@ -82,31 +82,23 @@ void DataTypeStack::pSlotAddDataType() {
 
 void DataTypeStack::pSlotEditDataType() {
 
-	QString name;
 	if (!m_pDataTypeList->currentItem()) {
 		return;
 	}
 	if (m_pDataTypeList->currentItem()->isSelected()) {
 		int row = m_pDataTypeList->currentItem()->row();
-		name = m_pDataTypeList->item(row, 0)->text();
-	}
+		QString name = m_pDataTypeList->item(row, 0)->text();
 
-	int index = 0;
-	for (dataTypeInfo d : dataTypeSet) {
-		if (d.dName == name) {
-			dialog = new EditDataTypeDialog(d, index);
-			connect(dialog, SIGNAL(nameCheck(bool, int, QString)),
-				this, SLOT(slotNameCheck(bool, int, QString)));
-			connect(this, SIGNAL(nameValid()), dialog, SLOT(slotNameValid()));
-			connect(dialog, SIGNAL(refreshDataType(bool, int, dataTypeInfo)),
-				this, SLOT(slotRefreshDataType(bool, int, dataTypeInfo)));
-			//暂无消息
-			//connect(dialog, SIGNAL(signalSendMessage(QString)),
-			//	this, SLOT(slotMessageFromDialog(QString)));
-			dialog->exec();
-			return;
-		}
-		index++;
+		dialog = new EditDataTypeDialog(name, dataTypeMap.value(name));
+		connect(dialog, SIGNAL(nameCheck(QString)),
+			this, SLOT(slotNameCheck(QString)));
+		connect(this, SIGNAL(nameValid()), dialog, SLOT(slotNameValid()));
+		connect(dialog, SIGNAL(refreshDataType(bool, QString, QString, dataTypeInfo)),
+			this, SLOT(slotRefreshDataType(bool, QString, QString, dataTypeInfo)));
+		//暂无消息
+		//connect(dialog, SIGNAL(signalSendMessage(QString)),
+		//	this, SLOT(slotMessageFromDialog(QString)));
+		dialog->exec();
 	}
 }
 
@@ -117,95 +109,60 @@ void DataTypeStack::pSlotDeleteDataType() {
 	if (m_pDataTypeList->currentItem()->isSelected()) {
 		int row = m_pDataTypeList->currentItem()->row();
 		QString name = m_pDataTypeList->item(row, 0)->text();
-		//在set中删除
-		for (dataTypeInfo d : dataTypeSet) {
-			if (d.dName == name) {
-				dataTypeSet.erase(d);
-				break;
-			}
-		}
+		//在map中删除
+		dataTypeMap.remove(name);
 		//在列表中删除
 		m_pDataTypeList->removeRow(row);
 	}
 }
 
-void DataTypeStack::slotNameCheck(bool isAdd, int index, QString name) {
-	if (isAdd) {
-		for (dataTypeInfo d : dataTypeSet) {
-			if (d.dName == name) {
-				QMessageBox::information(ERROR, "error", "name already used",
-					QMessageBox::Yes, QMessageBox::Yes);
-				return;
-			}
-		}
-		//通过名称检测
-		emit nameValid();
+void DataTypeStack::slotNameCheck(QString newName) {
+	//不管增加还是修改，name一定是新的
+	if (dataTypeMap.contains(newName)) {
+		QMessageBox::information(ERROR, "error", "name already used",
+			QMessageBox::Yes, QMessageBox::Yes);
 	}
 	else {
-		int i = 0;
-		for (dataTypeInfo d : dataTypeSet) {
-			if (index == i) {
-				i++;
-				continue;
-			}
-			if (d.dName == name) {
-				QMessageBox::information(ERROR, "error", "name already used",
-					QMessageBox::Yes, QMessageBox::Yes);
-				return;
-			}
-			i++;
-		}
 		//通过名称检测
 		emit nameValid();
 	}
 }
 
-void DataTypeStack::slotRefreshDataType(bool isAdd, int index, dataTypeInfo dInfo) {
+void DataTypeStack::slotRefreshDataType(bool isAdd, QString preName, QString newName, dataTypeInfo dInfo) {
 
 	if (isAdd) {
-		//如果主键存在则不会插入，且second = false
-		auto ret = dataTypeSet.insert(dInfo);
-		if (ret.second == 0) {
+		if (dataTypeMap.contains(newName)) {
 			//默认不会出现的情况
 			QMessageBox::information(ERROR, "error", "name valid but can not insert",
 				QMessageBox::Yes, QMessageBox::Yes);
 		}
 		else {
-			//添加成功
+			//添加map
+			dataTypeMap.insert(newName, dInfo);
+			//添加列表
 			int row = m_pDataTypeList->rowCount();
 			m_pDataTypeList->insertRow(row);
 
 			QTableWidgetItem *item;
 
-			item = new QTableWidgetItem(dInfo.dName);
+			item = new QTableWidgetItem(newName);
 			item->setFlags(item->flags() & (~Qt::ItemIsEditable));
 			m_pDataTypeList->setItem(row, 0, item);
 		}
 	}
 	else {
 		//edit
-		int i = 0;
-		for (dataTypeInfo d : dataTypeSet) {
-			if (index == i) {
-				dataTypeSet.erase(d);
-				//如果主键存在则不会插入，且second = false
-				auto ret = dataTypeSet.insert(dInfo);
-				if (ret.second == 0) {
-					//默认不会出现的情况
-					QMessageBox::information(ERROR, "error", "name valid but can not insert in edit",
-						QMessageBox::Yes, QMessageBox::Yes);
-				}
-				else {
-					//成功
-					QTableWidgetItem *item;
-					item = new QTableWidgetItem(dInfo.dName);
-					item->setFlags(item->flags() & (~Qt::ItemIsEditable));
-					m_pDataTypeList->setItem(m_pDataTypeList->currentItem()->row(), 0, item);
-				}
-				return;
-			}
-			i++;
+		if (preName != newName) {
+			dataTypeMap.remove(preName);
 		}
+		dataTypeMap.insert(newName, dInfo);
+
+		//成功
+		QTableWidgetItem *item;
+
+		item = new QTableWidgetItem(newName);
+		item->setFlags(item->flags() & (~Qt::ItemIsEditable));
+		m_pDataTypeList->setItem(m_pDataTypeList->currentItem()->row(), 0, item);
 	}
 }
 
