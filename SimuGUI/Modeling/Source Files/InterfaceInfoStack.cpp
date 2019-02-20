@@ -2,6 +2,11 @@
 
 #include "InterfaceInfoStack.h"
 
+//QSet基于哈希表，set基于变种红黑树，还要加上==
+uint qHash(const inputInfo i) {
+	return i.iName.toUInt();
+}
+
 InterfaceInfoStack::InterfaceInfoStack(QWidget *p) : MiniStack(p) {
 
 	//输出表
@@ -184,7 +189,25 @@ void InterfaceInfoStack::pSlotDeleteOutput() {
 
 void InterfaceInfoStack::pSlotSubscribeInput() {
 	if (selectedModel != NULL) {
-		dialog_in = new EditInputDialog(selectedModel);
+		QSet<inputInfo> subInfo;
+		QMap<QString, interfaceInfo>::iterator iter;
+		for (iter = interfaceMap.begin(); iter != interfaceMap.end(); ++iter) {
+			inputInfo iInfo;
+			iInfo.iName = iter.key();
+			iInfo.iDataType = iter.value().dataType;
+			iInfo.iPublisher = iter.value().publisher;
+			if (iter.value().subscribers.contains(selectedModel)) {
+				iInfo.isSubscribe = true;
+			}
+			else {
+				iInfo.isSubscribe = false;
+			}
+			subInfo.insert(iInfo);
+		}
+
+		dialog_in = new EditInputDialog(selectedModel, subInfo);
+		connect(dialog_in, SIGNAL(refreshInput(QSet<QString>)),
+				this, SLOT(slotRefreshInput(QSet<QString>)));
 		//暂无消息
 		//connect(dialog_in, SIGNAL(signalSendMessage(QString)),
 		//	this, SLOT(slotMessageFromDialog(QString)));
@@ -261,6 +284,10 @@ void InterfaceInfoStack::slotRefreshOutput(bool isAdd, QString preName, outputIn
 		item->setFlags(item->flags() & (~Qt::ItemIsEditable));
 		m_pOutputList->setItem(m_pOutputList->currentItem()->row(), 1, item);
 	}
+}
+
+void InterfaceInfoStack::slotRefreshInput(QSet<QString> sequences) {
+
 }
 
 void InterfaceInfoStack::slotModelChange(QString modelName) {

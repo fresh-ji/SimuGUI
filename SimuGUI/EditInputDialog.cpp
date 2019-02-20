@@ -1,8 +1,7 @@
 
-
 #include "EditInputDialog.h"
 
-EditInputDialog::EditInputDialog(QString modelName, QWidget *p) : FancyDialog(p) {
+EditInputDialog::EditInputDialog(QString modelName, QSet<inputInfo> subInfo, QWidget *p) : FancyDialog(p) {
 
 	setWindowTitle("Subscribe for " + modelName);
 	setWindowIcon(QIcon("./Icon/tools/interface"));

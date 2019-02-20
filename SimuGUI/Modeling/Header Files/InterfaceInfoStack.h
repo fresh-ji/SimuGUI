@@ -8,8 +8,6 @@
 #ifndef INTERFACEINFOSTACK_H
 #define INTERFACEINFOSTACK_H
 
-#include <set>
-
 #include "cwidgets.h"
 #include "ministack.h"
 #include "fancybutton.h"
@@ -20,8 +18,10 @@
 struct interfaceInfo {
 	QString dataType;
 	QString publisher;
-	std::set<QString> subscribers;
+	QSet<QString> subscribers;
 };
+
+
 
 class InterfaceInfoStack : public MiniStack {
 
@@ -45,7 +45,7 @@ signals:
 	void nameValid();
 public slots:
 	void slotRefreshOutput(bool, QString, outputInfo);
-	//void slotRefreshInput(interfaceInfo, bool);
+	void slotRefreshInput(QSet<QString>);
 
 public slots:
 	//接收表格内模型改变
