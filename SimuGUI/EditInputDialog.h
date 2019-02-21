@@ -33,7 +33,7 @@ public:
 private slots:
 	void pSlotFinish();
 signals:
-	void refreshInput(QSet<QString>);
+	void refreshInput(QSet<QString>, QSet<QString>);
 
 signals:
 	//消息信号，目前没用到
@@ -42,5 +42,11 @@ signals:
 private:
 	//模型名
 	QString modelName;
+
+	//之前的订阅
+	QSet<QString> preSet;
+
+	//core
+	QTreeWidget *treeWidget;
 };
 #endif // EDITINPUTDIALOG_H

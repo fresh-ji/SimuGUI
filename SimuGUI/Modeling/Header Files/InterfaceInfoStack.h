@@ -45,7 +45,7 @@ signals:
 	void nameValid();
 public slots:
 	void slotRefreshOutput(bool, QString, outputInfo);
-	void slotRefreshInput(QSet<QString>);
+	void slotRefreshInput(QSet<QString>, QSet<QString>);
 
 public slots:
 	//接收表格内模型改变

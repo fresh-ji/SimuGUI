@@ -206,8 +206,8 @@ void InterfaceInfoStack::pSlotSubscribeInput() {
 		}
 
 		dialog_in = new EditInputDialog(selectedModel, subInfo);
-		connect(dialog_in, SIGNAL(refreshInput(QSet<QString>)),
-				this, SLOT(slotRefreshInput(QSet<QString>)));
+		connect(dialog_in, SIGNAL(refreshInput(QSet<QString>, QSet<QString>)),
+				this, SLOT(slotRefreshInput(QSet<QString>, QSet<QString>)));
 		//暂无消息
 		//connect(dialog_in, SIGNAL(signalSendMessage(QString)),
 		//	this, SLOT(slotMessageFromDialog(QString)));
@@ -220,7 +220,19 @@ void InterfaceInfoStack::pSlotSubscribeInput() {
 }
 
 void InterfaceInfoStack::pSlotDeleteInput() {
-
+	if (!m_pInputList->currentItem()) {
+		return;
+	}
+	if (m_pInputList->currentItem()->isSelected()) {
+		int row = m_pInputList->currentItem()->row();
+		QString name = m_pInputList->item(row, 0)->text();
+		//在map中删除
+		interfaceInfo info = interfaceMap.value(name);
+		info.subscribers.remove(selectedModel);
+		interfaceMap.insert(name, info);
+		//在列表中删除
+		m_pInputList->removeRow(row);
+	}
 }
 
 void InterfaceInfoStack::slotNameCheck(QString newName) {
@@ -286,8 +298,43 @@ void InterfaceInfoStack::slotRefreshOutput(bool isAdd, QString preName, outputIn
 	}
 }
 
-void InterfaceInfoStack::slotRefreshInput(QSet<QString> sequences) {
+void InterfaceInfoStack::slotRefreshInput(QSet<QString> addSubSet, QSet<QString> cancelSubSet) {
+	for (QString s : cancelSubSet) {
+		interfaceInfo info = interfaceMap.value(s);
+		info.subscribers.remove(selectedModel);
+		interfaceMap.insert(s, info);
+		QList<QTableWidgetItem*> items = m_pInputList->findItems(s, Qt::MatchExactly);
+		for (QTableWidgetItem* item : items) {
+			if (item->column() != 0) {
+				continue;
+			}
+			//默认第0列不重复
+			m_pInputList->removeRow(item->row());
+			break;
+		}
+	}
+	for (QString s : addSubSet) {
+		interfaceInfo info = interfaceMap.value(s);
+		info.subscribers.insert(selectedModel);
+		interfaceMap.insert(s, info);
 
+		int row = m_pInputList->rowCount();
+		m_pInputList->insertRow(row);
+
+		QTableWidgetItem *item;
+
+		item = new QTableWidgetItem(s);
+		item->setFlags(item->flags() & (~Qt::ItemIsEditable));
+		m_pInputList->setItem(row, 0, item);
+
+		item = new QTableWidgetItem(info.dataType);
+		item->setFlags(item->flags() & (~Qt::ItemIsEditable));
+		m_pInputList->setItem(row, 1, item);
+
+		item = new QTableWidgetItem(info.publisher);
+		item->setFlags(item->flags() & (~Qt::ItemIsEditable));
+		m_pInputList->setItem(row, 2, item);
+	}
 }
 
 void InterfaceInfoStack::slotModelChange(QString modelName) {
@@ -321,6 +368,25 @@ void InterfaceInfoStack::slotModelChange(QString modelName) {
 				item = new QTableWidgetItem(iter.value().dataType);
 				item->setFlags(item->flags() & (~Qt::ItemIsEditable));
 				m_pOutputList->setItem(row, 1, item);
+			}
+			//输入表
+			if (iter.value().subscribers.contains(modelName)) {
+				int row = m_pInputList->rowCount();
+				m_pInputList->insertRow(row);
+
+				QTableWidgetItem *item;
+
+				item = new QTableWidgetItem(iter.key());
+				item->setFlags(item->flags() & (~Qt::ItemIsEditable));
+				m_pInputList->setItem(row, 0, item);
+
+				item = new QTableWidgetItem(iter.value().dataType);
+				item->setFlags(item->flags() & (~Qt::ItemIsEditable));
+				m_pInputList->setItem(row, 1, item);
+
+				item = new QTableWidgetItem(iter.value().publisher);
+				item->setFlags(item->flags() & (~Qt::ItemIsEditable));
+				m_pInputList->setItem(row, 2, item);
 			}
 		}
 	}

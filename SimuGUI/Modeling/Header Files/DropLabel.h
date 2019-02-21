@@ -73,5 +73,8 @@ private:
 
 	//总线
 	QLabel *principalLabel;
+
+	//拖动时的相对坐标
+	int hOffset, vOffset;
 };
 #endif // DROPLABEL_H

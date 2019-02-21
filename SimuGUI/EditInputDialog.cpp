@@ -11,33 +11,46 @@ EditInputDialog::EditInputDialog(QString modelName, QSet<inputInfo> subInfo, QWi
 	QWidget *centerWidget = new QWidget();
 	QGridLayout *layout = new QGridLayout();
 
-	//QLabel *nameLabel = new QLabel();
-	//nameLabel->setText("Name:");
-	//nameLabel->setFont(font);
-	//layout->addWidget(nameLabel, 0, 0, 1, 1);
+	treeWidget = new QTreeWidget();
 
-	//nameText = new QLineEdit();
-	//layout->addWidget(nameText, 0, 1, 1, 1);
+	for (inputInfo i : subInfo) {
 
-	//QLabel *dataType = new QLabel();
-	//dataType->setText("Type:");
-	//dataType->setFont(font);
-	//layout->addWidget(dataType, 1, 0, 1, 1);
+		QTreeWidgetItem *info = new QTreeWidgetItem();
+		info->setText(0, i.iName);
+		info->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+		if (i.isSubscribe) {
+			info->setCheckState(0, Qt::Checked);
+			preSet.insert(i.iName);
+		}
+		else {
+			info->setCheckState(0, Qt::Unchecked);
+		}
 
-	//typeBox = new QComboBox();
-	//typeBox->addItem("real");
-	//typeBox->addItem("int");
-	//typeBox->addItem("bool");
-	//typeBox->addItem("string");
-	//typeBox->addItem("enum");
-	//增加自定义类型
-	//layout->addWidget(typeBox, 1, 1, 1, 1);
+		bool isHave = false;
+		for (int j = 0; j < treeWidget->topLevelItemCount(); ++j) {
+			if (treeWidget->topLevelItem(j)->text(0) == i.iPublisher) {
+				treeWidget->topLevelItem(j)->addChild(info);
+				isHave = true;
+				break;
+			}
+		}
+		if (!isHave) {
+			QTreeWidgetItem *model = new QTreeWidgetItem();
+			model->setText(0, i.iPublisher);
+			if (i.iPublisher == modelName) {
+				model->setTextColor(0, QColor(Qt::red));
+			}
+			model->addChild(info);
+			treeWidget->addTopLevelItem(model);
+		}
+	}
+
+	layout->addWidget(treeWidget);
 
 	QDialogButtonBox *result = new QDialogButtonBox();
 	result->addButton("OK", QDialogButtonBox::AcceptRole);
 	connect(result, SIGNAL(accepted()), this, SLOT(pSlotFinish()));
 	layout->addWidget(result);
-	//layout->addWidget(result, 2, 0, 1, 2);
 
 	centerWidget->setLayout(layout);
 	setCentralWidget(centerWidget);
@@ -47,4 +60,22 @@ EditInputDialog::EditInputDialog(QString modelName, QSet<inputInfo> subInfo, QWi
 }
 
 void EditInputDialog::pSlotFinish() {
+	QSet<QString> addSubSet, cancelSubSet;
+	QTreeWidgetItemIterator it(treeWidget);
+	while (*it) {
+		QString info = (*it)->text(0);
+		if ((*it)->checkState(0) == Qt::Checked) {
+			if (!(preSet.contains(info))) {
+				addSubSet.insert(info);
+			}
+		}
+		else if ((*it)->checkState(0) == Qt::Unchecked) {
+			if (preSet.contains(info)) {
+				cancelSubSet.insert(info);
+			}
+		}
+		++it;
+	}
+	close();
+	refreshInput(addSubSet, cancelSubSet);
 }

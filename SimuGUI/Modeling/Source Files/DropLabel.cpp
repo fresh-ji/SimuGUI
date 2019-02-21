@@ -78,6 +78,10 @@ void DropLabel::mousePressEvent(QMouseEvent *event) {
 		if (principalLabel->geometry().contains(point)) {
 			selectedLabel = principalLabel;
 			emit signalModelChange(NULL);
+
+			hOffset = event->pos().x() - selectedLabel->geometry().x();
+			vOffset = event->pos().y() - selectedLabel->geometry().y();
+
 			QDrag *dg = new QDrag(selectedLabel);
 			QMimeData *md = new QMimeData;
 			md->setText(DRAG_MOVE);
@@ -96,6 +100,9 @@ void DropLabel::mousePressEvent(QMouseEvent *event) {
 			selectedLabel = itor->label;
 			selectedLabel->setStyleSheet("border:3px solid black;");
 			emit signalModelChange(itor->name);
+
+			hOffset = event->pos().x() - selectedLabel->geometry().x();
+			vOffset = event->pos().y() - selectedLabel->geometry().y();
 
 			QDrag *dg = new QDrag(selectedLabel);
 			QMimeData *md = new QMimeData;
@@ -119,8 +126,9 @@ void DropLabel::dragMoveEvent(QDragMoveEvent *event) {
 		//之前的传label方式
 		//QLabel *label = event->mimeData()->property("label").value<QLabel*>();
 
-		QPoint point = event->pos();
-		QRect rect(event->pos(), selectedLabel->size());
+		int hPos = event->pos().x() - hOffset;
+		int vPos = event->pos().y() - vOffset;
+		QRect rect(hPos, vPos, selectedLabel->size().width(), selectedLabel->size().height());
 		selectedLabel->setGeometry(rect);
 	}
 }
