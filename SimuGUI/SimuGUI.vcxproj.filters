@@ -308,20 +308,20 @@
     <QtMoc Include="Modeling\Header Files\ModelInfoStack.h">
       <Filter>Modeling\model</Filter>
     </QtMoc>
-    <QtMoc Include="DataTypeStack.h">
-      <Filter>Modeling\dataType</Filter>
-    </QtMoc>
     <QtMoc Include="Modeling\Header Files\ToolDragStack.h">
       <Filter>Modeling\model</Filter>
-    </QtMoc>
-    <QtMoc Include="EditDataTypeDialog.h">
-      <Filter>Modeling\dataType</Filter>
     </QtMoc>
     <QtMoc Include="Modeling\Header Files\EditOutputDialog.h">
       <Filter>Modeling\interface</Filter>
     </QtMoc>
-    <QtMoc Include="EditInputDialog.h">
+    <QtMoc Include="Modeling\Header Files\EditInputDialog.h">
       <Filter>Modeling\interface</Filter>
+    </QtMoc>
+    <QtMoc Include="Modeling\Header Files\DataTypeStack.h">
+      <Filter>Modeling\dataType</Filter>
+    </QtMoc>
+    <QtMoc Include="Modeling\Header Files\EditDataTypeDialog.h">
+      <Filter>Modeling\dataType</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -342,6 +342,9 @@
     </ClInclude>
     <ClInclude Include="main\Header Files\theme.h">
       <Filter>main\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Regulation.h">
+      <Filter>Modeling</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -492,20 +495,20 @@
     <ClCompile Include="Modeling\Source Files\ModelInfoStack.cpp">
       <Filter>Modeling\model</Filter>
     </ClCompile>
-    <ClCompile Include="DataTypeStack.cpp">
-      <Filter>Modeling\dataType</Filter>
-    </ClCompile>
-    <ClCompile Include="EditDataTypeDialog.cpp">
-      <Filter>Modeling\dataType</Filter>
-    </ClCompile>
     <ClCompile Include="Modeling\Source Files\ToolDragStack.cpp">
       <Filter>Modeling\model</Filter>
     </ClCompile>
     <ClCompile Include="Modeling\Source Files\EditOutputDialog.cpp">
       <Filter>Modeling\interface</Filter>
     </ClCompile>
-    <ClCompile Include="EditInputDialog.cpp">
+    <ClCompile Include="Modeling\Source Files\EditInputDialog.cpp">
       <Filter>Modeling\interface</Filter>
+    </ClCompile>
+    <ClCompile Include="Modeling\Source Files\DataTypeStack.cpp">
+      <Filter>Modeling\dataType</Filter>
+    </ClCompile>
+    <ClCompile Include="Modeling\Source Files\EditDataTypeDialog.cpp">
+      <Filter>Modeling\dataType</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

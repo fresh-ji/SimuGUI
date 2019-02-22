@@ -8,13 +8,7 @@
 #ifndef EDITDATATYPEDIALOG_H
 #define EDITDATATYPEDIALOG_H
 
-#include "cwidgets.h"
-#include "fancydialog.h"
-
-struct dataTypeInfo {
-	int count;
-	//TODO:内容待定
-};
+#include "Regulation.h"
 
 class EditDataTypeDialog : public FancyDialog {
 
@@ -22,13 +16,15 @@ class EditDataTypeDialog : public FancyDialog {
 
 public:
 	//增加一项的构造器
-	explicit EditDataTypeDialog(QWidget *p = 0);
+	explicit EditDataTypeDialog(QList<QString>, QWidget *p = 0);
 	//修改一项的构造器
-	explicit EditDataTypeDialog(QString, dataTypeInfo, QWidget *p = 0);
+	explicit EditDataTypeDialog(QList<QString>, QString, dataTypeInfo, QWidget *p = 0);
 	//析构器
 	~EditDataTypeDialog() {};
 
 private slots:
+	void pSlotAdd();
+	void pSlotDelete();
 	void pSlotFinish();
 signals:
 	void nameCheck(QString);
@@ -42,7 +38,7 @@ signals:
 
 private:
 	//创建背景模板
-	void createTemplate();
+	void createTemplate(QList<QString>);
 
 	//是否添加
 	bool isAdd;
@@ -50,7 +46,17 @@ private:
 	//修改时记录之前的key
 	QString preName;
 
-	//数据名
+	//记录之前的data
+	dataTypeInfo dInfo;
+
+	//结构体名
 	QLineEdit *nameText;
+
+	//添加的项
+	QLineEdit *nameContent;
+	QComboBox *typeContent;
+
+	//详情
+	QTableWidget *dataDetailList;
 };
 #endif // EDITDATATYPEDIALOG_H

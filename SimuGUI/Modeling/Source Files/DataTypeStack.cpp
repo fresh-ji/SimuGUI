@@ -64,11 +64,11 @@ DataTypeStack::DataTypeStack(QWidget *p) : MiniStack(p) {
 
 	addTab(tr("dataTypeList"), m_pDataTypeList, buttons);
 
-	this->setFixedWidth(200);
+	setFixedWidth(200);
 }
 
 void DataTypeStack::pSlotAddDataType() {
-	dialog = new EditDataTypeDialog();
+	dialog = new EditDataTypeDialog(dataTypeMap.keys());
 	connect(dialog, SIGNAL(nameCheck(QString)),
 		this, SLOT(slotNameCheck(QString)));
 	connect(this, SIGNAL(nameValid()), dialog, SLOT(slotNameValid()));
@@ -89,7 +89,7 @@ void DataTypeStack::pSlotEditDataType() {
 		int row = m_pDataTypeList->currentItem()->row();
 		QString name = m_pDataTypeList->item(row, 0)->text();
 
-		dialog = new EditDataTypeDialog(name, dataTypeMap.value(name));
+		dialog = new EditDataTypeDialog(dataTypeMap.keys(), name, dataTypeMap.value(name));
 		connect(dialog, SIGNAL(nameCheck(QString)),
 			this, SLOT(slotNameCheck(QString)));
 		connect(this, SIGNAL(nameValid()), dialog, SLOT(slotNameValid()));
@@ -103,6 +103,8 @@ void DataTypeStack::pSlotEditDataType() {
 }
 
 void DataTypeStack::pSlotDeleteDataType() {
+	//要加usage
+	/*
 	if (!m_pDataTypeList->currentItem()) {
 		return;
 	}
@@ -114,6 +116,7 @@ void DataTypeStack::pSlotDeleteDataType() {
 		//在列表中删除
 		m_pDataTypeList->removeRow(row);
 	}
+	*/
 }
 
 void DataTypeStack::slotNameCheck(QString newName) {
