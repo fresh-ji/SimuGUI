@@ -42,5 +42,4 @@ signals:
 private:
 	QTableWidget *m_pModelList;
 };
-
 #endif // MODELINFOSTACK_H

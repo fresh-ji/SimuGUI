@@ -8,14 +8,7 @@
 #ifndef EDITOUTPUTDIALOG_H
 #define EDITOUTPUTDIALOG_H
 
-#include "cwidgets.h"
-#include "fancydialog.h"
-
-struct outputInfo {
-	QString oName;
-	QString oDataType;
-	QString oPublisher;
-};
+#include "Regulation.h"
 
 class EditOutputDialog : public FancyDialog {
 
@@ -23,9 +16,9 @@ class EditOutputDialog : public FancyDialog {
 
 public:
 	//增加一项的构造器
-	explicit EditOutputDialog(QString, QWidget *p = 0);
+	explicit EditOutputDialog(QList<QString>, QString, QWidget *p = 0);
 	//修改一项的构造器
-	explicit EditOutputDialog(outputInfo, QWidget *p = 0);
+	explicit EditOutputDialog(QList<QString>, outputInfo, QWidget *p = 0);
 	//析构器
 	~EditOutputDialog() {};
 
@@ -43,7 +36,7 @@ signals:
 
 private:
 	//创建背景模板
-	void createTemplate();
+	void createTemplate(QList<QString>);
 
 	//是否添加
 	bool isAdd;

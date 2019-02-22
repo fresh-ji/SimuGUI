@@ -6,26 +6,26 @@
 
 #include "EditOutputDialog.h"
 
-EditOutputDialog::EditOutputDialog(QString pub, QWidget *p) : FancyDialog(p) {
+EditOutputDialog::EditOutputDialog(QList<QString> currentTypes, QString pub, QWidget *p) : FancyDialog(p) {
 	isAdd = true;
 	preName = "";
 	setWindowTitle("Add Output for " + pub);
 	publisher = pub;
-	createTemplate();
+	createTemplate(currentTypes);
 }
 
-EditOutputDialog::EditOutputDialog(outputInfo oInfo, QWidget *p) : FancyDialog(p) {
+EditOutputDialog::EditOutputDialog(QList<QString> currentTypes, outputInfo oInfo, QWidget *p) : FancyDialog(p) {
 	isAdd = false;
 	preName = oInfo.oName;
 	setWindowTitle("Edit Output for " + oInfo.oPublisher);
 	publisher = oInfo.oPublisher;
-	createTemplate();
+	createTemplate(currentTypes);
 
 	nameText->setText(oInfo.oName);
 	typeBox->setCurrentText(oInfo.oDataType);
 }
 
-void EditOutputDialog::createTemplate() {
+void EditOutputDialog::createTemplate(QList<QString> currentTypes) {
 
 	setWindowIcon(QIcon("./Icon/tools/interface"));
 	setFixedSize(400, 150);
@@ -49,11 +49,8 @@ void EditOutputDialog::createTemplate() {
 	layout->addWidget(dataType, 1, 0, 1, 1);
 
 	typeBox = new QComboBox();
-	typeBox->addItem("real");
-	typeBox->addItem("int");
-	typeBox->addItem("bool");
-	typeBox->addItem("string");
-	typeBox->addItem("enum");
+	typeBox->addItems(basicTypes);
+	typeBox->addItems(currentTypes);
 	//增加自定义类型
 	layout->addWidget(typeBox, 1, 1, 1, 1);
 

@@ -8,20 +8,8 @@
 #ifndef INTERFACEINFOSTACK_H
 #define INTERFACEINFOSTACK_H
 
-#include "cwidgets.h"
-#include "ministack.h"
-#include "fancybutton.h"
-
 #include "EditOutputDialog.h"
 #include "EditInputDialog.h"
-
-struct interfaceInfo {
-	QString dataType;
-	QString publisher;
-	QSet<QString> subscribers;
-};
-
-
 
 class InterfaceInfoStack : public MiniStack {
 
@@ -51,6 +39,10 @@ public slots:
 	//接收表格内模型改变
 	void slotModelChange(QString);
 
+public slots:
+	//接收自定义数据类型更新
+	void slotRefreshTypeSet(QString, QString);
+
 signals:
 	void signalSendMessage(QString);
 public slots:
@@ -69,6 +61,9 @@ private:
 
 	//被选中模型
 	QString selectedModel;
+
+	//目前的自定义数据类型
+	QList<QString> types;
 
 public:
 	//core

@@ -58,6 +58,9 @@ void Modeling::createWindow() {
 	connect(m_pModelInfoStack, SIGNAL(signalModelChange(QString)),
 		m_pInterfaceInfoStack, SLOT(slotModelChange(QString)));
 
+	//自定义数据类型改变发给interface
+	connect(m_pDataTypeStack, SIGNAL(refreshTypeSet(QString, QString)),
+		m_pInterfaceInfoStack, SLOT(slotRefreshTypeSet(QString, QString)));
 
 	QGridLayout *layout = new QGridLayout();
 	layout->setMargin(10);

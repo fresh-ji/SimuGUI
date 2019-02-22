@@ -151,12 +151,17 @@ void DataTypeStack::slotRefreshDataType(bool isAdd, QString preName, QString new
 			item = new QTableWidgetItem(newName);
 			item->setFlags(item->flags() & (~Qt::ItemIsEditable));
 			m_pDataTypeList->setItem(row, 0, item);
+
+			//告诉interface添加
+			emit refreshTypeSet(newName, newName);
 		}
 	}
 	else {
 		//edit
 		if (preName != newName) {
 			dataTypeMap.remove(preName);
+			//告诉interface修改 
+			emit refreshTypeSet(preName, newName);
 		}
 		dataTypeMap.insert(newName, dInfo);
 
@@ -166,7 +171,7 @@ void DataTypeStack::slotRefreshDataType(bool isAdd, QString preName, QString new
 		item = new QTableWidgetItem(newName);
 		item->setFlags(item->flags() & (~Qt::ItemIsEditable));
 		m_pDataTypeList->setItem(m_pDataTypeList->currentItem()->row(), 0, item);
-	}
+	}	
 }
 
 void DataTypeStack::slotMessageFromDialog(QString message) {

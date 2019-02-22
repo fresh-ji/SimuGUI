@@ -74,7 +74,7 @@ void ModelInfoStack::slotAddModel(QString modelName, QString modelType) {
 	item = new QTableWidgetItem(modelType);
 	item->setFlags(item->flags() & (~Qt::ItemIsEditable));
 	m_pModelList->setItem(row, 1, item);
-	
+
 	m_pModelList->selectRow(row);
 }
 
@@ -85,17 +85,13 @@ void ModelInfoStack::slotModelChange(QString modelName) {
 		return;
 	}
 	else {
-		QList<QTableWidgetItem*> items = m_pModelList->findItems(modelName, Qt::MatchExactly);
-		for (QTableWidgetItem* item : items) {
-			if (item->column() != 0) {
-				continue;
+		for (int i = 0; i < m_pModelList->rowCount(); ++i) {
+			if (m_pModelList->item(i, 0)->text() == modelName) {
+				m_pModelList->selectRow(i);
+				return;
 			}
-			//默认第0列不重复
-			m_pModelList->selectRow(item->row());
-			return;
 		}
 	}
-	//TODO:error机制
 }
 
 void ModelInfoStack::pSlotModelItemChanged() {
@@ -113,6 +109,8 @@ void ModelInfoStack::pSlotEditModel() {
 }
 
 void ModelInfoStack::pSlotDeleteModel() {
+	//暂无，需要加usage
+	/*
 	if (!m_pModelList->currentItem()) {
 		return;
 	}
@@ -121,4 +119,5 @@ void ModelInfoStack::pSlotDeleteModel() {
 		emit signalDeleteModel(m_pModelList->item(row, 0)->text());
 		m_pModelList->removeRow(row);
 	}
+	*/
 }

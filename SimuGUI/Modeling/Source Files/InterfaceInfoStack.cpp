@@ -129,7 +129,7 @@ InterfaceInfoStack::InterfaceInfoStack(QWidget *p) : MiniStack(p) {
 
 void InterfaceInfoStack::pSlotAddOutput() {
 	if (selectedModel != NULL) {
-		dialog = new EditOutputDialog(selectedModel);
+		dialog = new EditOutputDialog(types, selectedModel);
 		connect(dialog, SIGNAL(nameCheck(QString)),
 			this, SLOT(slotNameCheck(QString)));
 		connect(this, SIGNAL(nameValid()), dialog, SLOT(slotNameValid()));
@@ -161,7 +161,7 @@ void InterfaceInfoStack::pSlotEditOutput() {
 		oInfo.oDataType = interfaceMap.value(name).dataType;
 		oInfo.oPublisher = interfaceMap.value(name).publisher;
 
-		dialog = new EditOutputDialog(oInfo);
+		dialog = new EditOutputDialog(types, oInfo);
 		connect(dialog, SIGNAL(nameCheck(QString)),
 			this, SLOT(slotNameCheck(QString)));
 		connect(this, SIGNAL(nameValid()), dialog, SLOT(slotNameValid()));
@@ -174,6 +174,8 @@ void InterfaceInfoStack::pSlotEditOutput() {
 	}
 }
 void InterfaceInfoStack::pSlotDeleteOutput() {
+	//暂无，要加usage
+	/*
 	if (!m_pOutputList->currentItem()) {
 		return;
 	}
@@ -185,6 +187,7 @@ void InterfaceInfoStack::pSlotDeleteOutput() {
 		//在列表中删除
 		m_pOutputList->removeRow(row);
 	}
+	*/
 }
 
 void InterfaceInfoStack::pSlotSubscribeInput() {
@@ -303,14 +306,11 @@ void InterfaceInfoStack::slotRefreshInput(QSet<QString> addSubSet, QSet<QString>
 		interfaceInfo info = interfaceMap.value(s);
 		info.subscribers.remove(selectedModel);
 		interfaceMap.insert(s, info);
-		QList<QTableWidgetItem*> items = m_pInputList->findItems(s, Qt::MatchExactly);
-		for (QTableWidgetItem* item : items) {
-			if (item->column() != 0) {
-				continue;
+		for (int i = 0; i < m_pInputList->rowCount(); ++i) {
+			if (m_pInputList->item(i, 0)->text() == s) {
+				m_pInputList->removeRow(i);
+				break;
 			}
-			//默认第0列不重复
-			m_pInputList->removeRow(item->row());
-			break;
 		}
 	}
 	for (QString s : addSubSet) {
@@ -387,6 +387,34 @@ void InterfaceInfoStack::slotModelChange(QString modelName) {
 				item = new QTableWidgetItem(iter.value().publisher);
 				item->setFlags(item->flags() & (~Qt::ItemIsEditable));
 				m_pInputList->setItem(row, 2, item);
+			}
+		}
+	}
+}
+
+void InterfaceInfoStack::slotRefreshTypeSet(QString type1, QString type2) {
+	//无论如何2都是新的
+	types.append(type2);
+	if (type1 != type2) {
+		types.removeOne(type1);
+		//改map
+		for (QString s : interfaceMap.keys()) {
+			if (type1 == interfaceMap.value(s).dataType) {
+				interfaceInfo iInfo = interfaceMap.value(s);
+				iInfo.dataType = type2;
+				interfaceMap.insert(s, iInfo);
+			}
+		}
+		//m_pOutputList
+		for (int i = 0; i < m_pOutputList->rowCount(); ++i) {
+			if (m_pOutputList->item(i, 1)->text() == type1) {
+				m_pOutputList->item(i, 1)->setText(type2);
+			}
+		}
+		//m_pInputList
+		for (int i = 0; i < m_pInputList->rowCount(); ++i) {
+			if (m_pInputList->item(i, 1)->text() == type1) {
+				m_pInputList->item(i, 1)->setText(type2);
 			}
 		}
 	}

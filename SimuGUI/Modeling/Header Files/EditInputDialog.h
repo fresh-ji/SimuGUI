@@ -3,23 +3,7 @@
 #ifndef EDITINPUTDIALOG_H
 #define EDITINPUTDIALOG_H
 
-#include "cwidgets.h"
-#include "fancydialog.h"
-
-struct inputInfo {
-	QString iName;
-	QString iDataType;
-	QString iPublisher;
-	bool isSubscribe;
-
-	bool operator < (const inputInfo& i) const {
-		return this->iName < i.iName;
-	}
-
-	bool operator == (const inputInfo& i) const {
-		return this->iName == i.iName;
-	}
-};
+#include "Regulation.h"
 
 class EditInputDialog : public FancyDialog {
 

@@ -36,6 +36,9 @@ public slots:
 	void slotRefreshDataType(bool, QString, QString, dataTypeInfo);
 
 signals:
+	void refreshTypeSet(QString, QString);
+
+signals:
 	void signalSendMessage(QString);
 public slots:
 	void slotMessageFromDialog(QString);
