@@ -24,7 +24,7 @@ DropLabel::DropLabel(QWidget *p) : QLabel(p) {
 
 	//直接画总线
 	principalLabel = new QLabel(this);
-	principalLabel->setStyleSheet("border:2px solid black;""background-color:orange;""font:16pt");
+	principalLabel->setStyleSheet("border:2px solid black;""background-color:rgb(244, 157, 42);""font:16pt");
 	principalLabel->setText("CoSimulation Bus");
 	principalLabel->setGeometry(100, 200, 500, 40);
 	principalLabel->setAlignment(Qt::AlignCenter);

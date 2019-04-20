@@ -116,6 +116,12 @@
     <Filter Include="Modeling\dataType">
       <UniqueIdentifier>{75367c2b-5d47-42a6-aa46-afcfbd2b319b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Modeling\drag">
+      <UniqueIdentifier>{eb3c9a17-63e8-4677-965b-98debb3bc2ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modeling\drop">
+      <UniqueIdentifier>{24f40726-b3d0-46cf-8fba-f0a8fa765434}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="SimuGUI.ui">
@@ -296,9 +302,6 @@
     <QtMoc Include="FMIAdvance\Header Files\FMIAdvance.h">
       <Filter>FMIAdvance\Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="Modeling\Header Files\DropLabel.h">
-      <Filter>Modeling\ui</Filter>
-    </QtMoc>
     <QtMoc Include="Modeling\Header Files\Modeling.h">
       <Filter>Modeling\ui</Filter>
     </QtMoc>
@@ -306,9 +309,6 @@
       <Filter>Modeling\interface</Filter>
     </QtMoc>
     <QtMoc Include="Modeling\Header Files\ModelInfoStack.h">
-      <Filter>Modeling\model</Filter>
-    </QtMoc>
-    <QtMoc Include="Modeling\Header Files\ToolDragStack.h">
       <Filter>Modeling\model</Filter>
     </QtMoc>
     <QtMoc Include="Modeling\Header Files\EditOutputDialog.h">
@@ -322,6 +322,12 @@
     </QtMoc>
     <QtMoc Include="Modeling\Header Files\EditDataTypeDialog.h">
       <Filter>Modeling\dataType</Filter>
+    </QtMoc>
+    <QtMoc Include="Modeling\Header Files\ToolDragStack.h">
+      <Filter>Modeling\drag</Filter>
+    </QtMoc>
+    <QtMoc Include="Modeling\Header Files\DropLabel.h">
+      <Filter>Modeling\drop</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -343,7 +349,7 @@
     <ClInclude Include="main\Header Files\theme.h">
       <Filter>main\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Regulation.h">
+    <ClInclude Include="Modeling\Header Files\Regulation.h">
       <Filter>Modeling</Filter>
     </ClInclude>
   </ItemGroup>
@@ -486,16 +492,10 @@
     <ClCompile Include="Modeling\Source Files\Modeling.cpp">
       <Filter>Modeling\ui</Filter>
     </ClCompile>
-    <ClCompile Include="Modeling\Source Files\DropLabel.cpp">
-      <Filter>Modeling\ui</Filter>
-    </ClCompile>
     <ClCompile Include="Modeling\Source Files\InterfaceInfoStack.cpp">
       <Filter>Modeling\interface</Filter>
     </ClCompile>
     <ClCompile Include="Modeling\Source Files\ModelInfoStack.cpp">
-      <Filter>Modeling\model</Filter>
-    </ClCompile>
-    <ClCompile Include="Modeling\Source Files\ToolDragStack.cpp">
       <Filter>Modeling\model</Filter>
     </ClCompile>
     <ClCompile Include="Modeling\Source Files\EditOutputDialog.cpp">
@@ -509,6 +509,12 @@
     </ClCompile>
     <ClCompile Include="Modeling\Source Files\EditDataTypeDialog.cpp">
       <Filter>Modeling\dataType</Filter>
+    </ClCompile>
+    <ClCompile Include="Modeling\Source Files\ToolDragStack.cpp">
+      <Filter>Modeling\drag</Filter>
+    </ClCompile>
+    <ClCompile Include="Modeling\Source Files\DropLabel.cpp">
+      <Filter>Modeling\drop</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

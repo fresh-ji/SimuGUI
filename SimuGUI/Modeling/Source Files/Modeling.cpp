@@ -9,7 +9,7 @@
 Modeling::Modeling(QWidget *parent) : IMode(parent) {
 	setObjectName(QLatin1String("Modeling"));
 	setDisplayName(tr("Modeling"));
-	setIcon(QIcon("./Icon/mode/model"));
+	setIcon(QIcon("./Icon/mode/modeling"));
 
 	createWindow();
 }
@@ -18,10 +18,10 @@ void Modeling::createWindow() {
 
 	QWidget *widget = new QWidget();
 
-	QLabel *title = new QLabel();
-	title->setText("Modeling");
-	QFont font("Microsoft YaHei", 20, 75);
-	title->setFont(font);
+	//QLabel *title = new QLabel();
+	//title->setText("Modeling");
+	//QFont font("Microsoft YaHei", 20, 75);
+	//title->setFont(font);
 
 	createToolDragStack();
 	createDropLabel();
@@ -65,15 +65,19 @@ void Modeling::createWindow() {
 	QGridLayout *layout = new QGridLayout();
 	layout->setMargin(10);
 	layout->setSpacing(10);
-	layout->setColumnStretch(0, 1);
-	layout->setColumnStretch(1, 9);
-	layout->addWidget(title, 0, 0, 1, 3, Qt::AlignCenter);
+	//TODO：如果在各类内部能够调整就不用这些了
+	//layout->setColumnStretch(0, 2);
+	//layout->setColumnStretch(1, 5);
+	//layout->setColumnStretch(2, 5);
+	//layout->setRowStretch(0, 2);
+	//layout->setRowStretch(1, 1);
+	//layout->addWidget(title, 0, 0, 1, 3, Qt::AlignCenter);
 
-	layout->addWidget(m_pToolDragStack, 1, 0, 1, 1);
-	layout->addWidget(m_pDropLabel, 1, 1, 2, 1);
-	layout->addWidget(m_pDataTypeStack, 2, 0, 1, 1);
-	layout->addWidget(m_pModelInfoStack, 1, 2, 1, 1);
-	layout->addWidget(m_pInterfaceInfoStack, 2, 2, 1, 1);
+	layout->addWidget(m_pToolDragStack, 0, 0);
+	layout->addWidget(m_pDropLabel, 0, 1, 1, 2);
+	layout->addWidget(m_pDataTypeStack, 1, 0);
+	layout->addWidget(m_pModelInfoStack, 1, 1);
+	layout->addWidget(m_pInterfaceInfoStack, 1, 2);
 
 	widget->setLayout(layout);
 	setWidget(widget);
@@ -86,7 +90,7 @@ void Modeling::createToolDragStack() {
 
 void Modeling::createDropLabel() {
 	m_pDropLabel = new DropLabel();
-	m_pDropLabel->setStyleSheet("border:2px solid black;");
+	m_pDropLabel->setStyleSheet("border:2px solid black;background-color:white;");
 	m_pDropLabel->setAcceptDrops(true);
 }
 

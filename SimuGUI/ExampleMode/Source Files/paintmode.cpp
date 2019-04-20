@@ -11,7 +11,7 @@ PaintMode::PaintMode(QWidget *parent) : IMode(parent) {
 
 	setObjectName(QLatin1String("PaintMode"));
 	setDisplayName(tr("Painter"));
-	setIcon(QIcon("./Icon/mode/paint"));
+	setIcon(QIcon("./Icon/mode/example"));
 
 	createWindow();
 }

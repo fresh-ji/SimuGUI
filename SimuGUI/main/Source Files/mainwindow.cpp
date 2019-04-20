@@ -104,7 +104,7 @@ void MainWindow::createQuickAccessBar() {
 
 		fancyBar()->showQuickAccess(false);
 
-		fancyBar()->setBackgroundColor(QColor(0, 100, 200, 100));
+		//fancyBar()->setBackgroundColor(QColor(0, 33, 64));
 	}
 }
 
@@ -163,7 +163,9 @@ void MainWindow::createAdditionalControls() {
 	//这一组action的connect信息集合
 	QActionGroup *actionGroup = new QActionGroup(this);
 
-	QAction *styleAction = new QAction(tr("Window Style"));
+	QAction *styleAction;
+
+	styleAction = new QAction(tr("Window Style"));
 	styleAction->setCheckable(true);
 	styleMenu->addAction(styleAction);
 	actionGroup->addAction(styleAction);
@@ -182,9 +184,14 @@ void MainWindow::createAdditionalControls() {
 	m_styleActions.append(styleAction);
 
 	connect(actionGroup, SIGNAL(triggered(QAction*)), this, SLOT(slotSetStyle(QAction*)));
-	m_styleActions.at(0)->setChecked(true);
-
+	
 	menuAction->setMenu(styleMenu);
+
+	//设置初始style
+	fancyBar()->setFancyStyle(FancyBar::ClassicStyle);
+	fancyBar()->setApplicationButtonBkColor(QColor(255, 255, 255, 0));
+	m_styleActions.at(1)->setChecked(true);
+
 }
 
 //创建状态栏
@@ -223,9 +230,9 @@ void MainWindow::createModeBar() {
 	m_modeManager->objectAdded(m_pCustomMode);
 	m_modeManager->objectAdded(m_pPaintMode);
 	m_modeManager->objectAdded(m_pMenuMode);
-	m_modeManager->objectAdded(m_pHLARunControl);
-	m_modeManager->objectAdded(m_pFMISimulator);
-	m_modeManager->objectAdded(m_pFMIAdvance);
+	//m_modeManager->objectAdded(m_pHLARunControl);
+	//m_modeManager->objectAdded(m_pFMISimulator);
+	//m_modeManager->objectAdded(m_pFMIAdvance);
 	m_modeManager->objectAdded(m_pModeling);
 
 	m_modeManager->setCurrentMode(m_pModeling);

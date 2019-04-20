@@ -11,7 +11,7 @@ CustomMode::CustomMode(QWidget *parent) : IMode(parent) {
 
 	setObjectName(QLatin1String("CustomMode"));
 	setDisplayName(tr("Custom"));
-	setIcon(QIcon("./Icon/mode/custom"));
+	setIcon(QIcon("./Icon/mode/example"));
 
 	//如果需要有东西，则需创建窗口
 	createWindow();
