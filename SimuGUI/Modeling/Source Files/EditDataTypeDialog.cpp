@@ -1,19 +1,26 @@
 
 /*
-* @date : 2018/02/16
+* @date : 2019/02/16
 * @author : jihang
 */
 
 #include "EditDataTypeDialog.h"
 
-EditDataTypeDialog::EditDataTypeDialog(QList<QString> currentTypes, QWidget *p) : FancyDialog(p) {
+EditDataTypeDialog::EditDataTypeDialog(QList<QString> currentTypes,
+	QWidget *p) : FancyDialog(p) {
+
 	isAdd = true;
 	preName = "";
 	setWindowTitle("Add Data Type");
 	createTemplate(currentTypes);
 }
 
-EditDataTypeDialog::EditDataTypeDialog(QList<QString> currentTypes, QString key, dataTypeInfo dInfo, QWidget *p) : FancyDialog(p) {
+EditDataTypeDialog::EditDataTypeDialog(
+	QList<QString> currentTypes,
+	QString key,
+	dataTypeInfo dInfo,
+	QWidget *p) : FancyDialog(p) {
+
 	isAdd = false;
 	preName = key;
 	setWindowTitle("Edit Data Type : " + key);
@@ -40,75 +47,73 @@ EditDataTypeDialog::EditDataTypeDialog(QList<QString> currentTypes, QString key,
 
 void EditDataTypeDialog::createTemplate(QList<QString> currentTypes) {
 
-	setWindowIcon(QIcon("./Icon/tools/dataType"));
+	setWindowIcon(QIcon("./Icon/function/window"));
 	setFixedSize(600, 400);
+	setStyleSheet("background: #1890FF;");
 
 	QFont font("Microsoft YaHei", 13, 50);
 
 	QWidget *centerWidget = new QWidget();
+	centerWidget->setStyleSheet("background: #E7F7FE");
 	QGridLayout *layout = new QGridLayout();
 
 	//名称部分
 	QLabel *nameLabel = new QLabel();
-	nameLabel->setText("Struct:");
+	nameLabel->setText("name:");
 	nameLabel->setFont(font);
 	layout->addWidget(nameLabel, 0, 0, 1, 1);
 	nameText = new QLineEdit();
-	layout->addWidget(nameText, 0, 1, 1, 1);
+	nameText->setFixedHeight(50);
+	nameText->setFont(*(new QFont("Microsoft YaHei", 16)));
+	layout->addWidget(nameText, 0, 1, 1, 2);
 
 	//添加相关
-	QWidget *addBar = new QWidget();
-	QHBoxLayout *layout1 = new QHBoxLayout();
-
-	QLabel *addNameLabel = new QLabel();
-	addNameLabel->setText("Name:");
-	addNameLabel->setFont(font);
-	layout1->addWidget(addNameLabel);
-	nameContent = new QLineEdit();
-	nameContent->setFixedWidth(150);
-	layout1->addWidget(nameContent);
+	QLabel *addItemLabel = new QLabel();
+	addItemLabel->setText("Item:");
+	addItemLabel->setFont(font);
+	addItemLabel->setFixedHeight(40);
+	layout->addWidget(addItemLabel, 1, 0, 1, 1);
+	itemContent = new QLineEdit();
+	layout->addWidget(itemContent, 1, 1, 1, 1);
 
 	QLabel *addTypeLabel = new QLabel();
 	addTypeLabel->setText("Type:");
 	addTypeLabel->setFont(font);
-	layout1->addWidget(addTypeLabel);
+	addTypeLabel->setFixedHeight(40);
+	layout->addWidget(addTypeLabel, 2, 0, 1, 1);
 	typeContent = new QComboBox();
-	typeContent->setFixedWidth(180);
-
 	typeContent->addItems(basicTypes);
 	typeContent->addItems(currentTypes);
-	
-	layout1->addWidget(typeContent);
+	layout->addWidget(typeContent, 2, 1, 1, 1);
 
 	FancyButton *addButton = new FancyButton();
-	addButton->setIcon(QIcon("./Icon/tools/add2"));
+	addButton->setIcon(QIcon("./Icon/function/add"));
 	addButton->setCursor(QCursor(Qt::PointingHandCursor));
 	connect(addButton, SIGNAL(clicked()), this, SLOT(pSlotAdd()));
-	layout1->addWidget(addButton);
+	addButton->setFixedWidth(40);
+	layout->addWidget(addButton, 3, 0, 1, 1);
 
 	FancyButton *deleteButton = new FancyButton();
-	deleteButton->setIcon(QIcon("./Icon/tools/delete2"));
+	deleteButton->setIcon(QIcon("./Icon/function/delete"));
 	deleteButton->setCursor(QCursor(Qt::PointingHandCursor));
 	connect(deleteButton, SIGNAL(clicked()), this, SLOT(pSlotDelete()));
-	layout1->addWidget(deleteButton);
-
-	addBar->setLayout(layout1);
-	layout->addWidget(addBar, 1, 0, 1, 2);
+	deleteButton->setFixedWidth(40);
+	layout->addWidget(deleteButton, 3, 1, 1, 1);
 
 	//列表部分
 	dataDetailList = new QTableWidget();
 	//表头
 	dataDetailList->setColumnCount(2);
 	dataDetailList->horizontalHeader()->setSectionsClickable(false);
-	dataDetailList->setColumnWidth(0, 290);
-	dataDetailList->setColumnWidth(1, 290);
+	dataDetailList->setColumnWidth(0, 130);
+	dataDetailList->setColumnWidth(1, 125);
 
 	QFont font2;
 	font2.setBold(true);
 	dataDetailList->horizontalHeader()->setFont(font2);
-	dataDetailList->horizontalHeader()->setStyleSheet("QHeaderView::section{background:skyblue;}");
+	dataDetailList->horizontalHeader()->setStyleSheet("QHeaderView::section{background:#93D5FD;}");
 	QStringList header;
-	header << "Name" << "Type";
+	header << "Item" << "Type";
 	dataDetailList->setHorizontalHeaderLabels(header);
 
 	//列头
@@ -118,7 +123,7 @@ void EditDataTypeDialog::createTemplate(QList<QString> currentTypes) {
 	//选择模式
 	dataDetailList->setSelectionBehavior(QAbstractItemView::SelectRows);
 	dataDetailList->setSelectionMode(QAbstractItemView::SingleSelection);
-	dataDetailList->setStyleSheet("selection-background-color:lightblue;");
+	dataDetailList->setStyleSheet("selection-background-color:gray;");
 
 	//滚动条
 	dataDetailList->horizontalScrollBar()->setStyleSheet("QScrollBar{background:transparent; height:10px;}"
@@ -131,13 +136,28 @@ void EditDataTypeDialog::createTemplate(QList<QString> currentTypes) {
 		"QScrollBar::handle:hover{background:gray;}"
 		"QScrollBar::sub-line{background:transparent;}"
 		"QScrollBar::add-line{background:transparent;}");
-	layout->addWidget(dataDetailList, 2, 0, 1, 2);
+	layout->addWidget(dataDetailList, 1, 2, 8, 1);
+
+	//详情部分
+	QLabel *noticeLabel = new QLabel();
+	noticeLabel->setText("Notice:");
+	noticeLabel->setFont(font);
+	noticeLabel->setFixedHeight(50);
+	layout->addWidget(noticeLabel, 9, 0, 1, 1);
+	noticeContent = new QTextEdit();
+	noticeContent->setFixedHeight(50);
+	noticeContent->verticalScrollBar()->setStyleSheet("QScrollBar{background:transparent; width: 10px;}"
+		"QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
+		"QScrollBar::handle:hover{background:gray;}"
+		"QScrollBar::sub-line{background:transparent;}"
+		"QScrollBar::add-line{background:transparent;}");
+	layout->addWidget(noticeContent, 9, 1, 1, 2);
 
 	//确定部分
 	QDialogButtonBox *result = new QDialogButtonBox();
-	result->addButton("OK", QDialogButtonBox::AcceptRole);
+	result->addButton("Finish", QDialogButtonBox::AcceptRole);
 	connect(result, SIGNAL(accepted()), this, SLOT(pSlotFinish()));
-	layout->addWidget(result, 3, 0, 1, 2);
+	layout->addWidget(result, 10, 1, 1, 2);
 
 	centerWidget->setLayout(layout);
 	setCentralWidget(centerWidget);
@@ -147,7 +167,7 @@ void EditDataTypeDialog::createTemplate(QList<QString> currentTypes) {
 }
 
 void EditDataTypeDialog::pSlotAdd() {
-	QString newName = nameContent->text();
+	QString newName = itemContent->text();
 	//命名规范
 	if (newName != NULL && !(newName.contains(" ")) && !(forbidTypes.contains(newName))) {
 		if (!(dInfo.dataMap.contains(newName))) {
@@ -167,7 +187,7 @@ void EditDataTypeDialog::pSlotAdd() {
 			item->setFlags(item->flags() & (~Qt::ItemIsEditable));
 			dataDetailList->setItem(row, 1, item);
 			//清空
-			nameContent->clear();
+			itemContent->clear();
 		}
 		else {
 			QMessageBox::information(ERROR, "error", "item already exists",

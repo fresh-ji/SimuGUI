@@ -1,5 +1,10 @@
 #pragma once
 
+/*
+* @date : 2019/03/18
+* @author : jihang
+*/
+
 #ifndef EDITINPUTDIALOG_H
 #define EDITINPUTDIALOG_H
 

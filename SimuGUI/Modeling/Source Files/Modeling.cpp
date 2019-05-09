@@ -1,6 +1,6 @@
 
 /*
-* @date : 2018/01/05
+* @date : 2019/01/05
 * @author : jihang
 */
 
@@ -52,7 +52,7 @@ void Modeling::createWindow() {
 	//发送列表项改变
 	connect(m_pModelInfoStack, SIGNAL(signalModelChange(QString)),
 		m_pDropLabel, SLOT(slotModelChange(QString)));
-	//只有基于表格的改变会被发到interface层
+	//只有基于表格的改变会被发到interface层，中心与interface层的不要
 	//connect(m_pDropLabel, SIGNAL(signalModelChange(QString)),
 	//	m_pInterfaceInfoStack, SLOT(slotModelChange(QString)));
 	connect(m_pModelInfoStack, SIGNAL(signalModelChange(QString)),
@@ -65,7 +65,7 @@ void Modeling::createWindow() {
 	QGridLayout *layout = new QGridLayout();
 	layout->setMargin(10);
 	layout->setSpacing(10);
-	//TODO：如果在各类内部能够调整就不用这些了
+	//TODO：如果在各类内部能够调整就不用这些了，想要加弹簧
 	//layout->setColumnStretch(0, 2);
 	//layout->setColumnStretch(1, 5);
 	//layout->setColumnStretch(2, 5);
@@ -79,6 +79,10 @@ void Modeling::createWindow() {
 	layout->addWidget(m_pModelInfoStack, 1, 1);
 	layout->addWidget(m_pInterfaceInfoStack, 1, 2);
 
+	m_pDataTypeStack->setMaximumHeight(300);
+	m_pModelInfoStack->setMaximumHeight(300);
+	m_pInterfaceInfoStack->setMaximumHeight(300);
+
 	widget->setLayout(layout);
 	setWidget(widget);
 }
@@ -90,7 +94,8 @@ void Modeling::createToolDragStack() {
 
 void Modeling::createDropLabel() {
 	m_pDropLabel = new DropLabel();
-	m_pDropLabel->setStyleSheet("border:2px solid black;background-color:white;");
+	m_pDropLabel->setStyleSheet("border: 5px solid gray;"
+		"background-color: white;border-radius: 10px;");
 	m_pDropLabel->setAcceptDrops(true);
 }
 

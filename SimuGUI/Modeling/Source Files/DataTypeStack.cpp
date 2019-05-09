@@ -1,4 +1,9 @@
 
+/*
+* @date : 2019/02/14
+* @author : jihang
+*/
+
 #include "DataTypeStack.h"
 
 DataTypeStack::DataTypeStack(QWidget *p) : MiniStack(p) {
@@ -8,15 +13,15 @@ DataTypeStack::DataTypeStack(QWidget *p) : MiniStack(p) {
 	//表头
 	m_pDataTypeList->setColumnCount(2);
 	m_pDataTypeList->horizontalHeader()->setSectionsClickable(false);
-	m_pDataTypeList->setColumnWidth(0, 200);
-	m_pDataTypeList->setColumnWidth(1, 10);
+	m_pDataTypeList->setColumnWidth(0, 95);
+	m_pDataTypeList->setColumnWidth(1, 95);
 
 	QFont font;
 	font.setBold(true);
 	m_pDataTypeList->horizontalHeader()->setFont(font);
-	m_pDataTypeList->horizontalHeader()->setStyleSheet("QHeaderView::section{background:skyblue;}");
+	m_pDataTypeList->horizontalHeader()->setStyleSheet("QHeaderView::section{background: #93D5FD;}");
 	QStringList header;
-	header << "Name" << "-";
+	header << "Name" << "Notice";
 	m_pDataTypeList->setHorizontalHeaderLabels(header);
 
 	//列头
@@ -26,7 +31,7 @@ DataTypeStack::DataTypeStack(QWidget *p) : MiniStack(p) {
 	//选择模式
 	m_pDataTypeList->setSelectionBehavior(QAbstractItemView::SelectRows);
 	m_pDataTypeList->setSelectionMode(QAbstractItemView::SingleSelection);
-	m_pDataTypeList->setStyleSheet("selection-background-color:lightblue;");
+	m_pDataTypeList->setStyleSheet("selection-background-color:gray;");
 
 	//滚动条
 	m_pDataTypeList->horizontalScrollBar()->setStyleSheet("QScrollBar{background:transparent; height:10px;}"
@@ -41,17 +46,17 @@ DataTypeStack::DataTypeStack(QWidget *p) : MiniStack(p) {
 		"QScrollBar::add-line{background:transparent;}");
 
 	FancyButton *addButton = new FancyButton();
-	addButton->setIcon(QIcon("./Icon/tools/add"));
+	addButton->setIcon(QIcon("./Icon/function/add"));
 	addButton->setCursor(QCursor(Qt::PointingHandCursor));
 	connect(addButton, SIGNAL(clicked()), this, SLOT(pSlotAddDataType()));
 
 	FancyButton *editButton = new FancyButton();
-	editButton->setIcon(QIcon("./Icon/tools/edit"));
+	editButton->setIcon(QIcon("./Icon/function/edit"));
 	editButton->setCursor(QCursor(Qt::PointingHandCursor));
 	connect(editButton, SIGNAL(clicked()), this, SLOT(pSlotEditDataType()));
 
 	FancyButton *deleteButton = new FancyButton();
-	deleteButton->setIcon(QIcon("./Icon/tools/delete"));
+	deleteButton->setIcon(QIcon("./Icon/function/delete"));
 	deleteButton->setCursor(QCursor(Qt::PointingHandCursor));
 	connect(deleteButton, SIGNAL(clicked()), this, SLOT(pSlotDeleteDataType()));
 
@@ -103,7 +108,7 @@ void DataTypeStack::pSlotEditDataType() {
 }
 
 void DataTypeStack::pSlotDeleteDataType() {
-	//要加usage
+	//TODO:功能待开发，要加usage
 	/*
 	if (!m_pDataTypeList->currentItem()) {
 		return;
@@ -171,7 +176,7 @@ void DataTypeStack::slotRefreshDataType(bool isAdd, QString preName, QString new
 		item = new QTableWidgetItem(newName);
 		item->setFlags(item->flags() & (~Qt::ItemIsEditable));
 		m_pDataTypeList->setItem(m_pDataTypeList->currentItem()->row(), 0, item);
-	}	
+	}
 }
 
 void DataTypeStack::slotMessageFromDialog(QString message) {

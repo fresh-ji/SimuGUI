@@ -1,7 +1,7 @@
 #pragma once
 
 /*
-* @date : 2018/02/18
+* @date : 2019/02/18
 * @author : jihang
 */
 
@@ -52,5 +52,8 @@ private:
 
 	//数据类型
 	QComboBox *typeBox;
+
+	//详情项
+	QTextEdit *noticeContent;
 };
 #endif // EDITOUTPUTDIALOG_H

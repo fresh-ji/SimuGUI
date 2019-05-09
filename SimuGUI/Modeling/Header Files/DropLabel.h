@@ -1,7 +1,7 @@
 #pragma once
 
 /*
-* @date : 2018/01/14
+* @date : 2019/01/14
 * @author : jihang
 */
 
@@ -13,21 +13,8 @@
 
 #include "cwidgets.h"
 #include "fancybutton.h"
-
-constexpr auto CTYPE = "C";
-constexpr auto MATLABTYPE = "Matlab";
-constexpr auto ADAMSTYPE = "Adams";
-
-constexpr auto DRAG_MOVE = "Drag_Move";
-constexpr auto DRAG_COPY = "Drag_Copy";
-
-struct modelInfo {
-	//初始化name = type + "Model_" + count
-	QString name;
-	QString type;
-	int count;
-	QLabel *label;
-};
+#include "BusElement.h"
+#include "ItemElement.h"
 
 class DropLabel : public QLabel {
 
@@ -40,9 +27,12 @@ public:
 	virtual void dragEnterEvent(QDragEnterEvent*);
 	virtual void dropEvent(QDropEvent*);
 
-	//move
+	//move, stretch, connect
 	virtual void mousePressEvent(QMouseEvent*);
 	virtual void dragMoveEvent(QDragMoveEvent*);
+
+	//
+	virtual void paintEvent(QPaintEvent*);
 
 signals:
 	//拖动增加模型，前端接收
@@ -62,19 +52,21 @@ signals:
 
 private:
 	//私有命名引擎
-	modelInfo getModel(QString);
 	QMap<QString, std::set<int>> namingMap;
 
 	//模型列表
-	QList<modelInfo> modelList;
+	QList<ItemElement*> modelList;
+	//item
+	ItemElement *activeModel;
 
-	//被选中模型
-	QLabel *selectedLabel;
-
-	//总线
-	QLabel *principalLabel;
+	//bus
+	BusElement *bus;
 
 	//拖动时的相对坐标
 	int hOffset, vOffset;
+
+	QPoint startPoint;
+	QPoint endPoint;
 };
+
 #endif // DROPLABEL_H

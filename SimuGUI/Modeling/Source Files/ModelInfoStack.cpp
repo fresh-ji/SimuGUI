@@ -1,20 +1,26 @@
 
+/*
+* @date : 2019/01/27
+* @author : jihang
+*/
+
 #include "ModelInfoStack.h"
 
 ModelInfoStack::ModelInfoStack(QWidget *p) : MiniStack(p) {
 
 	m_pModelList = new QTableWidget();
 	//表头
-	m_pModelList->setColumnCount(2);
+	m_pModelList->setColumnCount(3);
 	m_pModelList->horizontalHeader()->setSectionsClickable(false);
-	m_pModelList->setColumnWidth(0, 160);
-	m_pModelList->setColumnWidth(1, 160);
+	m_pModelList->setColumnWidth(0, 150);
+	m_pModelList->setColumnWidth(1, 150);
+	m_pModelList->setColumnWidth(2, 170);
 	QFont font;
 	font.setBold(true);
 	m_pModelList->horizontalHeader()->setFont(font);
-	m_pModelList->horizontalHeader()->setStyleSheet("QHeaderView::section{background:skyblue;}");
+	m_pModelList->horizontalHeader()->setStyleSheet("QHeaderView::section{background:#93D5FD;}");
 	QStringList header;
-	header << "Name" << "Type";
+	header << "Name" << "Tool" << "Notice";
 	m_pModelList->setHorizontalHeaderLabels(header);
 
 	//列头
@@ -24,7 +30,7 @@ ModelInfoStack::ModelInfoStack(QWidget *p) : MiniStack(p) {
 	//选择模式
 	m_pModelList->setSelectionBehavior(QAbstractItemView::SelectRows);
 	m_pModelList->setSelectionMode(QAbstractItemView::SingleSelection);
-	m_pModelList->setStyleSheet("selection-background-color:lightblue;");
+	m_pModelList->setStyleSheet("selection-background-color:gray;");
 
 	//滚动条
 	m_pModelList->horizontalScrollBar()->setStyleSheet("QScrollBar{background:transparent; height:10px;}"
@@ -39,12 +45,12 @@ ModelInfoStack::ModelInfoStack(QWidget *p) : MiniStack(p) {
 		"QScrollBar::add-line{background:transparent;}");
 
 	FancyButton *editButton = new FancyButton();
-	editButton->setIcon(QIcon("./Icon/tools/edit"));
+	editButton->setIcon(QIcon("./Icon/function/edit"));
 	editButton->setCursor(QCursor(Qt::PointingHandCursor));
 	connect(editButton, SIGNAL(clicked()), this, SLOT(pSlotEditModel()));
 
 	FancyButton *deleteButton = new FancyButton();
-	deleteButton->setIcon(QIcon("./Icon/tools/delete"));
+	deleteButton->setIcon(QIcon("./Icon/function/delete"));
 	deleteButton->setCursor(QCursor(Qt::PointingHandCursor));
 	connect(deleteButton, SIGNAL(clicked()), this, SLOT(pSlotDeleteModel()));
 
@@ -109,7 +115,7 @@ void ModelInfoStack::pSlotEditModel() {
 }
 
 void ModelInfoStack::pSlotDeleteModel() {
-	//暂无，需要加usage
+	//TODO:暂无，需要加usage
 	/*
 	if (!m_pModelList->currentItem()) {
 		return;

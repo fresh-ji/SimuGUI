@@ -1,7 +1,7 @@
 #pragma once
 
 /*
-* @date : 2018/02/16
+* @date : 2019/02/16
 * @author : jihang
 */
 
@@ -52,8 +52,11 @@ private:
 	//结构体名
 	QLineEdit *nameText;
 
+	//详情项
+	QTextEdit *noticeContent;
+
 	//添加的项
-	QLineEdit *nameContent;
+	QLineEdit *itemContent;
 	QComboBox *typeContent;
 
 	//详情

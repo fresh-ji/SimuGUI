@@ -329,6 +329,12 @@
     <QtMoc Include="Modeling\Header Files\DropLabel.h">
       <Filter>Modeling\drop</Filter>
     </QtMoc>
+    <QtMoc Include="Modeling\Header Files\BusElement.h">
+      <Filter>Modeling\drop</Filter>
+    </QtMoc>
+    <QtMoc Include="Modeling\Header Files\ItemElement.h">
+      <Filter>Modeling\drop</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CanPool\Header Files\cursor.h">
@@ -514,6 +520,12 @@
       <Filter>Modeling\drag</Filter>
     </ClCompile>
     <ClCompile Include="Modeling\Source Files\DropLabel.cpp">
+      <Filter>Modeling\drop</Filter>
+    </ClCompile>
+    <ClCompile Include="Modeling\Source Files\BusElement.cpp">
+      <Filter>Modeling\drop</Filter>
+    </ClCompile>
+    <ClCompile Include="Modeling\Source Files\ItemElement.cpp">
       <Filter>Modeling\drop</Filter>
     </ClCompile>
   </ItemGroup>

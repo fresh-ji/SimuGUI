@@ -1,14 +1,22 @@
 
+/*
+* @date : 2019/03/20
+* @author : jihang
+*/
+
 #include "EditInputDialog.h"
 
-EditInputDialog::EditInputDialog(QString modelName, QSet<inputInfo> subInfo, QWidget *p) : FancyDialog(p) {
+EditInputDialog::EditInputDialog(QString modelName, QSet<inputInfo> subInfo,
+	QWidget *p) : FancyDialog(p) {
 
 	setWindowTitle("Subscribe for " + modelName);
-	setWindowIcon(QIcon("./Icon/tools/interface"));
+	setWindowIcon(QIcon("./Icon/function/window"));
+	setStyleSheet("background: #1890FF;");
 
 	QFont font("Microsoft YaHei", 13, 50);
 
 	QWidget *centerWidget = new QWidget();
+	centerWidget->setStyleSheet("background: #E7F7FE");
 	QGridLayout *layout = new QGridLayout();
 
 	treeWidget = new QTreeWidget();

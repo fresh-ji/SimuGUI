@@ -80,11 +80,11 @@ MiniStackPrivate::MiniStackPrivate(QObject *parent)
     m_titleColor = QColor(50,50,50);
     m_backgroundColor = QColor(255,255,255);
 
-    m_tabBackgroundColor = QColor(35,198,200);
+    m_tabBackgroundColor = QColor(147,213,253);
     m_tabTextColor = QColor(255,255,255);
-    m_tabHoverBackgroundColor = QColor(71,218,222);
+    m_tabHoverBackgroundColor = QColor(147,213,253);
     m_tabHoverTextColor = QColor(255,255,255);
-    m_tabSelectedBackgroundColor = QColor(28,156,159);
+    m_tabSelectedBackgroundColor = QColor(24,144,255);
     m_tabSelectedTextColor = QColor(255,255,255);
 }
 

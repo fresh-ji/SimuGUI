@@ -1,12 +1,14 @@
 
 /*
-* @date : 2018/02/18
+* @date : 2019/02/18
 * @author : jihang
 */
 
 #include "EditOutputDialog.h"
 
-EditOutputDialog::EditOutputDialog(QList<QString> currentTypes, QString pub, QWidget *p) : FancyDialog(p) {
+EditOutputDialog::EditOutputDialog(QList<QString> currentTypes, QString pub,
+	QWidget *p) : FancyDialog(p) {
+
 	isAdd = true;
 	preName = "";
 	setWindowTitle("Add Output for " + pub);
@@ -14,7 +16,11 @@ EditOutputDialog::EditOutputDialog(QList<QString> currentTypes, QString pub, QWi
 	createTemplate(currentTypes);
 }
 
-EditOutputDialog::EditOutputDialog(QList<QString> currentTypes, outputInfo oInfo, QWidget *p) : FancyDialog(p) {
+EditOutputDialog::EditOutputDialog(
+	QList<QString> currentTypes,
+	outputInfo oInfo,
+	QWidget *p) : FancyDialog(p) {
+
 	isAdd = false;
 	preName = oInfo.oName;
 	setWindowTitle("Edit Output for " + oInfo.oPublisher);
@@ -27,12 +33,14 @@ EditOutputDialog::EditOutputDialog(QList<QString> currentTypes, outputInfo oInfo
 
 void EditOutputDialog::createTemplate(QList<QString> currentTypes) {
 
-	setWindowIcon(QIcon("./Icon/tools/interface"));
-	setFixedSize(400, 150);
+	setWindowIcon(QIcon("./Icon/function/window"));
+	setFixedSize(400, 250);
+	setStyleSheet("background: #1890FF;");
 
 	QFont font("Microsoft YaHei", 13, 50);
 
 	QWidget *centerWidget = new QWidget();
+	centerWidget->setStyleSheet("background: #E7F7FE");
 	QGridLayout *layout = new QGridLayout();
 
 	QLabel *nameLabel = new QLabel();
@@ -44,7 +52,7 @@ void EditOutputDialog::createTemplate(QList<QString> currentTypes) {
 	layout->addWidget(nameText, 0, 1, 1, 1);
 
 	QLabel *dataType = new QLabel();
-	dataType->setText("Type:");
+	dataType->setText("Data Type:");
 	dataType->setFont(font);
 	layout->addWidget(dataType, 1, 0, 1, 1);
 
@@ -54,10 +62,24 @@ void EditOutputDialog::createTemplate(QList<QString> currentTypes) {
 	//增加自定义类型
 	layout->addWidget(typeBox, 1, 1, 1, 1);
 
+	QLabel *noticeLabel = new QLabel();
+	noticeLabel->setText("Notice:");
+	noticeLabel->setFont(font);
+	layout->addWidget(noticeLabel, 2, 0, 1, 1);
+
+	noticeContent = new QTextEdit();
+	noticeContent->setFixedHeight(50);
+	noticeContent->verticalScrollBar()->setStyleSheet("QScrollBar{background:transparent; width: 10px;}"
+		"QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
+		"QScrollBar::handle:hover{background:gray;}"
+		"QScrollBar::sub-line{background:transparent;}"
+		"QScrollBar::add-line{background:transparent;}");
+	layout->addWidget(noticeContent, 2, 1, 1, 1);
+
 	QDialogButtonBox *result = new QDialogButtonBox();
-	result->addButton("OK", QDialogButtonBox::AcceptRole);
+	result->addButton("finish", QDialogButtonBox::AcceptRole);
 	connect(result, SIGNAL(accepted()), this, SLOT(pSlotFinish()));
-	layout->addWidget(result, 2, 0, 1, 2);
+	layout->addWidget(result, 3, 0, 1, 2);
 
 	centerWidget->setLayout(layout);
 	setCentralWidget(centerWidget);

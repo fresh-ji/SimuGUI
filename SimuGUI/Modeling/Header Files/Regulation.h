@@ -8,16 +8,22 @@
 #include "fancydialog.h"
 #include "fancybutton.h"
 
+//数据类型管理部分
 struct dataTypeInfo {
 	QMap<QString, QString> dataMap;
 };
 
+//接口管理部分
+struct interfaceInfo {
+	QString dataType;
+	QString publisher;
+	QSet<QString> subscribers;
+};
 struct outputInfo {
 	QString oName;
 	QString oDataType;
 	QString oPublisher;
 };
-
 struct inputInfo {
 	QString iName;
 	QString iDataType;
@@ -33,10 +39,9 @@ struct inputInfo {
 	}
 };
 
-struct interfaceInfo {
-	QString dataType;
-	QString publisher;
-	QSet<QString> subscribers;
+//连接管理部分
+struct connectInfo {
+	//
 };
 
 static QList<QString> basicTypes = QList<QString>() << "real" << "int" << "bool" << "string" << "enum";

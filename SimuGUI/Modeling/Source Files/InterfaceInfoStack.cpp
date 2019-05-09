@@ -1,4 +1,8 @@
 
+/*
+* @date : 2019/02/20
+* @author : jihang
+*/
 
 #include "InterfaceInfoStack.h"
 
@@ -13,17 +17,18 @@ InterfaceInfoStack::InterfaceInfoStack(QWidget *p) : MiniStack(p) {
 	m_pOutputList = new QTableWidget();
 
 	//表头
-	m_pOutputList->setColumnCount(2);
+	m_pOutputList->setColumnCount(3);
 	m_pOutputList->horizontalHeader()->setSectionsClickable(false);
-	m_pOutputList->setColumnWidth(0, 160);
-	m_pOutputList->setColumnWidth(1, 160);
+	m_pOutputList->setColumnWidth(0, 150);
+	m_pOutputList->setColumnWidth(1, 150);
+	m_pOutputList->setColumnWidth(2, 170);
 
 	QFont font;
 	font.setBold(true);
 	m_pOutputList->horizontalHeader()->setFont(font);
-	m_pOutputList->horizontalHeader()->setStyleSheet("QHeaderView::section{background:skyblue;}");
+	m_pOutputList->horizontalHeader()->setStyleSheet("QHeaderView::section{background: #93D5FD;}");
 	QStringList header;
-	header << "Name" << "Type";
+	header << "Name" << "DataType" << "Notice";
 	m_pOutputList->setHorizontalHeaderLabels(header);
 
 	//列头
@@ -33,7 +38,7 @@ InterfaceInfoStack::InterfaceInfoStack(QWidget *p) : MiniStack(p) {
 	//选择模式
 	m_pOutputList->setSelectionBehavior(QAbstractItemView::SelectRows);
 	m_pOutputList->setSelectionMode(QAbstractItemView::SingleSelection);
-	m_pOutputList->setStyleSheet("selection-background-color:lightblue;");
+	m_pOutputList->setStyleSheet("selection-background-color:gray;");
 
 	//滚动条
 	m_pOutputList->horizontalScrollBar()->setStyleSheet("QScrollBar{background:transparent; height:10px;}"
@@ -48,17 +53,17 @@ InterfaceInfoStack::InterfaceInfoStack(QWidget *p) : MiniStack(p) {
 		"QScrollBar::add-line{background:transparent;}");
 
 	FancyButton *addOutputButton = new FancyButton();
-	addOutputButton->setIcon(QIcon("./Icon/tools/add"));
+	addOutputButton->setIcon(QIcon("./Icon/function/add"));
 	addOutputButton->setCursor(QCursor(Qt::PointingHandCursor));
 	connect(addOutputButton, SIGNAL(clicked()), this, SLOT(pSlotAddOutput()));
 
 	FancyButton *editOutputButton = new FancyButton();
-	editOutputButton->setIcon(QIcon("./Icon/tools/edit"));
+	editOutputButton->setIcon(QIcon("./Icon/function/edit"));
 	editOutputButton->setCursor(QCursor(Qt::PointingHandCursor));
 	connect(editOutputButton, SIGNAL(clicked()), this, SLOT(pSlotEditOutput()));
 
 	FancyButton *deleteOutputButton = new FancyButton();
-	deleteOutputButton->setIcon(QIcon("./Icon/tools/delete"));
+	deleteOutputButton->setIcon(QIcon("./Icon/function/delete"));
 	deleteOutputButton->setCursor(QCursor(Qt::PointingHandCursor));
 	connect(deleteOutputButton, SIGNAL(clicked()), this, SLOT(pSlotDeleteOutput()));
 
@@ -77,14 +82,14 @@ InterfaceInfoStack::InterfaceInfoStack(QWidget *p) : MiniStack(p) {
 	//表头
 	m_pInputList->setColumnCount(3);
 	m_pInputList->horizontalHeader()->setSectionsClickable(false);
-	m_pInputList->setColumnWidth(0, 100);
-	m_pInputList->setColumnWidth(1, 110);
-	m_pInputList->setColumnWidth(2, 110);
+	m_pInputList->setColumnWidth(0, 150);
+	m_pInputList->setColumnWidth(1, 150);
+	m_pInputList->setColumnWidth(2, 170);
 
 	m_pInputList->horizontalHeader()->setFont(font);
-	m_pInputList->horizontalHeader()->setStyleSheet("QHeaderView::section{background:skyblue;}");
+	m_pInputList->horizontalHeader()->setStyleSheet("QHeaderView::section{background: #93D5FD;}");
 	QStringList header2;
-	header2 << "Name" << "Type" << "Publisher";
+	header2 << "Name" << "DataType" << "Publisher";
 	m_pInputList->setHorizontalHeaderLabels(header2);
 
 	//列头
@@ -94,7 +99,7 @@ InterfaceInfoStack::InterfaceInfoStack(QWidget *p) : MiniStack(p) {
 	//选择模式
 	m_pInputList->setSelectionBehavior(QAbstractItemView::SelectRows);
 	m_pInputList->setSelectionMode(QAbstractItemView::SingleSelection);
-	m_pInputList->setStyleSheet("selection-background-color:lightblue;");
+	m_pInputList->setStyleSheet("selection-background-color:gray;");
 
 	//滚动条
 	m_pInputList->horizontalScrollBar()->setStyleSheet("QScrollBar{background:transparent; height:10px;}"
@@ -109,12 +114,12 @@ InterfaceInfoStack::InterfaceInfoStack(QWidget *p) : MiniStack(p) {
 		"QScrollBar::add-line{background:transparent;}");
 
 	FancyButton *subscribeInputButton = new FancyButton();
-	subscribeInputButton->setIcon(QIcon("./Icon/tools/subscribe"));
+	subscribeInputButton->setIcon(QIcon("./Icon/function/subscribe"));
 	subscribeInputButton->setCursor(QCursor(Qt::PointingHandCursor));
 	connect(subscribeInputButton, SIGNAL(clicked()), this, SLOT(pSlotSubscribeInput()));
 
 	FancyButton *deleteInputButton = new FancyButton();
-	deleteInputButton->setIcon(QIcon("./Icon/tools/delete"));
+	deleteInputButton->setIcon(QIcon("./Icon/function/delete"));
 	deleteInputButton->setCursor(QCursor(Qt::PointingHandCursor));
 	connect(deleteInputButton, SIGNAL(clicked()), this, SLOT(pSlotDeleteInput()));
 
@@ -210,7 +215,7 @@ void InterfaceInfoStack::pSlotSubscribeInput() {
 
 		dialog_in = new EditInputDialog(selectedModel, subInfo);
 		connect(dialog_in, SIGNAL(refreshInput(QSet<QString>, QSet<QString>)),
-				this, SLOT(slotRefreshInput(QSet<QString>, QSet<QString>)));
+			this, SLOT(slotRefreshInput(QSet<QString>, QSet<QString>)));
 		//暂无消息
 		//connect(dialog_in, SIGNAL(signalSendMessage(QString)),
 		//	this, SLOT(slotMessageFromDialog(QString)));

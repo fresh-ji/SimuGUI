@@ -1,7 +1,7 @@
 #pragma once
 
 /*
-* @date : 2018/01/04
+* @date : 2019/01/04
 * @author : jihang
 */
 
@@ -37,6 +37,7 @@ public slots:
 
 private:
 	ToolDragStack *m_pToolDragStack;
+
 	DropLabel *m_pDropLabel;
 
 	DataTypeStack *m_pDataTypeStack;

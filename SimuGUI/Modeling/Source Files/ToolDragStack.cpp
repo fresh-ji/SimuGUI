@@ -1,12 +1,13 @@
 
 /*
-* @date : 2018/01/07
+* @date : 2019/01/07
 * @author : jihang
 */
 
 #include "ToolDragStack.h"
 
-#include "DropLabel.h"
+//获取类型
+#include "ItemElement.h"
 
 ToolDragStack::ToolDragStack(QWidget *p) : MiniStack(p) {
 
