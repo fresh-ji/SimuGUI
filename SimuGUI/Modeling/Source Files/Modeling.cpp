@@ -18,11 +18,6 @@ void Modeling::createWindow() {
 
 	QWidget *widget = new QWidget();
 
-	//QLabel *title = new QLabel();
-	//title->setText("Modeling");
-	//QFont font("Microsoft YaHei", 20, 75);
-	//title->setFont(font);
-
 	createToolDragStack();
 	createDropLabel();
 	createDateTypeStack();
@@ -52,9 +47,7 @@ void Modeling::createWindow() {
 	//发送列表项改变
 	connect(m_pModelInfoStack, SIGNAL(signalModelChange(QString)),
 		m_pDropLabel, SLOT(slotModelChange(QString)));
-	//只有基于表格的改变会被发到interface层，中心与interface层的不要
-	//connect(m_pDropLabel, SIGNAL(signalModelChange(QString)),
-	//	m_pInterfaceInfoStack, SLOT(slotModelChange(QString)));
+	//只有基于表格的改变会被发到interface层，中心与interface层的会中转
 	connect(m_pModelInfoStack, SIGNAL(signalModelChange(QString)),
 		m_pInterfaceInfoStack, SLOT(slotModelChange(QString)));
 
@@ -65,13 +58,16 @@ void Modeling::createWindow() {
 	QGridLayout *layout = new QGridLayout();
 	layout->setMargin(10);
 	layout->setSpacing(10);
+
 	//TODO：如果在各类内部能够调整就不用这些了，想要加弹簧
 	//layout->setColumnStretch(0, 2);
 	//layout->setColumnStretch(1, 5);
 	//layout->setColumnStretch(2, 5);
 	//layout->setRowStretch(0, 2);
 	//layout->setRowStretch(1, 1);
-	//layout->addWidget(title, 0, 0, 1, 3, Qt::AlignCenter);
+	m_pDataTypeStack->setMaximumHeight(300);
+	m_pModelInfoStack->setMaximumHeight(300);
+	m_pInterfaceInfoStack->setMaximumHeight(300);
 
 	layout->addWidget(m_pToolDragStack, 0, 0);
 	layout->addWidget(m_pDropLabel, 0, 1, 1, 2);
@@ -79,24 +75,17 @@ void Modeling::createWindow() {
 	layout->addWidget(m_pModelInfoStack, 1, 1);
 	layout->addWidget(m_pInterfaceInfoStack, 1, 2);
 
-	m_pDataTypeStack->setMaximumHeight(300);
-	m_pModelInfoStack->setMaximumHeight(300);
-	m_pInterfaceInfoStack->setMaximumHeight(300);
-
 	widget->setLayout(layout);
 	setWidget(widget);
 }
 
 void Modeling::createToolDragStack() {
 	m_pToolDragStack = new ToolDragStack();
-	m_pToolDragStack->setTitle("Tools");
+	m_pToolDragStack->setTitle("Instance");
 }
 
 void Modeling::createDropLabel() {
 	m_pDropLabel = new DropLabel();
-	m_pDropLabel->setStyleSheet("border: 5px solid gray;"
-		"background-color: white;border-radius: 10px;");
-	m_pDropLabel->setAcceptDrops(true);
 }
 
 void Modeling::createDateTypeStack() {

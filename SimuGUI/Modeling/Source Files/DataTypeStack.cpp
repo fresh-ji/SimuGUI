@@ -10,40 +10,14 @@ DataTypeStack::DataTypeStack(QWidget *p) : MiniStack(p) {
 
 	m_pDataTypeList = new QTableWidget();
 
-	//表头
+	//设置
 	m_pDataTypeList->setColumnCount(2);
-	m_pDataTypeList->horizontalHeader()->setSectionsClickable(false);
 	m_pDataTypeList->setColumnWidth(0, 95);
 	m_pDataTypeList->setColumnWidth(1, 95);
-
-	QFont font;
-	font.setBold(true);
-	m_pDataTypeList->horizontalHeader()->setFont(font);
-	m_pDataTypeList->horizontalHeader()->setStyleSheet("QHeaderView::section{background: #93D5FD;}");
 	QStringList header;
 	header << "Name" << "Notice";
 	m_pDataTypeList->setHorizontalHeaderLabels(header);
-
-	//列头
-	m_pDataTypeList->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-	m_pDataTypeList->verticalHeader()->setVisible(false);
-
-	//选择模式
-	m_pDataTypeList->setSelectionBehavior(QAbstractItemView::SelectRows);
-	m_pDataTypeList->setSelectionMode(QAbstractItemView::SingleSelection);
-	m_pDataTypeList->setStyleSheet("selection-background-color:gray;");
-
-	//滚动条
-	m_pDataTypeList->horizontalScrollBar()->setStyleSheet("QScrollBar{background:transparent; height:10px;}"
-		"QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
-		"QScrollBar::handle:hover{background:gray;}"
-		"QScrollBar::sub-line{background:transparent;}"
-		"QScrollBar::add-line{background:transparent;}");
-	m_pDataTypeList->verticalScrollBar()->setStyleSheet("QScrollBar{background:transparent; width: 10px;}"
-		"QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
-		"QScrollBar::handle:hover{background:gray;}"
-		"QScrollBar::sub-line{background:transparent;}"
-		"QScrollBar::add-line{background:transparent;}");
+	tableStandardize(m_pDataTypeList);
 
 	FancyButton *addButton = new FancyButton();
 	addButton->setIcon(QIcon("./Icon/function/add"));
@@ -108,7 +82,7 @@ void DataTypeStack::pSlotEditDataType() {
 }
 
 void DataTypeStack::pSlotDeleteDataType() {
-	//TODO:功能待开发，要加usage
+	//TODO:无删除功能，要加usage
 	/*
 	if (!m_pDataTypeList->currentItem()) {
 		return;

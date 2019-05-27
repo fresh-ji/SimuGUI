@@ -12,7 +12,6 @@ ItemElement::ItemElement(QPixmap *pixmap, QString name,
 	this->name = name;
 	this->type = type;
 	this->count = count;
-	this->activeAnchor = NONE;
 
 	setFixedWidth(TOTALWIDTH);
 	setFixedHeight(TEXTHEIGHT * 2 + WIDTH + EDGE * 4);
@@ -27,6 +26,7 @@ ItemElement::ItemElement(QPixmap *pixmap, QString name,
 		TEXTHEIGHT);
 	topNameLabel->setStyleSheet("border: 0px solid black;");
 	topNameLabel->setAlignment(Qt::AlignCenter);
+	topNameLabel->setText(name);
 
 	//2
 	bottomNameLabel = new QLabel(this);
@@ -37,7 +37,7 @@ ItemElement::ItemElement(QPixmap *pixmap, QString name,
 		TEXTHEIGHT);
 	bottomNameLabel->setStyleSheet("border: 0px solid black;");
 	bottomNameLabel->setAlignment(Qt::AlignCenter);
-	bottomNameLabel->setText(name);
+	
 
 	//3
 	frameLabel = new QLabel(this);
@@ -121,22 +121,41 @@ void ItemElement::active() {
 	rightAnchor->setVisible(true);
 }
 
-ItemElement::Anchor ItemElement::getAvaiableAnchor(QPoint offset) {
-	if (activeAnchor == NONE) {
-		if (topAnchor->geometry().contains(offset)) {
-			return TOP;
-		}
-		if (bottomAnchor->geometry().contains(offset)) {
-			return BOTTOM;
-		}
-		if (leftAnchor->geometry().contains(offset)) {
-			return LEFT;
-		}
-		if (rightAnchor->geometry().contains(offset)) {
-			return RIGHT;
-		}
+ItemElement::Anchor ItemElement::whichAnchor(QPoint offset) {
+	if (topAnchor->geometry().contains(offset)) {
+		return TOP;
+	}
+	if (bottomAnchor->geometry().contains(offset)) {
+		return BOTTOM;
+	}
+	if (leftAnchor->geometry().contains(offset)) {
+		return LEFT;
+	}
+	if (rightAnchor->geometry().contains(offset)) {
+		return RIGHT;
 	}
 	return NONE;
+}
+
+QPoint ItemElement::getAnchorShift(Anchor anchor) {
+	QPoint point;
+	if (TOP == anchor) {
+		point.setX(TOPANCHORSHIFTX);
+		point.setY(TOPANCHORSHIFTY);
+	}
+	else if (BOTTOM == anchor) {
+		point.setX(BOTTOMANCHORSHIFTX);
+		point.setY(BOTTOMANCHORSHIFTY);
+	}
+	else if (LEFT == anchor) {
+		point.setX(LEFTANCHORSHIFTX);
+		point.setY(LEFTANCHORSHIFTY);
+	}
+	else if (RIGHT == anchor) {
+		point.setX(RIGHTANCHORSHIFTX);
+		point.setY(RIGHTANCHORSHIFTY);
+	}
+	return point;
 }
 
 QString ItemElement::getName() {
@@ -153,12 +172,4 @@ QString ItemElement::getType() {
 
 int ItemElement::getCount() {
 	return count;
-}
-
-ItemElement::Anchor ItemElement::getActiveAnchor() {
-	return activeAnchor;
-}
-
-void ItemElement::setActiveAnchor(Anchor activeAnchor) {
-	this->activeAnchor = activeAnchor;
 }

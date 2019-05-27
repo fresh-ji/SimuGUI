@@ -26,24 +26,31 @@ public:
 
 private:
 	void createWindow();
+	//1
 	void createToolDragStack();
+	//2
 	void createDropLabel();
+	//3
 	void createDateTypeStack();
+	//4
 	void createModelInfoStack();
+	//5
 	void createInterfaceInfoStack();
 
 public slots:
+	//仅作弹窗使用
 	void slotReceiveMessage(QString);
 
 private:
+	//1
 	ToolDragStack *m_pToolDragStack;
-
+	//2
 	DropLabel *m_pDropLabel;
-
+	//3
 	DataTypeStack *m_pDataTypeStack;
-
+	//4
 	ModelInfoStack *m_pModelInfoStack;
-
+	//5
 	InterfaceInfoStack *m_pInterfaceInfoStack;
 };
 #endif // MODELING_H

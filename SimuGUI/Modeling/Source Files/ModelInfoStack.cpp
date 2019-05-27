@@ -5,44 +5,21 @@
 */
 
 #include "ModelInfoStack.h"
+#include "Regulation.h"
 
 ModelInfoStack::ModelInfoStack(QWidget *p) : MiniStack(p) {
 
 	m_pModelList = new QTableWidget();
-	//表头
+
+	//设置
 	m_pModelList->setColumnCount(3);
-	m_pModelList->horizontalHeader()->setSectionsClickable(false);
 	m_pModelList->setColumnWidth(0, 150);
 	m_pModelList->setColumnWidth(1, 150);
 	m_pModelList->setColumnWidth(2, 170);
-	QFont font;
-	font.setBold(true);
-	m_pModelList->horizontalHeader()->setFont(font);
-	m_pModelList->horizontalHeader()->setStyleSheet("QHeaderView::section{background:#93D5FD;}");
 	QStringList header;
 	header << "Name" << "Tool" << "Notice";
 	m_pModelList->setHorizontalHeaderLabels(header);
-
-	//列头
-	m_pModelList->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-	m_pModelList->verticalHeader()->setVisible(false);
-
-	//选择模式
-	m_pModelList->setSelectionBehavior(QAbstractItemView::SelectRows);
-	m_pModelList->setSelectionMode(QAbstractItemView::SingleSelection);
-	m_pModelList->setStyleSheet("selection-background-color:gray;");
-
-	//滚动条
-	m_pModelList->horizontalScrollBar()->setStyleSheet("QScrollBar{background:transparent; height:10px;}"
-		"QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
-		"QScrollBar::handle:hover{background:gray;}"
-		"QScrollBar::sub-line{background:transparent;}"
-		"QScrollBar::add-line{background:transparent;}");
-	m_pModelList->verticalScrollBar()->setStyleSheet("QScrollBar{background:transparent; width: 10px;}"
-		"QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
-		"QScrollBar::handle:hover{background:gray;}"
-		"QScrollBar::sub-line{background:transparent;}"
-		"QScrollBar::add-line{background:transparent;}");
+	tableStandardize(m_pModelList);
 
 	FancyButton *editButton = new FancyButton();
 	editButton->setIcon(QIcon("./Icon/function/edit"));
@@ -111,11 +88,11 @@ void ModelInfoStack::pSlotModelItemChanged() {
 }
 
 void ModelInfoStack::pSlotEditModel() {
-
+	//TODO:编辑功能不可用
 }
 
 void ModelInfoStack::pSlotDeleteModel() {
-	//TODO:暂无，需要加usage
+	//TODO:删除功能不可用，需要加usage
 	/*
 	if (!m_pModelList->currentItem()) {
 		return;

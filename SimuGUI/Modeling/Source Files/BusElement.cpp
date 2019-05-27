@@ -16,14 +16,26 @@ BusElement::BusElement(QWidget *p) : QLabel(p) {
 		"border: 3px solid #F49D2A; border-radius: 10px;"
 		"font: 16pt;");
 
-	rightAnchor = new QLabel(this);
-	rightAnchor->setGeometry(this->width() - STRETCHWIDTH, 0,
+	stretchZone = new QLabel(this);
+	stretchZone->setGeometry(this->width() - STRETCHWIDTH, 0,
 		STRETCHWIDTH, BUSHEIGHT);
-	rightAnchor->setStyleSheet("background: transparent #a8918a;"
+	stretchZone->setStyleSheet("background: transparent #a8918a;"
 		"border: 0px solid black; border-radius: 10px;");
 }
 
-void BusElement::adjustAnchor() {
-	rightAnchor->setGeometry(this->width() - STRETCHWIDTH, 0,
+void BusElement::adjustStretchZone() {
+	stretchZone->setGeometry(this->width() - STRETCHWIDTH, 0,
 		STRETCHWIDTH, BUSHEIGHT);
+}
+
+void BusElement::effectOn() {
+	setStyleSheet("background: transparent #a8918a;"
+		"border: 3px solid #a8918a; border-radius: 10px;"
+		"font: 16pt;");
+}
+
+void BusElement::effectOff() {
+	setStyleSheet("background: transparent #F49D2A;"
+		"border: 3px solid #F49D2A; border-radius: 10px;"
+		"font: 16pt;");
 }

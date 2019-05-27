@@ -23,10 +23,17 @@ public:
 	explicit BusElement(QWidget *p = 0);
 
 private:
-	QLabel *rightAnchor;
+	//拉伸区
+	QLabel *stretchZone;
 
 public:
-	void adjustAnchor();
+	//拉伸时动态改变拉伸区
+	void adjustStretchZone();
+
+	//
+	void effectOn();
+	//
+	void effectOff();
 };
 
 #endif // BUSELEMENT_H

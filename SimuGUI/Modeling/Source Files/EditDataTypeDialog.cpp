@@ -102,40 +102,14 @@ void EditDataTypeDialog::createTemplate(QList<QString> currentTypes) {
 
 	//列表部分
 	dataDetailList = new QTableWidget();
-	//表头
 	dataDetailList->setColumnCount(2);
-	dataDetailList->horizontalHeader()->setSectionsClickable(false);
 	dataDetailList->setColumnWidth(0, 130);
 	dataDetailList->setColumnWidth(1, 125);
-
-	QFont font2;
-	font2.setBold(true);
-	dataDetailList->horizontalHeader()->setFont(font2);
-	dataDetailList->horizontalHeader()->setStyleSheet("QHeaderView::section{background:#93D5FD;}");
 	QStringList header;
 	header << "Item" << "Type";
 	dataDetailList->setHorizontalHeaderLabels(header);
+	tableStandardize(dataDetailList);
 
-	//列头
-	dataDetailList->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-	dataDetailList->verticalHeader()->setVisible(false);
-
-	//选择模式
-	dataDetailList->setSelectionBehavior(QAbstractItemView::SelectRows);
-	dataDetailList->setSelectionMode(QAbstractItemView::SingleSelection);
-	dataDetailList->setStyleSheet("selection-background-color:gray;");
-
-	//滚动条
-	dataDetailList->horizontalScrollBar()->setStyleSheet("QScrollBar{background:transparent; height:10px;}"
-		"QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
-		"QScrollBar::handle:hover{background:gray;}"
-		"QScrollBar::sub-line{background:transparent;}"
-		"QScrollBar::add-line{background:transparent;}");
-	dataDetailList->verticalScrollBar()->setStyleSheet("QScrollBar{background:transparent; width: 10px;}"
-		"QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
-		"QScrollBar::handle:hover{background:gray;}"
-		"QScrollBar::sub-line{background:transparent;}"
-		"QScrollBar::add-line{background:transparent;}");
 	layout->addWidget(dataDetailList, 1, 2, 8, 1);
 
 	//详情部分

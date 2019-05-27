@@ -15,6 +15,7 @@
 #include "fancybutton.h"
 #include "BusElement.h"
 #include "ItemElement.h"
+#include "Regulation.h"
 
 class DropLabel : public QLabel {
 
@@ -31,8 +32,18 @@ public:
 	virtual void mousePressEvent(QMouseEvent*);
 	virtual void dragMoveEvent(QDragMoveEvent*);
 
-	//
+	//repaint all connections
 	virtual void paintEvent(QPaintEvent*);
+
+private:
+	//点击鼠标左键后的一些预处理，防止函数过长
+	int mousePressPreprocess(QPoint);
+	//拖动过程方法，防止函数过长
+	void mouseDragMove(QPoint);
+	//bus拉伸过程方法，防止函数过长
+	void mouseDragStretch(QPoint);
+	//添加功能栏按钮
+	void addToolBar();
 
 signals:
 	//拖动增加模型，前端接收
@@ -50,23 +61,28 @@ signals:
 	//像前端发送消息
 	void signalSendMessage(QString);
 
+private slots:
+	void slotUndo();
+	void slotRedo();
+	void slotGrid();
+	void slotGenerate();
+
 private:
 	//私有命名引擎
 	QMap<QString, std::set<int>> namingMap;
 
+	//连接管理
+	QMap<QString, connectInfo> connectMap;
+
 	//模型列表
 	QList<ItemElement*> modelList;
-	//item
+	//被选中模型
 	ItemElement *activeModel;
-
 	//bus
 	BusElement *bus;
 
-	//拖动时的相对坐标
-	int hOffset, vOffset;
-
-	QPoint startPoint;
-	QPoint endPoint;
+	//拖动时的相对起始坐标
+	QPoint moveStartPoint;
 };
 
 #endif // DROPLABEL_H

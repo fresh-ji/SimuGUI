@@ -16,41 +16,15 @@ InterfaceInfoStack::InterfaceInfoStack(QWidget *p) : MiniStack(p) {
 	//输出表
 	m_pOutputList = new QTableWidget();
 
-	//表头
+	//设置
 	m_pOutputList->setColumnCount(3);
-	m_pOutputList->horizontalHeader()->setSectionsClickable(false);
 	m_pOutputList->setColumnWidth(0, 150);
 	m_pOutputList->setColumnWidth(1, 150);
 	m_pOutputList->setColumnWidth(2, 170);
-
-	QFont font;
-	font.setBold(true);
-	m_pOutputList->horizontalHeader()->setFont(font);
-	m_pOutputList->horizontalHeader()->setStyleSheet("QHeaderView::section{background: #93D5FD;}");
 	QStringList header;
 	header << "Name" << "DataType" << "Notice";
 	m_pOutputList->setHorizontalHeaderLabels(header);
-
-	//列头
-	m_pOutputList->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-	m_pOutputList->verticalHeader()->setVisible(false);
-
-	//选择模式
-	m_pOutputList->setSelectionBehavior(QAbstractItemView::SelectRows);
-	m_pOutputList->setSelectionMode(QAbstractItemView::SingleSelection);
-	m_pOutputList->setStyleSheet("selection-background-color:gray;");
-
-	//滚动条
-	m_pOutputList->horizontalScrollBar()->setStyleSheet("QScrollBar{background:transparent; height:10px;}"
-		"QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
-		"QScrollBar::handle:hover{background:gray;}"
-		"QScrollBar::sub-line{background:transparent;}"
-		"QScrollBar::add-line{background:transparent;}");
-	m_pOutputList->verticalScrollBar()->setStyleSheet("QScrollBar{background:transparent; width: 10px;}"
-		"QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
-		"QScrollBar::handle:hover{background:gray;}"
-		"QScrollBar::sub-line{background:transparent;}"
-		"QScrollBar::add-line{background:transparent;}");
+	tableStandardize(m_pOutputList);
 
 	FancyButton *addOutputButton = new FancyButton();
 	addOutputButton->setIcon(QIcon("./Icon/function/add"));
@@ -81,37 +55,13 @@ InterfaceInfoStack::InterfaceInfoStack(QWidget *p) : MiniStack(p) {
 
 	//表头
 	m_pInputList->setColumnCount(3);
-	m_pInputList->horizontalHeader()->setSectionsClickable(false);
 	m_pInputList->setColumnWidth(0, 150);
 	m_pInputList->setColumnWidth(1, 150);
 	m_pInputList->setColumnWidth(2, 170);
-
-	m_pInputList->horizontalHeader()->setFont(font);
-	m_pInputList->horizontalHeader()->setStyleSheet("QHeaderView::section{background: #93D5FD;}");
 	QStringList header2;
 	header2 << "Name" << "DataType" << "Publisher";
 	m_pInputList->setHorizontalHeaderLabels(header2);
-
-	//列头
-	m_pInputList->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-	m_pInputList->verticalHeader()->setVisible(false);
-
-	//选择模式
-	m_pInputList->setSelectionBehavior(QAbstractItemView::SelectRows);
-	m_pInputList->setSelectionMode(QAbstractItemView::SingleSelection);
-	m_pInputList->setStyleSheet("selection-background-color:gray;");
-
-	//滚动条
-	m_pInputList->horizontalScrollBar()->setStyleSheet("QScrollBar{background:transparent; height:10px;}"
-		"QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
-		"QScrollBar::handle:hover{background:gray;}"
-		"QScrollBar::sub-line{background:transparent;}"
-		"QScrollBar::add-line{background:transparent;}");
-	m_pInputList->verticalScrollBar()->setStyleSheet("QScrollBar{background:transparent; width: 10px;}"
-		"QScrollBar::handle{background:lightgray; border:2px solid transparent; border-radius:5px;}"
-		"QScrollBar::handle:hover{background:gray;}"
-		"QScrollBar::sub-line{background:transparent;}"
-		"QScrollBar::add-line{background:transparent;}");
+	tableStandardize(m_pInputList);
 
 	FancyButton *subscribeInputButton = new FancyButton();
 	subscribeInputButton->setIcon(QIcon("./Icon/function/subscribe"));
@@ -179,7 +129,7 @@ void InterfaceInfoStack::pSlotEditOutput() {
 	}
 }
 void InterfaceInfoStack::pSlotDeleteOutput() {
-	//暂无，要加usage
+	//TODO:无删除功能，要加usage
 	/*
 	if (!m_pOutputList->currentItem()) {
 		return;

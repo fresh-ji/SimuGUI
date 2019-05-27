@@ -22,6 +22,15 @@ constexpr auto BIGANCHOR = 20;
 constexpr auto FRAMESHIFTX = (TOTALWIDTH - WIDTH) / 2;
 constexpr auto FRAMESHIFTY = TEXTHEIGHT + EDGE;
 
+constexpr auto TOPANCHORSHIFTX = TOTALWIDTH / 2;
+constexpr auto TOPANCHORSHIFTY = TEXTHEIGHT + EDGE;
+constexpr auto BOTTOMANCHORSHIFTX = TOTALWIDTH / 2;
+constexpr auto BOTTOMANCHORSHIFTY = TEXTHEIGHT + EDGE * 3 + WIDTH;
+constexpr auto LEFTANCHORSHIFTX = (TOTALWIDTH - WIDTH) / 2;
+constexpr auto LEFTANCHORSHIFTY = TEXTHEIGHT + EDGE * 2 + WIDTH / 2;
+constexpr auto RIGHTANCHORSHIFTX = (TOTALWIDTH + WIDTH) / 2;
+constexpr auto RIGHTANCHORSHIFTY = TEXTHEIGHT + EDGE * 2 + WIDTH / 2;
+
 //模型类型
 constexpr auto CTYPE = "C";
 constexpr auto MATLABTYPE = "Matlab";
@@ -50,9 +59,6 @@ private:
 	//模型编号
 	int count;
 
-	//锚点
-	Anchor activeAnchor;
-
 private:
 	//名称标签
 	QLabel *topNameLabel;
@@ -68,18 +74,20 @@ private:
 	QLabel *imageLabel;
 
 public:
+	//取消选中
 	void inactive();
+	//选中
 	void active();
 	//根据点击点返回锚点
-	Anchor getAvaiableAnchor(QPoint offset);
+	Anchor whichAnchor(QPoint offset);
+	//获取锚点的连接精准点
+	QPoint getAnchorShift(Anchor);
 
 public:
 	QString getName();
 	void setName(QString name);
 	QString getType();
 	int getCount();
-	Anchor getActiveAnchor();
-	void setActiveAnchor(Anchor activeAnchor);
 };
 
 #endif // ITEMELEMENT_H
