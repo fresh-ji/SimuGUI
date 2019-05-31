@@ -21,13 +21,11 @@
 #include <QAction>
 
 #include "fancywindow.h"
-#include "fancytabwidget.h"
 #include "fancytabbar.h"
 #include "modemanager.h"
 #include "fancybar.h"
 #include "quickaccessbar.h"
 #include "fancydialog.h"
-#include "fancynavbar.h"
 #include "pagesorter.h"
 #include "fancybanner.h"
 
@@ -59,14 +57,11 @@ private:
 	void createQuickAccessBar();
 	void createMenuBar();
 	void createAdditionalControls();
-	void createStatusBar();
 	void createModeBar();
 	void createCentralWidget();
 	void createDockWidget();
 	void createToolBar();
 	//第二部分
-	void createConnects();
-	//第三部分
 	void readSettings();
 	void writeSettings();
 
@@ -76,7 +71,6 @@ public slots:
 private slots:
 	void slotNew();
 	void slotSkin();
-	void slotResizable(bool resizable);
 	void slotChangeSkin();
 	void slotSetStyle(QAction *action);
 
@@ -90,17 +84,15 @@ private:
 	//中心区域的对象stack
 	FancyTabWidget *m_modeStack;
 
-	//状态栏，在slotResizable里使用
-	QStatusBar *m_statusBar;
-
 	//存储的所有style和上一个style
 	QList<QAction *> m_styleActions;
 	QAction *m_styleAction;
 
-	//三个mode
+	//三个例子mode
 	CustomMode *m_pCustomMode;
 	PaintMode *m_pPaintMode;
 	MenuMode *m_pMenuMode;
+
 	HLARunControl *m_pHLARunControl;
 	FMISimulator *m_pFMISimulator;
 	Modeling *m_pModeling;

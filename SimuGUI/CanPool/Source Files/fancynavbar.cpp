@@ -181,7 +181,7 @@ void FancyNavBarPrivate::init()
 	//by ih
     m_pMenuButton->setIcon(QIcon("./Icon/tools/arrow_down"));
     m_pMenuButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
-    m_pMenuButton->setIconSize(QSize(16,16));
+    m_pMenuButton->setIconSize(QSize(16, 16));
     connect(m_pMenuButton, SIGNAL(clicked(bool)), this, SLOT(slotButtonClicked()));
 
     QHBoxLayout *layout = new QHBoxLayout();
@@ -334,6 +334,10 @@ FancyNavBar::FancyNavBar(QWidget *parent)
 {
     d->q = this;
     d->init();
+
+	//by jh，点开之后的头颜色，和另一个都有的
+	setPanelColor(QColor("#93D5FD"));
+	setSideExpand(true);
 }
 
 void FancyNavBar::add(const QString &title, QWidget *widget, QWidget *appendix)
@@ -348,6 +352,11 @@ void FancyNavBar::add(const QString &title, QWidget *widget, QWidget *appendix)
 
     FancyNavButton *button = new FancyNavButton();
     button->setText(QString("%1 %2").arg(index).arg(title));
+	
+	//by jh，文字和按钮颜色
+	button->setTextColor(Qt::black);
+	button->setPressColor(QColor("#93D5FD"));
+
     button->setCheckable(true);
     button->setShortcut(tr("Alt+%1").arg(index));
     button->setToolTip(tr("<b>%1</b>\nAlt+%2").arg(title).arg(index));

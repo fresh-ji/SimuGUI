@@ -9,6 +9,8 @@
 #define FMISIMULATOR_H
 
 #include "imode.h"
+#include "fancytabwidget.h"
+#include "fancynavbar.h"
 
 #include "cwidgets.h"
 
@@ -19,15 +21,29 @@ class FMISimulator : public IMode {
 public:
 	explicit FMISimulator(QWidget *parent = 0);
 
-signals:
+private:
+	void createWindow();
+	//1
+	void createCentralPanel();
+	//2
+	void createDetailStack();
+	//3
+	void createPlotStack();
+
+	void createConnects();
 
 public slots:
 	void test();
 	void DisplayFMIMsg(QString);
+	//日志区随动
+	void slotResizable(bool resizable);
 
 private:
-	void createWindow();
+	//QTextBrowser *textBrowser;
 
-	QTextBrowser *textBrowser;
+	//
+	QStatusBar *m_logBar;
+	//
+	QTextBrowser *m_logBrowser;
 };
 #endif // FMISIMULATOR_H

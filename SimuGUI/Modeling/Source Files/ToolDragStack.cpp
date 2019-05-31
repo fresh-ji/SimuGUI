@@ -29,10 +29,17 @@ ToolDragStack::ToolDragStack(QWidget *p) : MiniStack(p) {
 	m_adamsLabel->setFixedHeight(20);
 	m_adamsLabel->setFixedWidth(175);
 
+	m_simulinkLabel = new QLabel();
+	putImage("simulinkm", m_simulinkLabel);
+	m_simulinkLabel->setCursor(QCursor(Qt::PointingHandCursor));
+	m_simulinkLabel->setFixedHeight(20);
+	m_simulinkLabel->setFixedWidth(175);
+
 	QVBoxLayout *layout = new QVBoxLayout();
 	layout->addWidget(m_cLabel);
 	layout->addWidget(m_matlabLabel);
 	layout->addWidget(m_adamsLabel);
+	layout->addWidget(m_simulinkLabel);
 
 	QWidget *toolWidget = new QWidget();
 	toolWidget->setLayout(layout);
@@ -48,8 +55,8 @@ void ToolDragStack::mousePressEvent(QMouseEvent *event) {
 	if (event->button() & Qt::LeftButton) {
 
 		QPoint point = event->localPos().toPoint();
-		//TODO:magic number，默认的stack头高40
-		point.setY(point.y() - 40);
+		//TODO:magic number，默认的stack头高30
+		point.setY(point.y() - 30);
 
 		QString modelType;
 		QPixmap *pixmap;
@@ -67,6 +74,11 @@ void ToolDragStack::mousePressEvent(QMouseEvent *event) {
 			m_dragLabel = m_adamsLabel;
 			modelType = ADAMSTYPE;
 			pixmap = new QPixmap("./Icon/simutool/adams");
+		}
+		else if (m_simulinkLabel->geometry().contains(point)) {
+			m_dragLabel = m_simulinkLabel;
+			modelType = SIMULINKTYPE;
+			pixmap = new QPixmap("./Icon/simutool/simulink");
 		}
 		else {
 			return;

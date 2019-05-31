@@ -117,6 +117,8 @@ public:
 
     void setBackgroundColor(const QColor &color);
 
+	void closeSideEffect();
+
 signals:
     void currentChanged(int index);
     void menuTriggered(int index, QPoint pos);

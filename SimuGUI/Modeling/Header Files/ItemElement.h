@@ -35,6 +35,7 @@ constexpr auto RIGHTANCHORSHIFTY = TEXTHEIGHT + EDGE * 2 + WIDTH / 2;
 constexpr auto CTYPE = "C";
 constexpr auto MATLABTYPE = "Matlab";
 constexpr auto ADAMSTYPE = "Adams";
+constexpr auto SIMULINKTYPE = "Simulink";
 
 //ÍÏ×§ÀàÐÍ
 constexpr auto DRAG_MOVE = "Drag_Move";

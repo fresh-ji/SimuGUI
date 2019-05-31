@@ -380,3 +380,7 @@ void FancyTabWidget::hideMenu(int index)
     d->m_tabBar->hideMenu(index);
 }
 
+void FancyTabWidget::closeSideEffect() {
+	d->m_tabBar->setFixedWidth(0);
+	d->m_tabBar->setFixedHeight(0);
+}

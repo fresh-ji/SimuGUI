@@ -16,14 +16,60 @@ Modeling::Modeling(QWidget *parent) : IMode(parent) {
 
 void Modeling::createWindow() {
 
-	QWidget *widget = new QWidget();
-
 	createToolDragStack();
 	createDropLabel();
 	createDateTypeStack();
 	createModelInfoStack();
 	createInterfaceInfoStack();
 
+	createConnects();
+
+	QGridLayout *layout = new QGridLayout();
+	layout->setMargin(10);
+	layout->setSpacing(10);
+
+	//TODO：如果在各类内部能够调整就不用这些了，想要加弹簧
+	//layout->setColumnStretch(0, 2);
+	//layout->setColumnStretch(1, 5);
+	//layout->setColumnStretch(2, 5);
+	//layout->setRowStretch(0, 2);
+	//layout->setRowStretch(1, 1);
+	m_pDataTypeStack->setMaximumHeight(300);
+	m_pModelInfoStack->setMaximumHeight(300);
+	m_pInterfaceInfoStack->setMaximumHeight(300);
+
+	layout->addWidget(m_pToolDragStack, 0, 0);
+	layout->addWidget(m_pDropLabel, 0, 1, 1, 2);
+	layout->addWidget(m_pDataTypeStack, 1, 0);
+	layout->addWidget(m_pModelInfoStack, 1, 1);
+	layout->addWidget(m_pInterfaceInfoStack, 1, 2);
+
+	QWidget *carryWidget = new QWidget();
+	carryWidget->setLayout(layout);
+
+	FancyTabWidget *widget = new FancyTabWidget();
+
+	//装配核心widget
+	widget->insertTab(0, carryWidget, QIcon(), NULL, false);
+	widget->closeSideEffect();
+
+	//装配日志区域
+	m_logBar = widget->statusBar();
+	connect(this, SIGNAL(resizable(bool)), this, SLOT(slotResizable(bool)));
+
+	FancyNavBar *navBar = new FancyNavBar();
+	//设置点击之后的状态区在哪
+	QSplitter *splitter = widget->addCornerWidget(navBar->panel(), FancyTabWidget::Bottom);
+	navBar->setSplitter(splitter);
+
+	m_logBrowser = new QTextBrowser();
+	navBar->add(tr("LOG AREA"), m_logBrowser);
+	m_logBar->addWidget(navBar);
+
+	setWidget(widget);
+}
+
+void Modeling::createConnects() {
 	//接收消息发送
 	connect(m_pDropLabel, SIGNAL(signalSendMessage(QString)),
 		this, SLOT(slotReceiveMessage(QString)));
@@ -54,29 +100,6 @@ void Modeling::createWindow() {
 	//自定义数据类型改变发给interface
 	connect(m_pDataTypeStack, SIGNAL(refreshTypeSet(QString, QString)),
 		m_pInterfaceInfoStack, SLOT(slotRefreshTypeSet(QString, QString)));
-
-	QGridLayout *layout = new QGridLayout();
-	layout->setMargin(10);
-	layout->setSpacing(10);
-
-	//TODO：如果在各类内部能够调整就不用这些了，想要加弹簧
-	//layout->setColumnStretch(0, 2);
-	//layout->setColumnStretch(1, 5);
-	//layout->setColumnStretch(2, 5);
-	//layout->setRowStretch(0, 2);
-	//layout->setRowStretch(1, 1);
-	m_pDataTypeStack->setMaximumHeight(300);
-	m_pModelInfoStack->setMaximumHeight(300);
-	m_pInterfaceInfoStack->setMaximumHeight(300);
-
-	layout->addWidget(m_pToolDragStack, 0, 0);
-	layout->addWidget(m_pDropLabel, 0, 1, 1, 2);
-	layout->addWidget(m_pDataTypeStack, 1, 0);
-	layout->addWidget(m_pModelInfoStack, 1, 1);
-	layout->addWidget(m_pInterfaceInfoStack, 1, 2);
-
-	widget->setLayout(layout);
-	setWidget(widget);
 }
 
 void Modeling::createToolDragStack() {
@@ -105,4 +128,8 @@ void Modeling::createInterfaceInfoStack() {
 
 void Modeling::slotReceiveMessage(QString info) {
 	QMessageBox::information(NULL, "Title", info, QMessageBox::Yes, QMessageBox::Yes);
+}
+
+void Modeling::slotResizable(bool resizable) {
+	m_logBar->setSizeGripEnabled(resizable);
 }

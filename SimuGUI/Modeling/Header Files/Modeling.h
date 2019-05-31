@@ -9,6 +9,8 @@
 #define MODELING_H
 
 #include "imode.h"
+#include "fancytabwidget.h"
+#include "fancynavbar.h"
 
 #include "cwidgets.h"
 #include "ToolDragStack.h"
@@ -37,9 +39,13 @@ private:
 	//5
 	void createInterfaceInfoStack();
 
+	void createConnects();
+
 public slots:
 	//仅作弹窗使用
 	void slotReceiveMessage(QString);
+	//日志区随动
+	void slotResizable(bool);
 
 private:
 	//1
@@ -52,5 +58,9 @@ private:
 	ModelInfoStack *m_pModelInfoStack;
 	//5
 	InterfaceInfoStack *m_pInterfaceInfoStack;
+	//6
+	QStatusBar *m_logBar;
+	//7
+	QTextBrowser *m_logBrowser;
 };
 #endif // MODELING_H

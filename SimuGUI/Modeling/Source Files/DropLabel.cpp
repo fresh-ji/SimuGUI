@@ -23,6 +23,9 @@ DropLabel::DropLabel(QWidget *p) : QLabel(p) {
 	std::set<int> AdamsNameSet;
 	AdamsNameSet.insert(1);
 	namingMap.insert(ADAMSTYPE, AdamsNameSet);
+	std::set<int> SimulinkNameSet;
+	SimulinkNameSet.insert(1);
+	namingMap.insert(SIMULINKTYPE, SimulinkNameSet);
 
 	//无被选中模型
 	activeModel = NULL;
@@ -390,8 +393,15 @@ void DropLabel::addToolBar() {
 	gridButton->setIcon(QIcon("./Icon/function/grid"));
 	connect(gridButton, SIGNAL(clicked()), this, SLOT(slotGrid()));
 
+	QToolButton *cutbutton = new QToolButton(this);
+	cutbutton->setGeometry(170, 5, 50, 50);
+	cutbutton->setCursor(Qt::PointingHandCursor);
+	cutbutton->setStyleSheet("QToolButton{border: none;border-radius: 25px;}");
+	cutbutton->setIcon(QIcon("./Icon/function/cut"));
+	connect(cutbutton, SIGNAL(clicked()), this, SLOT(slotCut()));
+
 	QToolButton *generateButton = new QToolButton(this);
-	generateButton->setGeometry(170, 5, 50, 50);
+	generateButton->setGeometry(220, 5, 50, 50);
 	generateButton->setCursor(Qt::PointingHandCursor);
 	generateButton->setStyleSheet("QToolButton{border: none;border-radius: 25px;}");
 	generateButton->setIcon(QIcon("./Icon/function/generate"));
@@ -407,6 +417,10 @@ void DropLabel::slotRedo() {
 }
 
 void DropLabel::slotGrid() {
+
+}
+
+void DropLabel::slotCut() {
 
 }
 

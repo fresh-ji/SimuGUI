@@ -28,6 +28,7 @@ private:
 	QLabel* m_cLabel;
 	QLabel* m_matlabLabel;
 	QLabel* m_adamsLabel;
+	QLabel* m_simulinkLabel;
 
 	QLabel* m_dragLabel;
 

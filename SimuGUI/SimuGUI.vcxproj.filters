@@ -41,12 +41,6 @@
     <Filter Include="FMI">
       <UniqueIdentifier>{a6ec8702-dccf-4248-a4b6-8c07fd2207b3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="FMI\Header Files">
-      <UniqueIdentifier>{39b1f5d0-e0f3-41f2-b5f6-b7cb5e1fb905}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="FMI\Source Files">
-      <UniqueIdentifier>{f323b7c7-3d91-4b81-a21e-7d3ed6a40eb8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="HLA">
       <UniqueIdentifier>{f91456f6-2038-464a-b11c-c0ce25fa73ba}</UniqueIdentifier>
     </Filter>
@@ -121,6 +115,21 @@
     </Filter>
     <Filter Include="Modeling\drop">
       <UniqueIdentifier>{24f40726-b3d0-46cf-8fba-f0a8fa765434}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FMI\ui">
+      <UniqueIdentifier>{05f58f4b-8ceb-45bd-a014-c2239dd542db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FMI\CentralPanel">
+      <UniqueIdentifier>{5e8e2941-4e1a-474c-8c71-4a8202104e21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FMI\DetailStack">
+      <UniqueIdentifier>{6a271b19-6366-4a80-94d5-b1e61120d27f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FMI\PlotStack">
+      <UniqueIdentifier>{14f218cb-096e-4025-81f0-a9879ae0f3db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FMI\Support">
+      <UniqueIdentifier>{4e737050-e306-4c1d-90c2-ac97d323d890}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -245,9 +254,6 @@
     <QtMoc Include="ExampleMode\Header Files\paintmode.h">
       <Filter>ExampleMode\Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="FMI\Header Files\FMISimulator.h">
-      <Filter>FMI\Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="HLA\Header Files\HLAFlowThread.h">
       <Filter>HLA\Header Files</Filter>
     </QtMoc>
@@ -296,9 +302,6 @@
     <QtMoc Include="Plugin-ProcessBar\Header Files\zoomcirclewait.h">
       <Filter>Plugin-ProcessBar\Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="FMI\Header Files\FMISupport.h">
-      <Filter>FMI\Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="FMIAdvance\Header Files\FMIAdvance.h">
       <Filter>FMIAdvance\Header Files</Filter>
     </QtMoc>
@@ -334,6 +337,12 @@
     </QtMoc>
     <QtMoc Include="Modeling\Header Files\ItemElement.h">
       <Filter>Modeling\drop</Filter>
+    </QtMoc>
+    <QtMoc Include="FMI\Header Files\FMISimulator.h">
+      <Filter>FMI\ui</Filter>
+    </QtMoc>
+    <QtMoc Include="FMI\Header Files\FMISupport.h">
+      <Filter>FMI\Support</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -416,24 +425,6 @@
     </ClCompile>
     <ClCompile Include="ExampleMode\Source Files\paintmode.cpp">
       <Filter>ExampleMode\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FMI\Source Files\FMISimulator.cpp">
-      <Filter>FMI\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FMI\Source Files\FMISupport.cpp">
-      <Filter>FMI\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FMI\Source Files\XmlElement.cpp">
-      <Filter>FMI\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FMI\Source Files\XmlParser.cpp">
-      <Filter>FMI\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FMI\Source Files\XmlParserCApi.cpp">
-      <Filter>FMI\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FMI\Source Files\xmlVersionParser.c">
-      <Filter>FMI\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HLA\Source Files\Config.cpp">
       <Filter>HLA\Source Files</Filter>
@@ -527,6 +518,24 @@
     </ClCompile>
     <ClCompile Include="Modeling\Source Files\ItemElement.cpp">
       <Filter>Modeling\drop</Filter>
+    </ClCompile>
+    <ClCompile Include="FMI\Source Files\FMISimulator.cpp">
+      <Filter>FMI\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="FMI\Source Files\xmlVersionParser.c">
+      <Filter>FMI\Support</Filter>
+    </ClCompile>
+    <ClCompile Include="FMI\Source Files\XmlParserCApi.cpp">
+      <Filter>FMI\Support</Filter>
+    </ClCompile>
+    <ClCompile Include="FMI\Source Files\XmlParser.cpp">
+      <Filter>FMI\Support</Filter>
+    </ClCompile>
+    <ClCompile Include="FMI\Source Files\XmlElement.cpp">
+      <Filter>FMI\Support</Filter>
+    </ClCompile>
+    <ClCompile Include="FMI\Source Files\FMISupport.cpp">
+      <Filter>FMI\Support</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

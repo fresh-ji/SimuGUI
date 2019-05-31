@@ -65,6 +65,7 @@ private slots:
 	void slotUndo();
 	void slotRedo();
 	void slotGrid();
+	void slotCut();
 	void slotGenerate();
 
 private:

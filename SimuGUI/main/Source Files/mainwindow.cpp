@@ -19,10 +19,7 @@ MainWindow::MainWindow(QWidget *parent) : FancyWindow(parent) {
 	m_modeStack = new FancyTabWidget(this);
 	m_modeManager = new ModeManager(m_modeStack);
 
-	m_statusBar = m_modeStack->statusBar();
-
 	createWindow();
-	createConnects();
 
 	setAcceptDrops(true);
 
@@ -35,7 +32,6 @@ MainWindow::MainWindow(QWidget *parent) : FancyWindow(parent) {
 }
 
 MainWindow::~MainWindow() {
-	delete m_statusBar;
 	delete m_modeStack;
 	delete m_modeManager;
 }
@@ -51,8 +47,6 @@ void MainWindow::createWindow() {
 	createMenuBar();
 	//拓展栏，位于右上角，一共有两行，一行TitlePosition，一行MenuPosition
 	createAdditionalControls();
-	//状态栏，位于左下角，第一个可见，第二个不可见
-	createStatusBar();
 	//模式栏
 	createModeBar();
 	//中心区域
@@ -103,8 +97,6 @@ void MainWindow::createQuickAccessBar() {
 		smallButton->setEnabled(false);
 
 		fancyBar()->showQuickAccess(false);
-
-		//fancyBar()->setBackgroundColor(QColor(0, 33, 64));
 	}
 }
 
@@ -184,7 +176,7 @@ void MainWindow::createAdditionalControls() {
 	m_styleActions.append(styleAction);
 
 	connect(actionGroup, SIGNAL(triggered(QAction*)), this, SLOT(slotSetStyle(QAction*)));
-	
+
 	menuAction->setMenu(styleMenu);
 
 	//设置初始style
@@ -192,22 +184,6 @@ void MainWindow::createAdditionalControls() {
 	fancyBar()->setApplicationButtonBkColor(QColor(255, 255, 255, 0));
 	m_styleActions.at(1)->setChecked(true);
 
-}
-
-//创建状态栏
-void MainWindow::createStatusBar() {
-	FancyNavBar *navBar = new FancyNavBar();
-	navBar->setSideExpand(true);
-	//设置点击之后的状态区在哪
-	QSplitter *splitter = m_modeStack->addCornerWidget(navBar->panel(), FancyTabWidget::Bottom);
-	navBar->setSplitter(splitter);
-
-	QTextBrowser *tb1 = new QTextBrowser(this);
-	QTextBrowser *tb2 = new QTextBrowser(this);
-	navBar->add(tr("状态显示区"), tb1);
-	navBar->add(tr("隐藏着的I"), tb2, new QLineEdit());
-
-	m_statusBar->addWidget(navBar);
 }
 
 //创建模式栏
@@ -231,12 +207,13 @@ void MainWindow::createModeBar() {
 	m_modeManager->objectAdded(m_pPaintMode);
 	m_modeManager->objectAdded(m_pMenuMode);
 	//m_modeManager->objectAdded(m_pHLARunControl);
-	//m_modeManager->objectAdded(m_pFMISimulator);
 	//m_modeManager->objectAdded(m_pFMIAdvance);
 	m_modeManager->objectAdded(m_pModeling);
+	m_modeManager->objectAdded(m_pFMISimulator);
 
-	m_modeManager->setCurrentMode(m_pModeling);
+	m_modeManager->setCurrentMode(m_pFMISimulator);
 
+	//仿QT组件，没用
 	//QAction *action = new QAction(QIcon("./Icon/tools/start"), tr("Start"), this);
 	//action->setShortcut(tr("Ctrl+R"));
 	//action->setToolTip(tr("Start <i>Ctrl+R</i>"));
@@ -254,13 +231,7 @@ void MainWindow::createCentralWidget() {
 	setCentralWidget(m_modeStack);
 	//为中心区域添加top、left、bottom、right
 	//QTextBrowser *tb1 = new QTextBrowser(this);
-	//QTextBrowser *tb2 = new QTextBrowser(this);
-	//QTextBrowser *tb3 = new QTextBrowser(this);
-	//QTextBrowser *tb4 = new QTextBrowser(this);
 	//m_modeStack->addCornerWidget(tb1, FancyTabWidget::Left);
-	//m_modeStack->addCornerWidget(tb2, FancyTabWidget::Top);
-	//m_modeStack->addCornerWidget(tb3, FancyTabWidget::Right);
-	//m_modeStack->addCornerWidget(tb4, FancyTabWidget::Bottom);
 }
 
 //创建dock，在area周围的可以自由拖动的区域
@@ -294,11 +265,6 @@ void MainWindow::createDockWidget() {
 
 void MainWindow::createToolBar() {
 	setContextMenuPolicy(Qt::NoContextMenu);
-}
-
-void MainWindow::createConnects() {
-	//调整整体大小的信号槽
-	connect(this, SIGNAL(resizable(bool)), this, SLOT(slotResizable(bool)));
 }
 
 //TODO:如果未来找到了Canpool配置文件，找找有没有pos和size
@@ -376,10 +342,6 @@ void MainWindow::slotSkin() {
 	connect(&dlg, SIGNAL(changeSkin()), this, SLOT(slotChangeSkin()));
 	connect(&dlg, SIGNAL(changeTheme()), this, SLOT(updateTheme()));
 	dlg.exec();
-}
-
-void MainWindow::slotResizable(bool resizable) {
-	m_statusBar->setSizeGripEnabled(resizable);
 }
 
 void MainWindow::slotChangeSkin() {
