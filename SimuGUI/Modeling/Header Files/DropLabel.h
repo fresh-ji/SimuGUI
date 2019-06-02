@@ -46,19 +46,19 @@ private:
 	void addToolBar();
 
 signals:
-	//拖动增加模型，前端接收
+	//拖动增加模型并发送
 	void signalAddModel(QString, QString);
 public slots:
-	//接收前端删除模型
+	//接收删除模型
 	void slotDeleteModel(QString);
 signals:
-	//模型选择改变，前端接收
+	//模型选择改变并发送
 	void signalModelChange(QString);
 public slots:
-	//接收前端模型选择改变
+	//接收模型选择改变
 	void slotModelChange(QString);
 signals:
-	//像前端发送消息
+	//向ui发送消息
 	void signalSendMessage(QString);
 
 private slots:

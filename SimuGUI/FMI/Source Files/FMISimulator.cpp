@@ -1,6 +1,11 @@
 
+/*
+* @date : 2019/01/01
+* @author : jihang
+*/
+
 #include "FMISimulator.h"
-#include "FMISupport.h"
+//#include "FMISupport.h"
 
 FMISimulator::FMISimulator(QWidget *parent) : IMode(parent) {
 	setObjectName(QLatin1String("FMISimulator"));
@@ -12,7 +17,7 @@ FMISimulator::FMISimulator(QWidget *parent) : IMode(parent) {
 
 void FMISimulator::createWindow() {
 
-	createCentralPanel();
+	createCentralLabel();
 	createDetailStack();
 	createPlotStack();
 
@@ -21,6 +26,13 @@ void FMISimulator::createWindow() {
 	QGridLayout *layout = new QGridLayout();
 	layout->setMargin(10);
 	layout->setSpacing(10);
+	
+	//TODO£ºÏëÒª¼Óµ¯»É
+	m_pDetailStack->setMaximumWidth(400);
+	m_pPlotStack->setMaximumWidth(400);
+	layout->addWidget(m_pCentralLabel, 0, 0, 2, 1);
+	layout->addWidget(m_pDetailStack, 0, 1);
+	layout->addWidget(m_pPlotStack, 1, 1);
 
 	QWidget *carryWidget = new QWidget();
 	carryWidget->setLayout(layout);
@@ -54,19 +66,22 @@ void FMISimulator::createConnects() {
 
 }
 
-void FMISimulator::createCentralPanel() {
-
+void FMISimulator::createCentralLabel() {
+	m_pCentralLabel = new CentralLabel();
 }
 
 void FMISimulator::createDetailStack() {
-
+	m_pDetailStack = new DetailStack();
+	m_pDetailStack->setTitle("Model Info");
 }
 
 void FMISimulator::createPlotStack() {
-
+	m_pPlotStack = new PlotStack();
+	m_pPlotStack->setTitle("Plot");
 }
 
-//QPushButton *button = new QPushButton(widget);
+/*
+	//QPushButton *button = new QPushButton(widget);
 	//connect(button, SIGNAL(clicked()), this, SLOT(test()));
 
 	//textBrowser = new QTextBrowser(widget);
@@ -96,6 +111,11 @@ void FMISimulator::test() {
 
 void FMISimulator::DisplayFMIMsg(QString s) {
 	//textBrowser->append(s);
+}
+*/
+
+void FMISimulator::slotReceiveMessage(QString info) {
+	QMessageBox::information(NULL, "Title", info, QMessageBox::Yes, QMessageBox::Yes);
 }
 
 void FMISimulator::slotResizable(bool resizable) {

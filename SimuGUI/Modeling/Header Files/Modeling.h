@@ -44,6 +44,8 @@ private:
 public slots:
 	//仅作弹窗使用
 	void slotReceiveMessage(QString);
+
+private slots:
 	//日志区随动
 	void slotResizable(bool);
 

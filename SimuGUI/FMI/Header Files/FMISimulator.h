@@ -13,6 +13,9 @@
 #include "fancynavbar.h"
 
 #include "cwidgets.h"
+#include "CentralLabel.h"
+#include "DetailStack.h"
+#include "PlotStack.h"
 
 class FMISimulator : public IMode {
 
@@ -24,7 +27,7 @@ public:
 private:
 	void createWindow();
 	//1
-	void createCentralPanel();
+	void createCentralLabel();
 	//2
 	void createDetailStack();
 	//3
@@ -33,17 +36,23 @@ private:
 	void createConnects();
 
 public slots:
-	void test();
-	void DisplayFMIMsg(QString);
+	//仅作弹窗使用
+	void slotReceiveMessage(QString);
+
+private slots:
 	//日志区随动
 	void slotResizable(bool resizable);
 
 private:
-	//QTextBrowser *textBrowser;
-
-	//
+	//1
+	CentralLabel *m_pCentralLabel;
+	//2
+	DetailStack *m_pDetailStack;
+	//3
+	PlotStack *m_pPlotStack;
+	//4
 	QStatusBar *m_logBar;
-	//
+	//5
 	QTextBrowser *m_logBrowser;
 };
 #endif // FMISIMULATOR_H

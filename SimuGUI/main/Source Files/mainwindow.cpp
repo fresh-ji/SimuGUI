@@ -188,24 +188,27 @@ void MainWindow::createAdditionalControls() {
 
 //创建模式栏
 void MainWindow::createModeBar() {
+	
 	QPalette palette;
 	palette.setColor(QPalette::Background, QColor(0, 0, 0, 20));
 
 	FancyTabBar *modeBar = m_modeStack->tabBar();
 	modeBar->setPalette(palette);
 	modeBar->setAutoFillBackground(true);
-
+	
 	m_pCustomMode = new CustomMode();
 	m_pPaintMode = new PaintMode();
 	m_pMenuMode = new MenuMode();
-	m_pHLARunControl = new HLARunControl();
+
+	//m_pHLARunControl = new HLARunControl();
 	m_pFMISimulator = new FMISimulator();
 	m_pModeling = new Modeling();
 	m_pFMIAdvance = new FMIAdvance();
-
+	
 	m_modeManager->objectAdded(m_pCustomMode);
 	m_modeManager->objectAdded(m_pPaintMode);
 	m_modeManager->objectAdded(m_pMenuMode);
+
 	//m_modeManager->objectAdded(m_pHLARunControl);
 	//m_modeManager->objectAdded(m_pFMIAdvance);
 	m_modeManager->objectAdded(m_pModeling);
@@ -224,6 +227,7 @@ void MainWindow::createModeBar() {
 	modeBar->setSelectedTextColor(QColor(255, 255, 255));
 	modeBar->setHoverColor(QColor(255, 255, 255, 50));
 	modeBar->setFixedWidth(80);
+	
 }
 
 //创建中心区域，即m_modeStack

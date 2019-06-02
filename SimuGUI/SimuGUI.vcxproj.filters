@@ -119,9 +119,6 @@
     <Filter Include="FMI\ui">
       <UniqueIdentifier>{05f58f4b-8ceb-45bd-a014-c2239dd542db}</UniqueIdentifier>
     </Filter>
-    <Filter Include="FMI\CentralPanel">
-      <UniqueIdentifier>{5e8e2941-4e1a-474c-8c71-4a8202104e21}</UniqueIdentifier>
-    </Filter>
     <Filter Include="FMI\DetailStack">
       <UniqueIdentifier>{6a271b19-6366-4a80-94d5-b1e61120d27f}</UniqueIdentifier>
     </Filter>
@@ -130,6 +127,9 @@
     </Filter>
     <Filter Include="FMI\Support">
       <UniqueIdentifier>{4e737050-e306-4c1d-90c2-ac97d323d890}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FMI\CentralLabel">
+      <UniqueIdentifier>{5e8e2941-4e1a-474c-8c71-4a8202104e21}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -344,6 +344,15 @@
     <QtMoc Include="FMI\Header Files\FMISupport.h">
       <Filter>FMI\Support</Filter>
     </QtMoc>
+    <QtMoc Include="CentralLabel.h">
+      <Filter>FMI\CentralLabel</Filter>
+    </QtMoc>
+    <QtMoc Include="DetailStack.h">
+      <Filter>FMI\DetailStack</Filter>
+    </QtMoc>
+    <QtMoc Include="PlotStack.h">
+      <Filter>FMI\PlotStack</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CanPool\Header Files\cursor.h">
@@ -536,6 +545,15 @@
     </ClCompile>
     <ClCompile Include="FMI\Source Files\FMISupport.cpp">
       <Filter>FMI\Support</Filter>
+    </ClCompile>
+    <ClCompile Include="CentralLabel.cpp">
+      <Filter>FMI\CentralLabel</Filter>
+    </ClCompile>
+    <ClCompile Include="DetailStack.cpp">
+      <Filter>FMI\DetailStack</Filter>
+    </ClCompile>
+    <ClCompile Include="PlotStack.cpp">
+      <Filter>FMI\PlotStack</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
