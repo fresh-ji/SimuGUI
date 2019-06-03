@@ -19,9 +19,14 @@ class CentralLabel : public QLabel {
 public:
 	explicit CentralLabel(QWidget *p = 0);
 
+	virtual void dragEnterEvent(QDragEnterEvent*);
 	virtual void mousePressEvent(QMouseEvent*);
 	virtual void dragMoveEvent(QDragMoveEvent*);
 	virtual void dropEvent(QDropEvent*);
+
+private:
+	//点击鼠标左键后的一些预处理，防止函数过长
+	int mousePressPreprocess(QPoint);
 
 private:
 	//添加功能栏按钮
@@ -32,12 +37,15 @@ private slots:
 	void slotUndo();
 	void slotRedo();
 	void slotGrid();
-	void slotCut();
+	void slotDelete();
 	void slotGo();
+signals:
+	//向ui发送消息
+	void signalSendMessage(QString);
 
 private:
 	//模型列表
-	QList<ItemElement*> modelList;
+	QMap<QString, ItemElement*> modelMap;
 	//被选中模型
 	ItemElement *activeModel;
 

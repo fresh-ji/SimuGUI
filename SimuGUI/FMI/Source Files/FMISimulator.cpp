@@ -63,7 +63,9 @@ void FMISimulator::createWindow() {
 }
 
 void FMISimulator::createConnects() {
-
+	//接收消息发送
+	connect(m_pCentralLabel, SIGNAL(signalSendMessage(QString)),
+		this, SLOT(slotReceiveMessage(QString)));
 }
 
 void FMISimulator::createCentralLabel() {
