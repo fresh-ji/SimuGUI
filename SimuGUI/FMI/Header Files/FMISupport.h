@@ -1,14 +1,28 @@
 #pragma once
 
 #include <QObject>
+#include <QFileInfo>
+#include <QUuid>
+
 #include <fstream>
 
 #include "fmi2.h"
 
-#define FMI_MODEL_EXCHANGE 1
-#define FMI_COSIMULATION 2
+constexpr auto FMI_MODEL_EXCHANGE = "Model Exchange";
+constexpr auto FMI_COSIMULATION = "CoSimulation";
 
 using namespace std;
+
+struct FMUInfo {
+	bool isSuccess;
+	QString message;
+	FMU fmu;
+	QString simuType;
+	QString globalName;
+	QString targetDir;
+	QString descriptionPath;
+	QString dllPath;
+};
 
 class FMISupport : public QObject {
 
@@ -19,20 +33,20 @@ public:
 	virtual ~FMISupport() {};
 
 public:
-	bool loadFMU(const char*, int);
+	FMUInfo loadFMU(QString);
 	void unLoad();
 	bool simulateByCs(double, double, double, int, char **);
 	bool simulateByMe(double, double, double, int, char **);
 
 private:
-	bool loadDll(const char*);
+	bool loadDll(const char*, FMU*);
 	void *getAdr(bool*, HMODULE, const char*);
 	void outputData(ofstream&, double, bool);
 
 private:
 	char* currentDir;
-	FMU fmu;
-	int type;
+	FMU fmu0;
+	QString type;
 	fmi2Component c;
 
 signals:

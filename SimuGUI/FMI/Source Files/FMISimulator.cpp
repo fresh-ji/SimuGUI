@@ -74,7 +74,7 @@ void FMISimulator::createCentralLabel() {
 
 void FMISimulator::createDetailStack() {
 	m_pDetailStack = new DetailStack();
-	m_pDetailStack->setTitle("Model Info");
+	m_pDetailStack->setTitle("Info");
 }
 
 void FMISimulator::createPlotStack() {

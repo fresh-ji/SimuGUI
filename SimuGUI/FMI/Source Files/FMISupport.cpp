@@ -7,20 +7,19 @@
 #define GetCurrentDir getcwd 
 #endif
 
-#include <sstream>
-#include <string>
-
 #include "FMISupport.h"
 #include "xmlVersionParser.h"
 
+#include <sstream>
+#include <string>
+
 #define DIRECTORY_PATH_SIZE 1024
 static char currentDirectory[DIRECTORY_PATH_SIZE];
+
 #define UNZIP_CMD ".\\FMI\\7z\\7z x -aoa -o"
 // -x   Extracts files from an archive with their full paths in the current dir, or in an output dir if specified
 // -aoa Overwrite All existing files without prompt
 // -o   Specifies a destination directory where files are to be extracted
-#define OUT_PATH "\\FMI\\tmp\\"
-
 #define SEVEN_ZIP_NO_ERROR 0
 #define SEVEN_ZIP_WARNING 1
 #define SEVEN_ZIP_ERROR 2
@@ -41,230 +40,255 @@ using namespace std;
 FMISupport::FMISupport(QObject *parent) : QObject(parent) {
 }
 
-bool FMISupport::loadFMU(const char *filePath, int simuType) {
-	type = simuType;
+FMUInfo FMISupport::loadFMU(QString filePath) {
+
+	FMUInfo info;
+	info.isSuccess = false;
+	//TODO：所有错误回复都要清理解压缩文件
+
+	//判断fmu文件是否存在
+	QFileInfo fileInfo(filePath);
+	if (!fileInfo.isFile()) {
+		info.message = "fmu file not exists";
+		return info;
+	}
 
 	//获取当前目录
 	currentDir = GetCurrentDir(currentDirectory, DIRECTORY_PATH_SIZE);
-	ostringstream ss;
-	string str;
 
-	//写控制流
-	ss << UNZIP_CMD << "\"" << currentDir << OUT_PATH << "\" \"" << filePath << "\" > NUL";
-	str = ss.str();
+	//命名
+	QString globalName = filePath.section('/', -1);
+	globalName.append(QUuid::createUuid().toString());
+	QString targetDir;
+	targetDir.append(currentDir)
+		.append("\\FMI\\extracted\\").append(globalName).append("\\");
+
+	//拼接cmd命令，原先用的是sstream，清空需要ss.clear() + ss.str("")
+	QString command;
+	command.append(UNZIP_CMD).append("\"").append(targetDir)
+		.append("\"").append(" \"").append(filePath).append("\" > NUL");
+
 	//解压缩
-	int code = system(str.c_str());
+	int code = system(command.toLocal8Bit().constData());
 	switch (code) {
 	case SEVEN_ZIP_NO_ERROR: break;
-	case SEVEN_ZIP_WARNING: emit postUIMsg("warning"); return false;
-	case SEVEN_ZIP_ERROR: emit postUIMsg("error"); return false;
-	case SEVEN_ZIP_COMMAND_LINE_ERROR: emit postUIMsg("command line error"); return false;
-	case SEVEN_ZIP_OUT_OF_MEMORY: emit postUIMsg("out of memory"); return false;
-	case SEVEN_ZIP_STOPPED_BY_USER: emit postUIMsg("stopped by user"); return false;
-	default: emit postUIMsg("unknown problem"); return false;
+	case SEVEN_ZIP_WARNING: info.message = "unzip warning"; return info;
+	case SEVEN_ZIP_ERROR: info.message = "unzip error"; return info;
+	case SEVEN_ZIP_COMMAND_LINE_ERROR: info.message = "unzip command line error"; return info;
+	case SEVEN_ZIP_OUT_OF_MEMORY: info.message = "unzip out of memory"; return info;
+	case SEVEN_ZIP_STOPPED_BY_USER: info.message = "unzip stopped by user"; return info;
+	default: info.message = "unzip unknown problem"; return info;
 	}
 
-	//判断版本是否符合要求
-	ss.clear();
-	ss.str("");
-	ss << currentDir << OUT_PATH << "modelDescription.xml";
-	str = ss.str();//str里存着xml描述
+	QString descriptionPath = targetDir;
+	descriptionPath.append("modelDescription.xml");
 
 	//TODO:注掉了一句关闭xml的话
-	char *xmlFmiVersion = extractVersion(str.c_str());
-
+	char* xmlFmiVersion = extractVersion(descriptionPath.toLocal8Bit().constData());
 	if (xmlFmiVersion == NULL) {
-		emit postUIMsg("The FMI version of the FMU could not be read");
-		return false;
+		info.message = "The FMI version of the FMU could not be read";
+		return info;
 	}
 	if (strcmp(xmlFmiVersion, fmi2Version) != 0) {
-		emit postUIMsg("The FMI version wrong");
-		return false;
+		info.message = "The FMI version is not 2.0";
+		return info;
 	}
 
-	//提取模型描述并输出
-	char* xmlPath = new char[str.length() + 1];
-	strcpy(xmlPath, str.c_str());
+	FMU fmu;
 
+	//获取模型
 	//TODO:注掉了一句关闭xml的话
-	fmu.modelDescription = parse(xmlPath);
-
-	//解析模型描述
+	fmu.modelDescription = parse(descriptionPath.toLocal8Bit().data());
 	Element* e = (Element*)(fmu.modelDescription);
+
+	//模型描述
 	int n;
 	const char **attributes = getAttributesAsArray(e, &n);
 	if (!attributes) {
-		emit postUIMsg("ModelDescription printing aborted.");
-		return false;
+		info.message = "ModelDescription printing aborted.";
+		return info;
 	}
-	emit postUIMsg(getElementTypeName(e));
+	QString des1;
 	for (int i = 0; i < n; i += 2) {
 		QString s1 = attributes[i];
 		QString s2 = " = ";
 		QString s3 = attributes[i + 1];
-		emit postUIMsg(s1 + s2 + s3);
+		des1.append(s1 + s2 + s3).append("\n");
 	}
-	Component *component;
-	if (type == FMI_MODEL_EXCHANGE) {
-		component = getModelExchange(fmu.modelDescription);
-		if (!component) {
-			emit postUIMsg(
-				"error: No ModelExchange element found in model description. This FMU is not for Model Exchange.");
-			return false;
-		}
-	}
-	else if (type == FMI_COSIMULATION) {
+
+	//获取类型
+	QString simuType;
+	Component *component = getModelExchange(fmu.modelDescription);
+	if (!component) {
 		component = getCoSimulation(fmu.modelDescription);
 		if (!component) {
-			emit postUIMsg(
-				"error: No CoSimulation element found in model description. This FMU is not for Co-Simulation.");
-			return false;
+			info.message = "model simulation type wrong";
+			return info;
+		}
+		else {
+			simuType = FMI_COSIMULATION;
 		}
 	}
-	emit postUIMsg(getElementTypeName((Element*)component));
-	attributes = getAttributesAsArray((Element *)component, &n);
-	if (!attributes) {
-		emit postUIMsg("ModelDescription printing aborted 2.");
-		return false;
+	else {
+		simuType = FMI_MODEL_EXCHANGE;
 	}
+
+	//类型描述
+	attributes = getAttributesAsArray((Element*)component, &n);
+	if (!attributes) {
+		info.message = "ModelDescription printing aborted 2.";
+		return info;
+	}
+	QString des2;
 	for (int i = 0; i < n; i += 2) {
 		QString s1 = attributes[i];
 		QString s2 = " = ";
 		QString s3 = attributes[i + 1];
-		emit postUIMsg(s1 + s2 + s3);
+		des2.append(s1 + s2 + s3).append("\n");
 	}
-	//获取modelID
+
+	//获取id
 	const char *modelId;
-	if (type == FMI_MODEL_EXCHANGE) {
-		modelId = getAttributeValue((Element *)getModelExchange(fmu.modelDescription), att_modelIdentifier);
+	if (simuType == FMI_MODEL_EXCHANGE) {
+		modelId = getAttributeValue((Element*)getModelExchange(fmu.modelDescription), att_modelIdentifier);
 	}
-	else if (type == FMI_COSIMULATION) {
-		modelId = getAttributeValue((Element *)getCoSimulation(fmu.modelDescription), att_modelIdentifier);
+	else if (simuType == FMI_COSIMULATION) {
+		modelId = getAttributeValue((Element*)getCoSimulation(fmu.modelDescription), att_modelIdentifier);
 	}
+
+	//获取dll路径
+	QString dllPath = targetDir;
+	dllPath.append(DLL_DIR).append(modelId).append(".dll");
 
 	//加载dll功能
-	ss.clear();
-	ss.str("");
-	ss << currentDir << OUT_PATH << DLL_DIR << modelId << ".dll";
-	str = ss.str();
-
-	if (!loadDll(str.c_str())) {
-		emit postUIMsg("load dll error");
-		return false;
+	if (!loadDll(dllPath.toLocal8Bit().constData(), &fmu)) {
+		info.message = "load dll error";
+		return info;
 	}
-	return true;
+
+	info.fmu = fmu;
+	info.simuType = simuType;
+	info.globalName = globalName;
+	info.targetDir = targetDir;
+	info.descriptionPath = descriptionPath;
+	info.dllPath = dllPath;
+	info.isSuccess = true;
+	info.message = "success";
+
+	return info;
 }
 
-bool FMISupport::loadDll(const char* dllPath) {
+bool FMISupport::loadDll(const char* dllPath, FMU* fmu) {
+	
 	bool s = true;
 
 	HMODULE h = LoadLibrary(dllPath);
-
 	if (!h) {
 		return false;
 	}
-	fmu.dllHandle = h;
-	fmu.getTypesPlatform = (fmi2GetTypesPlatformTYPE *)getAdr(&s, h, "fmi2GetTypesPlatform");
-	fmu.getVersion = (fmi2GetVersionTYPE *)getAdr(&s, h, "fmi2GetVersion");
-	fmu.setDebugLogging = (fmi2SetDebugLoggingTYPE *)getAdr(&s, h, "fmi2SetDebugLogging");
-	fmu.instantiate = (fmi2InstantiateTYPE *)getAdr(&s, h, "fmi2Instantiate");
-	fmu.freeInstance = (fmi2FreeInstanceTYPE *)getAdr(&s, h, "fmi2FreeInstance");
-	fmu.setupExperiment = (fmi2SetupExperimentTYPE *)getAdr(&s, h, "fmi2SetupExperiment");
-	fmu.enterInitializationMode = (fmi2EnterInitializationModeTYPE *)getAdr(&s, h, "fmi2EnterInitializationMode");
-	fmu.exitInitializationMode = (fmi2ExitInitializationModeTYPE *)getAdr(&s, h, "fmi2ExitInitializationMode");
-	fmu.terminate = (fmi2TerminateTYPE *)getAdr(&s, h, "fmi2Terminate");
-	fmu.reset = (fmi2ResetTYPE *)getAdr(&s, h, "fmi2Reset");
-	fmu.getReal = (fmi2GetRealTYPE *)getAdr(&s, h, "fmi2GetReal");
-	fmu.getInteger = (fmi2GetIntegerTYPE *)getAdr(&s, h, "fmi2GetInteger");
-	fmu.getBoolean = (fmi2GetBooleanTYPE *)getAdr(&s, h, "fmi2GetBoolean");
-	fmu.getString = (fmi2GetStringTYPE *)getAdr(&s, h, "fmi2GetString");
-	fmu.setReal = (fmi2SetRealTYPE *)getAdr(&s, h, "fmi2SetReal");
-	fmu.setInteger = (fmi2SetIntegerTYPE *)getAdr(&s, h, "fmi2SetInteger");
-	fmu.setBoolean = (fmi2SetBooleanTYPE *)getAdr(&s, h, "fmi2SetBoolean");
-	fmu.setString = (fmi2SetStringTYPE *)getAdr(&s, h, "fmi2SetString");
-	fmu.getFMUstate = (fmi2GetFMUstateTYPE *)getAdr(&s, h, "fmi2GetFMUstate");
-	fmu.setFMUstate = (fmi2SetFMUstateTYPE *)getAdr(&s, h, "fmi2SetFMUstate");
-	fmu.freeFMUstate = (fmi2FreeFMUstateTYPE *)getAdr(&s, h, "fmi2FreeFMUstate");
-	fmu.serializedFMUstateSize = (fmi2SerializedFMUstateSizeTYPE *)getAdr(&s, h, "fmi2SerializedFMUstateSize");
-	fmu.serializeFMUstate = (fmi2SerializeFMUstateTYPE *)getAdr(&s, h, "fmi2SerializeFMUstate");
-	fmu.deSerializeFMUstate = (fmi2DeSerializeFMUstateTYPE *)getAdr(&s, h, "fmi2DeSerializeFMUstate");
-	fmu.getDirectionalDerivative = (fmi2GetDirectionalDerivativeTYPE *)getAdr(&s, h, "fmi2GetDirectionalDerivative");
+
+	fmu->dllHandle = h;
+	fmu->getTypesPlatform = (fmi2GetTypesPlatformTYPE *)getAdr(&s, h, "fmi2GetTypesPlatform");
+	fmu->getVersion = (fmi2GetVersionTYPE *)getAdr(&s, h, "fmi2GetVersion");
+	fmu->setDebugLogging = (fmi2SetDebugLoggingTYPE *)getAdr(&s, h, "fmi2SetDebugLogging");
+	fmu->instantiate = (fmi2InstantiateTYPE *)getAdr(&s, h, "fmi2Instantiate");
+	fmu->freeInstance = (fmi2FreeInstanceTYPE *)getAdr(&s, h, "fmi2FreeInstance");
+	fmu->setupExperiment = (fmi2SetupExperimentTYPE *)getAdr(&s, h, "fmi2SetupExperiment");
+	fmu->enterInitializationMode = (fmi2EnterInitializationModeTYPE *)getAdr(&s, h, "fmi2EnterInitializationMode");
+	fmu->exitInitializationMode = (fmi2ExitInitializationModeTYPE *)getAdr(&s, h, "fmi2ExitInitializationMode");
+	fmu->terminate = (fmi2TerminateTYPE *)getAdr(&s, h, "fmi2Terminate");
+	fmu->reset = (fmi2ResetTYPE *)getAdr(&s, h, "fmi2Reset");
+	fmu->getReal = (fmi2GetRealTYPE *)getAdr(&s, h, "fmi2GetReal");
+	fmu->getInteger = (fmi2GetIntegerTYPE *)getAdr(&s, h, "fmi2GetInteger");
+	fmu->getBoolean = (fmi2GetBooleanTYPE *)getAdr(&s, h, "fmi2GetBoolean");
+	fmu->getString = (fmi2GetStringTYPE *)getAdr(&s, h, "fmi2GetString");
+	fmu->setReal = (fmi2SetRealTYPE *)getAdr(&s, h, "fmi2SetReal");
+	fmu->setInteger = (fmi2SetIntegerTYPE *)getAdr(&s, h, "fmi2SetInteger");
+	fmu->setBoolean = (fmi2SetBooleanTYPE *)getAdr(&s, h, "fmi2SetBoolean");
+	fmu->setString = (fmi2SetStringTYPE *)getAdr(&s, h, "fmi2SetString");
+	fmu->getFMUstate = (fmi2GetFMUstateTYPE *)getAdr(&s, h, "fmi2GetFMUstate");
+	fmu->setFMUstate = (fmi2SetFMUstateTYPE *)getAdr(&s, h, "fmi2SetFMUstate");
+	fmu->freeFMUstate = (fmi2FreeFMUstateTYPE *)getAdr(&s, h, "fmi2FreeFMUstate");
+	fmu->serializedFMUstateSize = (fmi2SerializedFMUstateSizeTYPE *)getAdr(&s, h, "fmi2SerializedFMUstateSize");
+	fmu->serializeFMUstate = (fmi2SerializeFMUstateTYPE *)getAdr(&s, h, "fmi2SerializeFMUstate");
+	fmu->deSerializeFMUstate = (fmi2DeSerializeFMUstateTYPE *)getAdr(&s, h, "fmi2DeSerializeFMUstate");
+	fmu->getDirectionalDerivative = (fmi2GetDirectionalDerivativeTYPE *)getAdr(&s, h, "fmi2GetDirectionalDerivative");
 
 	if (type == FMI_MODEL_EXCHANGE) {
-		fmu.enterEventMode = (fmi2EnterEventModeTYPE *)getAdr(&s, h, "fmi2EnterEventMode");
-		fmu.newDiscreteStates = (fmi2NewDiscreteStatesTYPE *)getAdr(&s, h, "fmi2NewDiscreteStates");
-		fmu.enterContinuousTimeMode = (fmi2EnterContinuousTimeModeTYPE *)getAdr(&s, h, "fmi2EnterContinuousTimeMode");
-		fmu.completedIntegratorStep = (fmi2CompletedIntegratorStepTYPE *)getAdr(&s, h, "fmi2CompletedIntegratorStep");
-		fmu.setTime = (fmi2SetTimeTYPE *)getAdr(&s, h, "fmi2SetTime");
-		fmu.setContinuousStates = (fmi2SetContinuousStatesTYPE *)getAdr(&s, h, "fmi2SetContinuousStates");
-		fmu.getDerivatives = (fmi2GetDerivativesTYPE *)getAdr(&s, h, "fmi2GetDerivatives");
-		fmu.getEventIndicators = (fmi2GetEventIndicatorsTYPE *)getAdr(&s, h, "fmi2GetEventIndicators");
-		fmu.getContinuousStates = (fmi2GetContinuousStatesTYPE *)getAdr(&s, h, "fmi2GetContinuousStates");
-		fmu.getNominalsOfContinuousStates = (fmi2GetNominalsOfContinuousStatesTYPE *)getAdr(&s, h, "fmi2GetNominalsOfContinuousStates");
+		fmu->enterEventMode = (fmi2EnterEventModeTYPE *)getAdr(&s, h, "fmi2EnterEventMode");
+		fmu->newDiscreteStates = (fmi2NewDiscreteStatesTYPE *)getAdr(&s, h, "fmi2NewDiscreteStates");
+		fmu->enterContinuousTimeMode = (fmi2EnterContinuousTimeModeTYPE *)getAdr(&s, h, "fmi2EnterContinuousTimeMode");
+		fmu->completedIntegratorStep = (fmi2CompletedIntegratorStepTYPE *)getAdr(&s, h, "fmi2CompletedIntegratorStep");
+		fmu->setTime = (fmi2SetTimeTYPE *)getAdr(&s, h, "fmi2SetTime");
+		fmu->setContinuousStates = (fmi2SetContinuousStatesTYPE *)getAdr(&s, h, "fmi2SetContinuousStates");
+		fmu->getDerivatives = (fmi2GetDerivativesTYPE *)getAdr(&s, h, "fmi2GetDerivatives");
+		fmu->getEventIndicators = (fmi2GetEventIndicatorsTYPE *)getAdr(&s, h, "fmi2GetEventIndicators");
+		fmu->getContinuousStates = (fmi2GetContinuousStatesTYPE *)getAdr(&s, h, "fmi2GetContinuousStates");
+		fmu->getNominalsOfContinuousStates = (fmi2GetNominalsOfContinuousStatesTYPE *)getAdr(&s, h, "fmi2GetNominalsOfContinuousStates");
 	}
 	else if (type == FMI_COSIMULATION) {
-		fmu.setRealInputDerivatives = (fmi2SetRealInputDerivativesTYPE *)getAdr(&s, h, "fmi2SetRealInputDerivatives");
-		fmu.getRealOutputDerivatives = (fmi2GetRealOutputDerivativesTYPE *)getAdr(&s, h, "fmi2GetRealOutputDerivatives");
-		fmu.doStep = (fmi2DoStepTYPE *)getAdr(&s, h, "fmi2DoStep");
-		fmu.cancelStep = (fmi2CancelStepTYPE *)getAdr(&s, h, "fmi2CancelStep");
-		fmu.getStatus = (fmi2GetStatusTYPE *)getAdr(&s, h, "fmi2GetStatus");
-		fmu.getRealStatus = (fmi2GetRealStatusTYPE *)getAdr(&s, h, "fmi2GetRealStatus");
-		fmu.getIntegerStatus = (fmi2GetIntegerStatusTYPE *)getAdr(&s, h, "fmi2GetIntegerStatus");
-		fmu.getBooleanStatus = (fmi2GetBooleanStatusTYPE *)getAdr(&s, h, "fmi2GetBooleanStatus");
-		fmu.getStringStatus = (fmi2GetStringStatusTYPE *)getAdr(&s, h, "fmi2GetStringStatus");
+		fmu->setRealInputDerivatives = (fmi2SetRealInputDerivativesTYPE *)getAdr(&s, h, "fmi2SetRealInputDerivatives");
+		fmu->getRealOutputDerivatives = (fmi2GetRealOutputDerivativesTYPE *)getAdr(&s, h, "fmi2GetRealOutputDerivatives");
+		fmu->doStep = (fmi2DoStepTYPE *)getAdr(&s, h, "fmi2DoStep");
+		fmu->cancelStep = (fmi2CancelStepTYPE *)getAdr(&s, h, "fmi2CancelStep");
+		fmu->getStatus = (fmi2GetStatusTYPE *)getAdr(&s, h, "fmi2GetStatus");
+		fmu->getRealStatus = (fmi2GetRealStatusTYPE *)getAdr(&s, h, "fmi2GetRealStatus");
+		fmu->getIntegerStatus = (fmi2GetIntegerStatusTYPE *)getAdr(&s, h, "fmi2GetIntegerStatus");
+		fmu->getBooleanStatus = (fmi2GetBooleanStatusTYPE *)getAdr(&s, h, "fmi2GetBooleanStatus");
+		fmu->getStringStatus = (fmi2GetStringStatusTYPE *)getAdr(&s, h, "fmi2GetStringStatus");
 	}
 
-	if (fmu.getVersion == NULL && fmu.instantiate == NULL) {
+	if (fmu->getVersion == NULL && fmu->instantiate == NULL) {
 		//printf("warning: Functions from FMI 2.0 could not be found in %s\n", dllPath);
 		//printf("warning: Simulator will look for FMI 2.0 RC1 functions names...\n");
 		s = true;
-		fmu.getTypesPlatform = (fmi2GetTypesPlatformTYPE *)getAdr(&s, h, "fmiGetTypesPlatform");
-		fmu.getVersion = (fmi2GetVersionTYPE *)getAdr(&s, h, "fmiGetVersion");
-		fmu.setDebugLogging = (fmi2SetDebugLoggingTYPE *)getAdr(&s, h, "fmiSetDebugLogging");
-		fmu.instantiate = (fmi2InstantiateTYPE *)getAdr(&s, h, "fmiInstantiate");
-		fmu.freeInstance = (fmi2FreeInstanceTYPE *)getAdr(&s, h, "fmiFreeInstance");
-		fmu.setupExperiment = (fmi2SetupExperimentTYPE *)getAdr(&s, h, "fmiSetupExperiment");
-		fmu.enterInitializationMode = (fmi2EnterInitializationModeTYPE *)getAdr(&s, h, "fmiEnterInitializationMode");
-		fmu.exitInitializationMode = (fmi2ExitInitializationModeTYPE *)getAdr(&s, h, "fmiExitInitializationMode");
-		fmu.terminate = (fmi2TerminateTYPE *)getAdr(&s, h, "fmiTerminate");
-		fmu.reset = (fmi2ResetTYPE *)getAdr(&s, h, "fmiReset");
-		fmu.getReal = (fmi2GetRealTYPE *)getAdr(&s, h, "fmiGetReal");
-		fmu.getInteger = (fmi2GetIntegerTYPE *)getAdr(&s, h, "fmiGetInteger");
-		fmu.getBoolean = (fmi2GetBooleanTYPE *)getAdr(&s, h, "fmiGetBoolean");
-		fmu.getString = (fmi2GetStringTYPE *)getAdr(&s, h, "fmiGetString");
-		fmu.setReal = (fmi2SetRealTYPE *)getAdr(&s, h, "fmiSetReal");
-		fmu.setInteger = (fmi2SetIntegerTYPE *)getAdr(&s, h, "fmiSetInteger");
-		fmu.setBoolean = (fmi2SetBooleanTYPE *)getAdr(&s, h, "fmiSetBoolean");
-		fmu.setString = (fmi2SetStringTYPE *)getAdr(&s, h, "fmiSetString");
-		fmu.getFMUstate = (fmi2GetFMUstateTYPE *)getAdr(&s, h, "fmiGetFMUstate");
-		fmu.setFMUstate = (fmi2SetFMUstateTYPE *)getAdr(&s, h, "fmiSetFMUstate");
-		fmu.freeFMUstate = (fmi2FreeFMUstateTYPE *)getAdr(&s, h, "fmiFreeFMUstate");
-		fmu.serializedFMUstateSize = (fmi2SerializedFMUstateSizeTYPE *)getAdr(&s, h, "fmiSerializedFMUstateSize");
-		fmu.serializeFMUstate = (fmi2SerializeFMUstateTYPE *)getAdr(&s, h, "fmiSerializeFMUstate");
-		fmu.deSerializeFMUstate = (fmi2DeSerializeFMUstateTYPE *)getAdr(&s, h, "fmiDeSerializeFMUstate");
-		fmu.getDirectionalDerivative = (fmi2GetDirectionalDerivativeTYPE *)getAdr(&s, h, "fmiGetDirectionalDerivative");
+		fmu->getTypesPlatform = (fmi2GetTypesPlatformTYPE *)getAdr(&s, h, "fmiGetTypesPlatform");
+		fmu->getVersion = (fmi2GetVersionTYPE *)getAdr(&s, h, "fmiGetVersion");
+		fmu->setDebugLogging = (fmi2SetDebugLoggingTYPE *)getAdr(&s, h, "fmiSetDebugLogging");
+		fmu->instantiate = (fmi2InstantiateTYPE *)getAdr(&s, h, "fmiInstantiate");
+		fmu->freeInstance = (fmi2FreeInstanceTYPE *)getAdr(&s, h, "fmiFreeInstance");
+		fmu->setupExperiment = (fmi2SetupExperimentTYPE *)getAdr(&s, h, "fmiSetupExperiment");
+		fmu->enterInitializationMode = (fmi2EnterInitializationModeTYPE *)getAdr(&s, h, "fmiEnterInitializationMode");
+		fmu->exitInitializationMode = (fmi2ExitInitializationModeTYPE *)getAdr(&s, h, "fmiExitInitializationMode");
+		fmu->terminate = (fmi2TerminateTYPE *)getAdr(&s, h, "fmiTerminate");
+		fmu->reset = (fmi2ResetTYPE *)getAdr(&s, h, "fmiReset");
+		fmu->getReal = (fmi2GetRealTYPE *)getAdr(&s, h, "fmiGetReal");
+		fmu->getInteger = (fmi2GetIntegerTYPE *)getAdr(&s, h, "fmiGetInteger");
+		fmu->getBoolean = (fmi2GetBooleanTYPE *)getAdr(&s, h, "fmiGetBoolean");
+		fmu->getString = (fmi2GetStringTYPE *)getAdr(&s, h, "fmiGetString");
+		fmu->setReal = (fmi2SetRealTYPE *)getAdr(&s, h, "fmiSetReal");
+		fmu->setInteger = (fmi2SetIntegerTYPE *)getAdr(&s, h, "fmiSetInteger");
+		fmu->setBoolean = (fmi2SetBooleanTYPE *)getAdr(&s, h, "fmiSetBoolean");
+		fmu->setString = (fmi2SetStringTYPE *)getAdr(&s, h, "fmiSetString");
+		fmu->getFMUstate = (fmi2GetFMUstateTYPE *)getAdr(&s, h, "fmiGetFMUstate");
+		fmu->setFMUstate = (fmi2SetFMUstateTYPE *)getAdr(&s, h, "fmiSetFMUstate");
+		fmu->freeFMUstate = (fmi2FreeFMUstateTYPE *)getAdr(&s, h, "fmiFreeFMUstate");
+		fmu->serializedFMUstateSize = (fmi2SerializedFMUstateSizeTYPE *)getAdr(&s, h, "fmiSerializedFMUstateSize");
+		fmu->serializeFMUstate = (fmi2SerializeFMUstateTYPE *)getAdr(&s, h, "fmiSerializeFMUstate");
+		fmu->deSerializeFMUstate = (fmi2DeSerializeFMUstateTYPE *)getAdr(&s, h, "fmiDeSerializeFMUstate");
+		fmu->getDirectionalDerivative = (fmi2GetDirectionalDerivativeTYPE *)getAdr(&s, h, "fmiGetDirectionalDerivative");
 		if (type == FMI_MODEL_EXCHANGE) {
-			fmu.enterEventMode = (fmi2EnterEventModeTYPE *)getAdr(&s, h, "fmiEnterEventMode");
-			fmu.newDiscreteStates = (fmi2NewDiscreteStatesTYPE *)getAdr(&s, h, "fmiNewDiscreteStates");
-			fmu.enterContinuousTimeMode = (fmi2EnterContinuousTimeModeTYPE *)getAdr(&s, h, "fmiEnterContinuousTimeMode");
-			fmu.completedIntegratorStep = (fmi2CompletedIntegratorStepTYPE *)getAdr(&s, h, "fmiCompletedIntegratorStep");
-			fmu.setTime = (fmi2SetTimeTYPE *)getAdr(&s, h, "fmiSetTime");
-			fmu.setContinuousStates = (fmi2SetContinuousStatesTYPE *)getAdr(&s, h, "fmiSetContinuousStates");
-			fmu.getDerivatives = (fmi2GetDerivativesTYPE *)getAdr(&s, h, "fmiGetDerivatives");
-			fmu.getEventIndicators = (fmi2GetEventIndicatorsTYPE *)getAdr(&s, h, "fmiGetEventIndicators");
-			fmu.getContinuousStates = (fmi2GetContinuousStatesTYPE *)getAdr(&s, h, "fmiGetContinuousStates");
-			fmu.getNominalsOfContinuousStates = (fmi2GetNominalsOfContinuousStatesTYPE *)getAdr(&s, h, "fmiGetNominalsOfContinuousStates");
+			fmu->enterEventMode = (fmi2EnterEventModeTYPE *)getAdr(&s, h, "fmiEnterEventMode");
+			fmu->newDiscreteStates = (fmi2NewDiscreteStatesTYPE *)getAdr(&s, h, "fmiNewDiscreteStates");
+			fmu->enterContinuousTimeMode = (fmi2EnterContinuousTimeModeTYPE *)getAdr(&s, h, "fmiEnterContinuousTimeMode");
+			fmu->completedIntegratorStep = (fmi2CompletedIntegratorStepTYPE *)getAdr(&s, h, "fmiCompletedIntegratorStep");
+			fmu->setTime = (fmi2SetTimeTYPE *)getAdr(&s, h, "fmiSetTime");
+			fmu->setContinuousStates = (fmi2SetContinuousStatesTYPE *)getAdr(&s, h, "fmiSetContinuousStates");
+			fmu->getDerivatives = (fmi2GetDerivativesTYPE *)getAdr(&s, h, "fmiGetDerivatives");
+			fmu->getEventIndicators = (fmi2GetEventIndicatorsTYPE *)getAdr(&s, h, "fmiGetEventIndicators");
+			fmu->getContinuousStates = (fmi2GetContinuousStatesTYPE *)getAdr(&s, h, "fmiGetContinuousStates");
+			fmu->getNominalsOfContinuousStates = (fmi2GetNominalsOfContinuousStatesTYPE *)getAdr(&s, h, "fmiGetNominalsOfContinuousStates");
 		}
 		else if (type == FMI_COSIMULATION) {
-			fmu.setRealInputDerivatives = (fmi2SetRealInputDerivativesTYPE *)getAdr(&s, h, "fmiSetRealInputDerivatives");
-			fmu.getRealOutputDerivatives = (fmi2GetRealOutputDerivativesTYPE *)getAdr(&s, h, "fmiGetRealOutputDerivatives");
-			fmu.doStep = (fmi2DoStepTYPE *)getAdr(&s, h, "fmiDoStep");
-			fmu.cancelStep = (fmi2CancelStepTYPE *)getAdr(&s, h, "fmiCancelStep");
-			fmu.getStatus = (fmi2GetStatusTYPE *)getAdr(&s, h, "fmiGetStatus");
-			fmu.getRealStatus = (fmi2GetRealStatusTYPE *)getAdr(&s, h, "fmiGetRealStatus");
-			fmu.getIntegerStatus = (fmi2GetIntegerStatusTYPE *)getAdr(&s, h, "fmiGetIntegerStatus");
-			fmu.getBooleanStatus = (fmi2GetBooleanStatusTYPE *)getAdr(&s, h, "fmiGetBooleanStatus");
-			fmu.getStringStatus = (fmi2GetStringStatusTYPE *)getAdr(&s, h, "fmiGetStringStatus");
+			fmu->setRealInputDerivatives = (fmi2SetRealInputDerivativesTYPE *)getAdr(&s, h, "fmiSetRealInputDerivatives");
+			fmu->getRealOutputDerivatives = (fmi2GetRealOutputDerivativesTYPE *)getAdr(&s, h, "fmiGetRealOutputDerivatives");
+			fmu->doStep = (fmi2DoStepTYPE *)getAdr(&s, h, "fmiDoStep");
+			fmu->cancelStep = (fmi2CancelStepTYPE *)getAdr(&s, h, "fmiCancelStep");
+			fmu->getStatus = (fmi2GetStatusTYPE *)getAdr(&s, h, "fmiGetStatus");
+			fmu->getRealStatus = (fmi2GetRealStatusTYPE *)getAdr(&s, h, "fmiGetRealStatus");
+			fmu->getIntegerStatus = (fmi2GetIntegerStatusTYPE *)getAdr(&s, h, "fmiGetIntegerStatus");
+			fmu->getBooleanStatus = (fmi2GetBooleanStatusTYPE *)getAdr(&s, h, "fmiGetBooleanStatus");
+			fmu->getStringStatus = (fmi2GetStringStatusTYPE *)getAdr(&s, h, "fmiGetStringStatus");
 		}
 	}
 	return s;
@@ -278,14 +302,15 @@ void* FMISupport::getAdr(bool *success, HMODULE dllHandle, const char *functionN
 	return fp;
 }
 
+
 void FMISupport::unLoad() {
-	fmu.terminate(c);
-	fmu.freeInstance(c);
-	FreeLibrary(fmu.dllHandle);
-	freeModelDescription(fmu.modelDescription);
+	fmu0.terminate(c);
+	fmu0.freeInstance(c);
+	FreeLibrary(fmu0.dllHandle);
+	freeModelDescription(fmu0.modelDescription);
 	ostringstream ss;
 	string str;
-	ss << "rmdir /S /Q " << currentDir << OUT_PATH;
+	//ss << "rmdir /S /Q " << currentDir << OUT_PATH;
 	str = ss.str();
 	system(str.c_str());
 }
@@ -296,7 +321,7 @@ bool FMISupport::simulateByCs(
 	double h,
 	int nCategories,
 	char **categories) {
-	ModelDescription* md = fmu.modelDescription;
+	ModelDescription* md = fmu0.modelDescription;
 	//获取信息
 	const char* guid = getAttributeValue((Element*)md, att_guid);
 	const char *instanceName = getAttributeValue((Element*)getCoSimulation(md), att_modelIdentifier);
@@ -304,17 +329,17 @@ bool FMISupport::simulateByCs(
 	ostringstream ss;
 	string str;
 
-	ss << currentDir << OUT_PATH << "resources\\";
+	//ss << currentDir << OUT_PATH << "resources\\";
 	str = ss.str();
 
 	//回调
-	fmi2CallbackFunctions callbacks = { fmuLogger, calloc, free, NULL, &fmu };
+	fmi2CallbackFunctions callbacks = { fmuLogger, calloc, free, NULL, &fmu0 };
 
 	//是否有可视化组件
 	fmi2Boolean visible = fmi2False;
 
 	//最后一项为loggingOn
-	c = fmu.instantiate(instanceName, fmi2CoSimulation, guid, str.c_str(), &callbacks, visible, true);
+	c = fmu0.instantiate(instanceName, fmi2CoSimulation, guid, str.c_str(), &callbacks, visible, true);
 
 	if (!c) {
 		emit postUIMsg("could not instantiate model");
@@ -322,7 +347,7 @@ bool FMISupport::simulateByCs(
 	}
 
 	if (nCategories > 0) {
-		fmi2Status fmi2Flag = fmu.setDebugLogging(c, fmi2True, nCategories, categories);
+		fmi2Status fmi2Flag = fmu0.setDebugLogging(c, fmi2True, nCategories, categories);
 		if (fmi2Flag > fmi2Warning) {
 			emit postUIMsg("failed FMI set debug logging");
 			return false;
@@ -341,19 +366,19 @@ bool FMISupport::simulateByCs(
 		}
 	}
 
-	fmi2Status fmi2Flag = fmu.setupExperiment(c, toleranceDefined, tolerance, tStart, fmi2True, tEnd);
+	fmi2Status fmi2Flag = fmu0.setupExperiment(c, toleranceDefined, tolerance, tStart, fmi2True, tEnd);
 	if (fmi2Flag > fmi2Warning) {
 		emit postUIMsg("failed FMI setup experiment");
 		return false;
 	}
 
-	fmi2Flag = fmu.enterInitializationMode(c);
+	fmi2Flag = fmu0.enterInitializationMode(c);
 	if (fmi2Flag > fmi2Warning) {
 		emit postUIMsg("failed FMI enter initialization mode");
 		return false;
 	}
 
-	fmi2Flag = fmu.exitInitializationMode(c);
+	fmi2Flag = fmu0.exitInitializationMode(c);
 	if (fmi2Flag > fmi2Warning) {
 		emit postUIMsg("failed FMI exit initialization mode");
 		return false;
@@ -377,10 +402,10 @@ bool FMISupport::simulateByCs(
 		if (h > tEnd - time) {
 			hh = tEnd - time;
 		}
-		fmi2Flag = fmu.doStep(c, time, hh, fmi2True);
+		fmi2Flag = fmu0.doStep(c, time, hh, fmi2True);
 		if (fmi2Flag == fmi2Discard) {
 			fmi2Boolean b;
-			if (fmi2OK != fmu.getBooleanStatus(c, fmi2Terminated, &b)) {
+			if (fmi2OK != fmu0.getBooleanStatus(c, fmi2Terminated, &b)) {
 				emit postUIMsg(
 					"could not complete simulation of the model. getBooleanStatus return other than fmi2OK");
 				return false;
@@ -428,7 +453,7 @@ bool FMISupport::simulateByMe(
 
 	bool loggingOn = true;
 
-	ModelDescription* md = fmu.modelDescription;
+	ModelDescription* md = fmu0.modelDescription;
 	//获取信息
 	const char* guid = getAttributeValue((Element*)md, att_guid);
 	const char* instanceName = getAttributeValue((Element*)getModelExchange(md), att_modelIdentifier);
@@ -436,24 +461,24 @@ bool FMISupport::simulateByMe(
 	ostringstream ss;
 	string str;
 
-	ss << currentDir << OUT_PATH << "resources\\";
+	//ss << currentDir << OUT_PATH << "resources\\";
 	str = ss.str();
 
 	//回调 
-	fmi2CallbackFunctions callbacks = { fmuLogger, calloc, free, NULL, &fmu };
+	fmi2CallbackFunctions callbacks = { fmuLogger, calloc, free, NULL, &fmu0 };
 
 	//无可视化组件
 	fmi2Boolean visible = fmi2False;
 
 	//最后一项为loggingOn
-	fmi2Component c = fmu.instantiate(instanceName, fmi2ModelExchange, guid, str.c_str(), &callbacks, visible, loggingOn);
+	fmi2Component c = fmu0.instantiate(instanceName, fmi2ModelExchange, guid, str.c_str(), &callbacks, visible, loggingOn);
 	if (!c) {
 		emit postUIMsg("could not instantiate model");
 		return false;
 	}
 
 	if (nCategories > 0) {
-		fmi2Status fmi2Flag = fmu.setDebugLogging(c, fmi2True, nCategories, categories);
+		fmi2Status fmi2Flag = fmu0.setDebugLogging(c, fmi2True, nCategories, categories);
 		if (fmi2Flag > fmi2Warning) {
 			emit postUIMsg("failed FMI set debug logging");
 			return 0;
@@ -487,19 +512,19 @@ bool FMISupport::simulateByMe(
 	fmi2Boolean toleranceDefined = fmi2False;
 	fmi2Real tolerance = 0;
 	//准备
-	fmi2Status fmi2Flag = fmu.setupExperiment(c, toleranceDefined, tolerance, tStart, fmi2True, tEnd);
+	fmi2Status fmi2Flag = fmu0.setupExperiment(c, toleranceDefined, tolerance, tStart, fmi2True, tEnd);
 	if (fmi2Flag > fmi2Warning) {
 		emit postUIMsg("failed FMI setup experiment");
 		return false;
 	}
 
 	//模型初始化
-	fmi2Flag = fmu.enterInitializationMode(c);
+	fmi2Flag = fmu0.enterInitializationMode(c);
 	if (fmi2Flag > fmi2Warning) {
 		emit postUIMsg("failed FMI enter initialization mode");
 		return false;
 	}
-	fmi2Flag = fmu.exitInitializationMode(c);
+	fmi2Flag = fmu0.exitInitializationMode(c);
 	if (fmi2Flag > fmi2Warning) {
 		emit postUIMsg("failed FMI exit initialization mode");
 		return false;
@@ -510,7 +535,7 @@ bool FMISupport::simulateByMe(
 	eventInfo.newDiscreteStatesNeeded = fmi2True;
 	eventInfo.terminateSimulation = fmi2False;
 	while (eventInfo.newDiscreteStatesNeeded && !eventInfo.terminateSimulation) {
-		fmi2Flag = fmu.newDiscreteStates(c, &eventInfo);
+		fmi2Flag = fmu0.newDiscreteStates(c, &eventInfo);
 		if (fmi2Flag > fmi2Warning) {
 			emit postUIMsg("could not set a new discrete state");
 			return 0;
@@ -535,19 +560,19 @@ bool FMISupport::simulateByMe(
 		emit postUIMsg("model requested termination at t = " + QString::number(time));
 	}
 	else {
-		fmu.enterContinuousTimeMode(c);
+		fmu0.enterContinuousTimeMode(c);
 		outputData(dataFile, tStart, true);
 		outputData(dataFile, tStart, false);
 
 		while (time < tEnd) {
 			//1.获取当前状态
-			fmi2Flag = fmu.getContinuousStates(c, x, nx);
+			fmi2Flag = fmu0.getContinuousStates(c, x, nx);
 			if (fmi2Flag > fmi2Warning) {
 				emit postUIMsg("could not retrieve states");
 				return false;
 			}
 			//2.获取状态导数
-			fmi2Flag = fmu.getDerivatives(c, xdot, nx);
+			fmi2Flag = fmu0.getDerivatives(c, xdot, nx);
 			if (fmi2Flag > fmi2Warning) {
 				emit postUIMsg("could not retrieve derivatives");
 				return false;
@@ -560,7 +585,7 @@ bool FMISupport::simulateByMe(
 				time = eventInfo.nextEventTime;
 			}
 			dt = time - tPre;
-			fmi2Flag = fmu.setTime(c, time);
+			fmi2Flag = fmu0.setTime(c, time);
 			if (fmi2Flag > fmi2Warning) {
 				emit postUIMsg("could not set time");
 				return false;
@@ -570,7 +595,7 @@ bool FMISupport::simulateByMe(
 				//欧拉折线
 				x[i] += dt * xdot[i];
 			}
-			fmi2Flag = fmu.setContinuousStates(c, x, nx);
+			fmi2Flag = fmu0.setContinuousStates(c, x, nx);
 			if (fmi2Flag > fmi2Warning) {
 				emit postUIMsg("could not set states");
 				return false;
@@ -582,7 +607,7 @@ bool FMISupport::simulateByMe(
 			for (int i = 0; i < nz; i++) {
 				prez[i] = z[i];
 			}
-			fmi2Flag = fmu.getEventIndicators(c, z, nz);
+			fmi2Flag = fmu0.getEventIndicators(c, z, nz);
 			if (fmi2Flag > fmi2Warning) {
 				emit postUIMsg("could not retrieve event indicators");
 				return false;
@@ -592,7 +617,7 @@ bool FMISupport::simulateByMe(
 				stateEvent = stateEvent || (prez[i] * z[i] < 0);
 			}
 			//6.检查步进事件
-			fmi2Flag = fmu.completedIntegratorStep(c, fmi2True, &stepEvent, &terminateSimulation);
+			fmi2Flag = fmu0.completedIntegratorStep(c, fmi2True, &stepEvent, &terminateSimulation);
 			if (fmi2Flag > fmi2Warning) {
 				emit postUIMsg("could not complete integrator step");
 				return false;
@@ -603,7 +628,7 @@ bool FMISupport::simulateByMe(
 			}
 			//7.处理事件
 			if (timeEvent || stateEvent || stepEvent) {
-				fmu.enterEventMode(c);
+				fmu0.enterEventMode(c);
 				if (timeEvent) {
 					nTimeEvents++;
 					if (loggingOn) {
@@ -628,7 +653,7 @@ bool FMISupport::simulateByMe(
 				eventInfo.newDiscreteStatesNeeded = fmi2True;
 				eventInfo.terminateSimulation = fmi2False;
 				while (eventInfo.newDiscreteStatesNeeded && !eventInfo.terminateSimulation) {
-					fmi2Flag = fmu.newDiscreteStates(c, &eventInfo);
+					fmi2Flag = fmu0.newDiscreteStates(c, &eventInfo);
 					if (fmi2Flag > fmi2Warning) {
 						emit postUIMsg("could not set a new discrete state");
 						return false;
@@ -644,7 +669,7 @@ bool FMISupport::simulateByMe(
 					emit postUIMsg("model requested termination at t=" + QString::number(time));
 					break;
 				}
-				fmu.enterContinuousTimeMode(c);
+				fmu0.enterContinuousTimeMode(c);
 			}
 			outputData(dataFile, time, false);
 			nSteps++;
@@ -688,8 +713,8 @@ void FMISupport::outputData(ofstream& file, double time, bool isHeader) {
 	else {
 		file << time;
 	}
-	for (int k = 0; k < getScalarVariableSize(fmu.modelDescription); ++k) {
-		ScalarVariable *sv = getScalarVariable(fmu.modelDescription, k);
+	for (int k = 0; k < getScalarVariableSize(fmu0.modelDescription); ++k) {
+		ScalarVariable *sv = getScalarVariable(fmu0.modelDescription, k);
 		if (isHeader) {
 			const char *s = getAttributeValue((Element*)sv, att_name);
 			file << ",";
@@ -706,23 +731,23 @@ void FMISupport::outputData(ofstream& file, double time, bool isHeader) {
 			switch (getElementType(getTypeSpec(sv))) {
 			case elm_Real:
 				fmi2Real r;
-				fmu.getReal(c, &vr, 1, &r);
+				fmu0.getReal(c, &vr, 1, &r);
 				file << "," << r;
 				break;
 			case elm_Integer:
 			case elm_Enumeration:
 				fmi2Integer i;
-				fmu.getInteger(c, &vr, 1, &i);
+				fmu0.getInteger(c, &vr, 1, &i);
 				file << "," << i;
 				break;
 			case elm_Boolean:
 				fmi2Boolean b;
-				fmu.getBoolean(c, &vr, 1, &b);
+				fmu0.getBoolean(c, &vr, 1, &b);
 				file << "," << b;
 				break;
 			case elm_String:
 				fmi2String s;
-				fmu.getString(c, &vr, 1, &s);
+				fmu0.getString(c, &vr, 1, &s);
 				file << "," << s;
 				break;
 			default:
@@ -774,7 +799,7 @@ void fmuLogger(
 }
 // replace e.g. #r1365# by variable name and ## by # in message
 // copies the result to buffer
-void replaceRefsInMessage(const char* msg, char* buffer, int nBuffer, FMU* fmu) {
+void replaceRefsInMessage(const char* msg, char* buffer, int nBuffer, FMU* fmu0) {
 	int i = 0; // position in msg
 	int k = 0; // position in buffer
 	int n;
@@ -816,7 +841,7 @@ void replaceRefsInMessage(const char* msg, char* buffer, int nBuffer, FMU* fmu) 
 				int nvr = sscanf(msg + i + 2, "%u", &vr);
 				if (nvr == 1) {
 					// vr of type detected, e.g. #r12#
-					ScalarVariable* sv = getSV(fmu, type, vr);
+					ScalarVariable* sv = getSV(fmu0, type, vr);
 					const char* name = sv ? getAttributeValue((Element *)sv, att_name) : "?";
 					sprintf(buffer + k, "%s", name);
 					k += strlen(name);
@@ -842,9 +867,9 @@ void replaceRefsInMessage(const char* msg, char* buffer, int nBuffer, FMU* fmu) 
 }
 // search a fmu for the given variable, matching the type specified.
 // return NULL if not found
-ScalarVariable* getSV(FMU* fmu, char type, fmi2ValueReference vr) {
+ScalarVariable* getSV(FMU* fmu0, char type, fmi2ValueReference vr) {
 	int i;
-	int n = getScalarVariableSize(fmu->modelDescription);
+	int n = getScalarVariableSize(fmu0->modelDescription);
 	Elm tp;
 
 	switch (type) {
@@ -855,7 +880,7 @@ ScalarVariable* getSV(FMU* fmu, char type, fmi2ValueReference vr) {
 	default: tp = elm_BAD_DEFINED;
 	}
 	for (i = 0; i < n; i++) {
-		ScalarVariable* sv = getScalarVariable(fmu->modelDescription, i);
+		ScalarVariable* sv = getScalarVariable(fmu0->modelDescription, i);
 		if (vr == getValueReference(sv) && tp == getElementType(getTypeSpec(sv))) {
 			return sv;
 		}

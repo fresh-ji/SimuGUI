@@ -16,6 +16,12 @@ CentralLabel::CentralLabel(QWidget *p) : QLabel(p) {
 	//无被选中模型
 	activeModel = NULL;
 
+	//初始文件选择路径
+	openPath = QDir::currentPath();
+
+	//fmi
+	FMIsupport = new FMISupport();
+
 	//添加功能栏
 	addToolBar();
 }
@@ -157,10 +163,10 @@ void CentralLabel::addToolBar() {
 
 void CentralLabel::slotOpen() {
 	QString title = "select FMU file";
-	QString curPath = QDir::currentPath();
 	QString filter = "FMU File(*.fmu)";
 
-	QString modelPath = QFileDialog::getOpenFileName(this, title, curPath, filter);
+	QString modelPath = QFileDialog::getOpenFileName(this, title, openPath, filter);
+	openPath = modelPath;
 
 	if (!modelPath.isEmpty()) {
 		QString name = modelPath.section('/', -1);
@@ -169,6 +175,14 @@ void CentralLabel::slotOpen() {
 			emit signalSendMessage("Model Already Imported");
 			return;
 		}
+
+		//看是不是正确的FMU
+		FMUInfo info = FMIsupport->loadFMU(modelPath);
+		if (!info.isSuccess) {
+			signalSendMessage(info.message);
+			return;
+		}
+		modelRepo.insert(modelPath, info);
 
 		QPixmap *pixmap = new QPixmap("./Icon/simutool/fmi");
 		ItemElement *item = new ItemElement(pixmap, name, "FMU", 0, this);
@@ -183,7 +197,6 @@ void CentralLabel::slotOpen() {
 
 		modelMap.insert(modelPath, item);
 	}
-
 }
 
 void CentralLabel::slotUndo() {

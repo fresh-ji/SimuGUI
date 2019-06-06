@@ -11,6 +11,7 @@
 #include "cwidgets.h"
 #include "fancybutton.h"
 #include "ItemElement.h"
+#include "FMISupport.h"
 
 class CentralLabel : public QLabel {
 
@@ -42,8 +43,14 @@ private slots:
 signals:
 	//向ui发送消息
 	void signalSendMessage(QString);
+signals:
+	//向DetailStack发送要显示的
+	void signalModelDetail();
 
 private:
+	//模型库
+	QMap<QString, FMUInfo> modelRepo;
+
 	//模型列表
 	QMap<QString, ItemElement*> modelMap;
 	//被选中模型
@@ -51,6 +58,12 @@ private:
 
 	//拖动时的相对起始坐标
 	QPoint moveStartPoint;
+
+	//选择文件时的初始路径
+	QString openPath;
+
+	//整fmu的
+	FMISupport *FMIsupport;
 };
 
 #endif // CENTRALLABEL_H

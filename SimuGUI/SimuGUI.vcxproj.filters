@@ -116,11 +116,14 @@
     <Filter Include="FMI\PlotStack">
       <UniqueIdentifier>{14f218cb-096e-4025-81f0-a9879ae0f3db}</UniqueIdentifier>
     </Filter>
-    <Filter Include="FMI\Support">
-      <UniqueIdentifier>{4e737050-e306-4c1d-90c2-ac97d323d890}</UniqueIdentifier>
-    </Filter>
     <Filter Include="FMI\CentralLabel">
       <UniqueIdentifier>{5e8e2941-4e1a-474c-8c71-4a8202104e21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FMI\FMISupport">
+      <UniqueIdentifier>{5e34437e-0964-4184-849c-a4038accfee5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FMI\XmlImpl">
+      <UniqueIdentifier>{4e737050-e306-4c1d-90c2-ac97d323d890}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -329,9 +332,6 @@
     <QtMoc Include="FMI\Header Files\FMISimulator.h">
       <Filter>FMI\ui</Filter>
     </QtMoc>
-    <QtMoc Include="FMI\Header Files\FMISupport.h">
-      <Filter>FMI\Support</Filter>
-    </QtMoc>
     <QtMoc Include="FMI\Header Files\CentralLabel.h">
       <Filter>FMI\CentralLabel</Filter>
     </QtMoc>
@@ -340,6 +340,9 @@
     </QtMoc>
     <QtMoc Include="FMI\Header Files\PlotStack.h">
       <Filter>FMI\PlotStack</Filter>
+    </QtMoc>
+    <QtMoc Include="FMI\Header Files\FMISupport.h">
+      <Filter>FMI\FMISupport</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -517,19 +520,16 @@
       <Filter>FMI\ui</Filter>
     </ClCompile>
     <ClCompile Include="FMI\Source Files\xmlVersionParser.c">
-      <Filter>FMI\Support</Filter>
+      <Filter>FMI\XmlImpl</Filter>
     </ClCompile>
     <ClCompile Include="FMI\Source Files\XmlParserCApi.cpp">
-      <Filter>FMI\Support</Filter>
+      <Filter>FMI\XmlImpl</Filter>
     </ClCompile>
     <ClCompile Include="FMI\Source Files\XmlParser.cpp">
-      <Filter>FMI\Support</Filter>
+      <Filter>FMI\XmlImpl</Filter>
     </ClCompile>
     <ClCompile Include="FMI\Source Files\XmlElement.cpp">
-      <Filter>FMI\Support</Filter>
-    </ClCompile>
-    <ClCompile Include="FMI\Source Files\FMISupport.cpp">
-      <Filter>FMI\Support</Filter>
+      <Filter>FMI\XmlImpl</Filter>
     </ClCompile>
     <ClCompile Include="FMI\Source Files\CentralLabel.cpp">
       <Filter>FMI\CentralLabel</Filter>
@@ -539,6 +539,9 @@
     </ClCompile>
     <ClCompile Include="FMI\Source Files\PlotStack.cpp">
       <Filter>FMI\PlotStack</Filter>
+    </ClCompile>
+    <ClCompile Include="FMI\Source Files\FMISupport.cpp">
+      <Filter>FMI\FMISupport</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

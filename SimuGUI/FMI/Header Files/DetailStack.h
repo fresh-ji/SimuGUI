@@ -17,10 +17,12 @@ class DetailStack :public MiniStack {
 	Q_OBJECT
 
 public:
-
 	explicit DetailStack(QWidget *p = 0);
-
 	~DetailStack() {};
+
+public slots:
+	void slotModelDetail();
+
 };
 
 #endif // DETAILSTACK_H

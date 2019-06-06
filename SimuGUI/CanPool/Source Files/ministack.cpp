@@ -343,4 +343,10 @@ void MiniStack::setTabSelectedTextColor(const QColor &color)
     d->setTabColor();
 }
 
+//by jh
+void MiniStack::setTitleHeight(int height) {
+	d->m_pTitleWidget->setFixedHeight(height);
+}
+
+
 #include "ministack.moc"

@@ -87,6 +87,9 @@ public:
     void setTabSelectedBackgroundColor(const QColor &color);
     void setTabSelectedTextColor(const QColor &color);
 
+	//by jh
+	void setTitleHeight(int);
+
 signals:
     void sigSetupClicked();
 
