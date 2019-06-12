@@ -16,7 +16,7 @@
 
 #include <libxml/xmlreader.h>
 
-//#include "ErrorLog.h"
+#include "ErrorLog.h"
 
 #ifdef _MSC_VER
 #pragma comment(lib, "libxml2.lib")

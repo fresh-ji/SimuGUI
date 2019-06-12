@@ -41,13 +41,13 @@ void Element::printElement(int indent) {
 
 	char msg[512];
 	sprintf(msg, "[INFO] %s%s", indentS.c_str(), XmlParser::elmNames[type]);
-	//LOG::logToSystem(msg);
+	LOG::logToSystem(msg);
 
     for (std::map<XmlParser::Att, char *>::const_iterator it = attributes.begin(); it != attributes.end(); ++it) {
 
 		char msg2[512];
 		sprintf(msg2, "[INFO] %s%s=%s", indentS.c_str(), XmlParser::attNames[it->first], it->second);
-		//LOG::logToSystem(msg2);
+		LOG::logToSystem(msg2);
 
     }
 }

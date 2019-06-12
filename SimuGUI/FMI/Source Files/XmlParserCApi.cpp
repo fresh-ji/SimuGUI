@@ -204,7 +204,7 @@ const char **getAttributesAsArray(Element *el, int *n) {
     if (!result) {
 		char msg[512];
 		sprintf(msg, "[FATAL] Out of memory");
-		//LOG::logToSystem(msg);
+		LOG::logToSystem(msg);
         n = 0;
         return NULL;
     }

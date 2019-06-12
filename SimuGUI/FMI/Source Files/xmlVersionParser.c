@@ -8,6 +8,7 @@
  * Author: Adrian Tirea
  * ---------------------------------------------------------------------------*/
 
+#include <string.h>
 #define checkStrdup(str) strdup(str)
 #define BOOL int
 #define TRUE 1
@@ -15,7 +16,6 @@
 
 #include <libxml/xmlreader.h>
 #include "xmlVersionParser.h"
-#include "ErrorLog.h"
 
 // Element and attribute that identify the fmiVersion.
 #define ELM_fmiModelDescription_NAME "fmiModelDescription"
@@ -43,6 +43,9 @@ static char *extractFmiVersionAttribute(xmlTextReaderPtr xmlReader) {
 
 // The receiver must free the return.
 static char *streamFile(const char *xmlPath) {
+
+	FILE *fp = fopen(".\\FMI\\error.log", "a+");
+
     xmlTextReaderPtr xmlReader;
     char *fmiVersion = NULL;
     xmlReader = xmlReaderForFile(xmlPath, NULL, 0);
@@ -53,22 +56,28 @@ static char *streamFile(const char *xmlPath) {
 				char msg[512];
 				sprintf(msg, "[ERROR] Expected '%s' element. Found instead: '%s'",
 					ELM_fmiModelDescription_NAME, xmlTextReaderConstLocalName(xmlReader));
-				//LOG::logToSystem(msg);
+				//fprintf(fp, msg);
+				fprintf(fp, "s2");
             } else {
                 fmiVersion = extractFmiVersionAttribute(xmlReader);
             }
         } else {
 			char msg[512];
 			sprintf(msg, "[ERROR] Syntax error parsing xml file '%s'", xmlPath);
-			//LOG::logToSystem(msg);
+			//fprintf(fp, msg);
+			fprintf(fp, "s1");
         }
 		//edit by jh
         //xmlFreeTextReader(xmlReader);
     } else {
 		char msg[512];
 		sprintf(msg, "[ERROR] Cannot open file '%s'", xmlPath);
-		//logToSystem(msg);
+		//fprintf(fp, msg);
+		fprintf(fp, "s3");
     }
+
+	fclose(fp);
+
     return fmiVersion;
 }
 

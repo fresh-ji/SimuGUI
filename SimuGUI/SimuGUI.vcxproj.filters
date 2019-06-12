@@ -125,9 +125,6 @@
     <Filter Include="FMI\XmlImpl">
       <UniqueIdentifier>{4e737050-e306-4c1d-90c2-ac97d323d890}</UniqueIdentifier>
     </Filter>
-    <Filter Include="FMI\XmlImpl\ErrorLog">
-      <UniqueIdentifier>{5f5a87da-1cd0-496e-8f30-f70c7342d60f}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="SimuGUI.ui">
@@ -385,8 +382,8 @@
     <ClInclude Include="FMI\Header Files\xmlVersionParser.h">
       <Filter>FMI\XmlImpl</Filter>
     </ClInclude>
-    <ClInclude Include="ErrorLog.h">
-      <Filter>FMI\XmlImpl\ErrorLog</Filter>
+    <ClInclude Include="FMI\Header Files\ErrorLog.h">
+      <Filter>FMI\XmlImpl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

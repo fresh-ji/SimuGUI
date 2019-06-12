@@ -8,7 +8,6 @@
 #include <ctime>
 #include <iomanip>
 
-
 class LOG {
 public:
 	static void logToSystem(const char* message) {
