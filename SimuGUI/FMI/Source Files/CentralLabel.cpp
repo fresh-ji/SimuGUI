@@ -204,11 +204,9 @@ void CentralLabel::slotUndo() {
 }
 
 void CentralLabel::slotRedo() {
-
 }
 
 void CentralLabel::slotGrid() {
-
 }
 
 void CentralLabel::slotDelete() {

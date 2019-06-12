@@ -9,17 +9,10 @@
  * ---------------------------------------------------------------------------*/
 
 #include "XmlParserCApi.h"
-#include "fmu20/XmlParser.h"
-#include "fmu20/XmlElement.h"
+#include "XmlParser.h"
+#include "XmlElement.h"
 
-#define STANDALONE_XML_PARSER
-
-#ifdef STANDALONE_XML_PARSER
-#define logThis(n, ...) printf(__VA_ARGS__); printf("\n")
 #define checkStrdup(str) strdup(str)
-#else
-#include "logging.h"  // logThis
-#endif  // STANDALONE_XML_PARSER
 
 ModelDescription* parse(char* xmlPath) {
     XmlParser parser(xmlPath);
@@ -209,7 +202,9 @@ const char **getAttributesAsArray(Element *el, int *n) {
     *n = el->attributes.size();
     const char **result = (const char **)calloc(2 * (*n), sizeof(char *));
     if (!result) {
-        logThis(ERROR_FATAL, "Out of memory");
+		char msg[512];
+		sprintf(msg, "[FATAL] Out of memory");
+		//LOG::logToSystem(msg);
         n = 0;
         return NULL;
     }

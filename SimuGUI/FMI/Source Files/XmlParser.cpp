@@ -11,23 +11,14 @@
  * Author: Adrian Tirea
  * ---------------------------------------------------------------------------*/
 
-#include "fmu20/XmlParser.h"
+#include "XmlParser.h"
 #include <utility>
 #include <vector>
 #include <string.h>
-#include "fmu20/XmlElement.h"
-#include "fmu20/XmlParserException.h"
+#include "XmlElement.h"
+#include "XmlParserException.h"
 
-#define STANDALONE_XML_PARSER
-
-#ifdef STANDALONE_XML_PARSER
-#define logThis(n, ...) printf(__VA_ARGS__); printf("\n")
 #define checkStrdup(str) strdup(str)
-#else
-#include "GlobalIncludes.h"
-#include "logging.h"  // logThis
-#include "minutil.h"  // checkStrdup
-#endif  // STANDALONE_XML_PARSER
 
 /* Helper functions to check validity of xml. */
 static int checkAttribute(const char* att);
@@ -103,16 +94,22 @@ ModelDescription *XmlParser::parse() {
                 throw XmlParserException("Syntax error parsing xml file '%s'", xmlPath);
             }
         } catch (XmlParserException& e) {
-            logThis(ERROR_ERROR, "%s", e.what());
+			char msg[512];
+			sprintf(msg, "[ERROR] %s", e.what());
+			//LOG::logToSystem(msg);
             md = NULL;
         } catch (std::bad_alloc& ) {
-            logThis(ERROR_FATAL, "Out of memory");
+			char msg[512];
+			sprintf(msg, "[FATAL] Out of memory");
+			//LOG::logToSystem(msg);
             md = NULL;
         }
 		//by jh
         //xmlFreeTextReader(xmlReader);
     } else {
-        logThis(ERROR_ERROR, "Unable to open '%s'", xmlPath);
+		char msg[512];
+		sprintf(msg, "[ERROR] Unable to open %s", xmlPath);
+		//LOG::logToSystem(msg);
     }
 
     return validate(md);
@@ -239,14 +236,17 @@ ModelDescription *XmlParser::validate(ModelDescription *md) {
     if (!(md->getAttributeValue(XmlParser::att_fmiVersion)
         && md->getAttributeValue(XmlParser::att_modelName)
         && md->getAttributeValue(XmlParser::att_guid))) {
-            logThis(ERROR_ERROR, "Model description miss required attributes in file %s", xmlPath);
+			char msg[512];
+			sprintf(msg, "[ERROR] Model description miss required attributes in file %s", xmlPath);
+			//LOG::logToSystem(msg);
             return NULL;
     }
 
     if (!(md->coSimulation || md->modelExchange)) {
-        logThis(ERROR_ERROR, "Model description must have a co-simulation or model exchange component in file %s",
-            xmlPath);
-            return NULL;
+		char msg[512];
+		sprintf(msg, "[ERROR] Model description must have a co-simulation or model exchange component in file %s", xmlPath);
+		//LOG::logToSystem(msg);
+		return NULL;
     }
 
     // check model variables
@@ -254,43 +254,55 @@ ModelDescription *XmlParser::validate(ModelDescription *md) {
             ++it) {
         const char *varName = (*it)->getAttributeValue(XmlParser::att_name);
         if (!varName) {
-            logThis(ERROR_ERROR, "Scalar variable miss required %s attribute in modelDescription.xml",
-                XmlParser::attNames[XmlParser::att_name]);
+			char msg[512];
+			sprintf(msg, "[ERROR] Scalar variable miss required %s attribute in modelDescription.xml",
+				XmlParser::attNames[XmlParser::att_name]);
+			//LOG::logToSystem(msg);
             errors++;
             continue;
         }
         XmlParser::ValueStatus vs;
         (*it)->getAttributeUInt(XmlParser::att_valueReference, &vs);
         if (vs == XmlParser::valueMissing) {
-            logThis(ERROR_ERROR, "Scalar variable %s miss required %s attribute in modelDescription.xml",
-                varName, XmlParser::attNames[XmlParser::att_valueReference]);
+			char msg[512];
+			sprintf(msg, "[ERROR] Scalar variable %s miss required %s attribute in modelDescription.xml",
+				varName, XmlParser::attNames[XmlParser::att_valueReference]);
+			//LOG::logToSystem(msg);
             errors++;
             continue;
         }
         if (vs == XmlParser::valueIllegal) {
-            logThis(ERROR_ERROR, "Scalar variable %s has illegal format for %s attribute in modelDescription.xml",
-                varName, XmlParser::attNames[XmlParser::att_valueReference]);
+			char msg[512];
+			sprintf(msg, "[ERROR] Scalar variable %s has illegal format for %s attribute in modelDescription.xml",
+				varName, XmlParser::attNames[XmlParser::att_valueReference]);
+			//LOG::logToSystem(msg);
             errors++;
             continue;
         }
 
         if (!(*it)->typeSpec) {
-            logThis(ERROR_ERROR, "Scalar variable %s miss type specification in modelDescription.xml",
-                varName);
+			char msg[512];
+			sprintf(msg, "[ERROR] Scalar variable %s miss type specification in modelDescription.xml",
+				varName);
+			//LOG::logToSystem(msg);
             errors++;
             continue;
         }
         if ((*it)->typeSpec->type == XmlParser::elm_Enumeration) {
             const char *typeName = (*it)->typeSpec->getAttributeValue(XmlParser::att_declaredType);
             if (!typeName) {
-                logThis(ERROR_ERROR, "Scalar variable %s with enum type specification miss required %s attribute in "
-                        "modelDescription.xml", varName, XmlParser::attNames[XmlParser::att_declaredType]);
+				char msg[512];
+				sprintf(msg, "[ERROR] Scalar variable %s with enum type specification miss required %s attribute in "
+					"modelDescription.xml", varName, XmlParser::attNames[XmlParser::att_declaredType]);
+				//LOG::logToSystem(msg);
                 errors++;
                 continue;
             }
             if (!md->getSimpleType(typeName)) {
-                logThis(ERROR_ERROR, "Declared type %s of variable %s not found in modelDescription.xml",
-                     typeName, varName);
+				char msg[512];
+				sprintf(msg, "[ERROR] Declared type %s of variable %s not found in modelDescription.xml",
+					typeName, varName);
+				//LOG::logToSystem(msg);
                 errors++;
                 continue;
             }
@@ -299,13 +311,17 @@ ModelDescription *XmlParser::validate(ModelDescription *md) {
 
     // check existence of model structure
     if (!(md->modelStructure)) {
-        logThis(ERROR_ERROR, "Model description must contain model structure in file %s",
-            xmlPath);
+		char msg[512];
+		sprintf(msg, "[ERROR] Model description must contain model structure in file %s",
+			xmlPath);
+		//LOG::logToSystem(msg);
         return NULL;
     }
 
     if (errors > 0) {
-        logThis(ERROR_ERROR, "Found %d error in file %s", errors, xmlPath);
+		char msg[512];
+		sprintf(msg, "[ERROR] Found %d error in file %s", errors, xmlPath);
+		//LOG::logToSystem(msg);
         return NULL;
     }
     return md;

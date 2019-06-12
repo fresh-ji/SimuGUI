@@ -11,22 +11,13 @@
  * Author: Adrian Tirea
  * ---------------------------------------------------------------------------*/
 
-#include "fmu20/XmlElement.h"
+#include "XmlElement.h"
 #include <assert.h>
 #include <map>
 #include <string>
 #include <vector>
 #include <string.h> // strcmp
-#include "fmu20/XmlParserException.h"
-
-#define STANDALONE_XML_PARSER
-
-#ifdef STANDALONE_XML_PARSER
-#define logThis(n, ...) printf(__VA_ARGS__); printf("\n")
-#else
-#include "GlobalIncludes.h"
-#include "logging.h"  // logThis
-#endif  // STANDALONE_XML_PARSER
+#include "XmlParserException.h"
 
 Element::~Element() {
     for (std::map<XmlParser::Att, char *>::const_iterator it = attributes.begin(); it != attributes.end(); ++it) {
@@ -47,9 +38,17 @@ void Element::handleElement(XmlParser *parser, const char *childName, int isEmpt
 }
 void Element::printElement(int indent) {
     std::string indentS(indent, ' ');
-    logThis(ERROR_INFO, "%s%s", indentS.c_str(), XmlParser::elmNames[type]);
+
+	char msg[512];
+	sprintf(msg, "[INFO] %s%s", indentS.c_str(), XmlParser::elmNames[type]);
+	//LOG::logToSystem(msg);
+
     for (std::map<XmlParser::Att, char *>::const_iterator it = attributes.begin(); it != attributes.end(); ++it) {
-        logThis(ERROR_INFO, "%s%s=%s", indentS.c_str(), XmlParser::attNames[it->first], it->second);
+
+		char msg2[512];
+		sprintf(msg2, "[INFO] %s%s=%s", indentS.c_str(), XmlParser::attNames[it->first], it->second);
+		//LOG::logToSystem(msg2);
+
     }
 }
 template <typename T> void Element::printListOfElements(int indent, const std::vector<T *> &list) {

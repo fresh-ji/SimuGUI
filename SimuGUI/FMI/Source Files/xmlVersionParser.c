@@ -8,23 +8,14 @@
  * Author: Adrian Tirea
  * ---------------------------------------------------------------------------*/
 
-#define STANDALONE_XML_PARSER
-
-#ifdef STANDALONE_XML_PARSER
-#include <string.h>
-#define logThis(n, ...) printf(__VA_ARGS__); printf("\n")
 #define checkStrdup(str) strdup(str)
 #define BOOL int
 #define TRUE 1
 #define FALSE 0
-#else
-#include "GlobalIncludes.h"
-#include "logging.h"  // logThis
-#include "minutil.h"  // checkStrdup
-#endif  // STANDALONE_XML_PARSER
 
 #include <libxml/xmlreader.h>
 #include "xmlVersionParser.h"
+#include "ErrorLog.h"
 
 // Element and attribute that identify the fmiVersion.
 #define ELM_fmiModelDescription_NAME "fmiModelDescription"
@@ -59,18 +50,24 @@ static char *streamFile(const char *xmlPath) {
         if (readNextInXml(xmlReader)) {
             // I expect that first element is fmiModelDescription.
             if (0 != strcmp((char *)xmlTextReaderConstLocalName(xmlReader), ELM_fmiModelDescription_NAME)) {
-                logThis(ERROR_ERROR, "Expected '%s' element. Found instead: '%s'",
-                    ELM_fmiModelDescription_NAME, xmlTextReaderConstLocalName(xmlReader));
+				char msg[512];
+				sprintf(msg, "[ERROR] Expected '%s' element. Found instead: '%s'",
+					ELM_fmiModelDescription_NAME, xmlTextReaderConstLocalName(xmlReader));
+				//LOG::logToSystem(msg);
             } else {
                 fmiVersion = extractFmiVersionAttribute(xmlReader);
             }
         } else {
-            logThis(ERROR_ERROR, "Syntax error parsing xml file '%s'", xmlPath);
+			char msg[512];
+			sprintf(msg, "[ERROR] Syntax error parsing xml file '%s'", xmlPath);
+			//LOG::logToSystem(msg);
         }
 		//edit by jh
         //xmlFreeTextReader(xmlReader);
     } else {
-        logThis(ERROR_ERROR, "Cannot open file '%s'", xmlPath);
+		char msg[512];
+		sprintf(msg, "[ERROR] Cannot open file '%s'", xmlPath);
+		//logToSystem(msg);
     }
     return fmiVersion;
 }
