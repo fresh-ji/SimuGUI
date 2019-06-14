@@ -17,6 +17,7 @@ struct FMUInfo {
 	bool isSuccess;
 	QString message;
 	FMU fmu;
+	QString version;
 	QString simuType;
 	QString globalName;
 	QString targetDir;

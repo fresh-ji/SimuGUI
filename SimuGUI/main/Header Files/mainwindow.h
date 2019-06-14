@@ -92,7 +92,7 @@ private:
 	PaintMode *m_pPaintMode;
 	MenuMode *m_pMenuMode;
 
-	HLARunControl *m_pHLARunControl;
+	//HLARunControl *m_pHLARunControl;
 	FMISimulator *m_pFMISimulator;
 	Modeling *m_pModeling;
 };

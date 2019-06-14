@@ -27,6 +27,7 @@ static char currentDirectory[DIRECTORY_PATH_SIZE];
 #define SEVEN_ZIP_OUT_OF_MEMORY 8
 #define SEVEN_ZIP_STOPPED_BY_USER 255
 
+//TODO:应该既支持32又支持64
 #ifdef _WIN64
 #define DLL_DIR   "binaries\\win64\\"
 #else
@@ -44,7 +45,7 @@ FMUInfo FMISupport::loadFMU(QString filePath) {
 
 	FMUInfo info;
 	info.isSuccess = false;
-	//TODO：所有错误回复都要清理解压缩文件
+	//TODO：所有错误回复都要清理解压缩文件及内存回收
 
 	//判断fmu文件是否存在
 	QFileInfo fileInfo(filePath);
@@ -56,14 +57,14 @@ FMUInfo FMISupport::loadFMU(QString filePath) {
 	//获取当前目录
 	currentDir = GetCurrentDir(currentDirectory, DIRECTORY_PATH_SIZE);
 
-	//命名
+	//命名，添加一个uuid
 	QString globalName = filePath.section('/', -1);
 	globalName.append(QUuid::createUuid().toString());
 	QString targetDir;
 	targetDir.append(currentDir)
 		.append("\\FMI\\extracted\\").append(globalName).append("\\");
 
-	//拼接cmd命令，原先用的是sstream，清空需要ss.clear() + ss.str("")
+	//拼接cmd命令，原先用的是sstream，清空需要(ss.clear() + ss.str(""))
 	QString command;
 	command.append(UNZIP_CMD).append("\"").append(targetDir)
 		.append("\"").append(" \"").append(filePath).append("\" > NUL");
@@ -83,6 +84,7 @@ FMUInfo FMISupport::loadFMU(QString filePath) {
 	QString descriptionPath = targetDir;
 	descriptionPath.append("modelDescription.xml");
 
+	//校验及写入版本号，目前仅支持2.0
 	//TODO:注掉了一句关闭xml的话
 	char* xmlFmiVersion = extractVersion(descriptionPath.toLocal8Bit().constData());
 	if (xmlFmiVersion == NULL) {
@@ -93,15 +95,15 @@ FMUInfo FMISupport::loadFMU(QString filePath) {
 		info.message = "The FMI version is not 2.0";
 		return info;
 	}
+	info.version = xmlFmiVersion;
 
+	//模型基础
 	FMU fmu;
-
-	//获取模型
 	//TODO:注掉了一句关闭xml的话
 	fmu.modelDescription = parse(descriptionPath.toLocal8Bit().data());
-	Element* e = (Element*)(fmu.modelDescription);
 
-	//模型描述
+	//解析。。。
+	Element* e = (Element*)(fmu.modelDescription);
 	int n;
 	const char **attributes = getAttributesAsArray(e, &n);
 	if (!attributes) {
@@ -179,7 +181,7 @@ FMUInfo FMISupport::loadFMU(QString filePath) {
 }
 
 bool FMISupport::loadDll(const char* dllPath, FMU* fmu) {
-	
+
 	bool s = true;
 
 	HMODULE h = LoadLibrary(dllPath);
