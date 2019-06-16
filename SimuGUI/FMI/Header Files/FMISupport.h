@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QFileInfo>
 #include <QUuid>
+#include <QMap>
 
 #include <fstream>
 
@@ -17,12 +18,17 @@ struct FMUInfo {
 	bool isSuccess;
 	QString message;
 	FMU fmu;
-	QString version;
-	QString simuType;
-	QString globalName;
-	QString targetDir;
-	QString descriptionPath;
-	QString dllPath;
+	//在本框架的基本信息
+	QString version;//版本号
+	QString simuType;//ME或CS
+	QString modelId;//文件名
+	QString globalName;//带uuid的全局名
+	QString targetDir;//fmu目标文件夹
+	QString xmlPath;//xml路径
+	QString dllPath;//dll路径
+	//xml里的基本信息
+	QMap<QString, QString> basicInfo;
+	//xml里的变量信息
 };
 
 class FMISupport : public QObject {

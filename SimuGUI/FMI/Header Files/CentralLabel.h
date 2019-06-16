@@ -10,6 +10,7 @@
 
 #include "cwidgets.h"
 #include "fancybutton.h"
+
 #include "ItemElement.h"
 #include "FMISupport.h"
 
@@ -45,7 +46,7 @@ signals:
 	void signalSendMessage(QString);
 signals:
 	//向DetailStack发送要显示的
-	void signalModelDetail();
+	void signalModelDetail(FMUInfo);
 
 private:
 	//模型库

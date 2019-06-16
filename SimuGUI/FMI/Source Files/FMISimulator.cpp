@@ -28,8 +28,8 @@ void FMISimulator::createWindow() {
 	layout->setSpacing(10);
 	
 	//TODO：想要加弹簧
-	m_pDetailStack->setMaximumWidth(400);
-	m_pPlotStack->setMaximumWidth(400);
+	m_pDetailStack->setMaximumWidth(600);
+	m_pPlotStack->setMaximumWidth(600);
 	layout->addWidget(m_pCentralLabel, 0, 0, 2, 1);
 	layout->addWidget(m_pDetailStack, 0, 1);
 	layout->addWidget(m_pPlotStack, 1, 1);
@@ -66,6 +66,10 @@ void FMISimulator::createConnects() {
 	//接收消息发送
 	connect(m_pCentralLabel, SIGNAL(signalSendMessage(QString)),
 		this, SLOT(slotReceiveMessage(QString)));
+
+	//FMU详情发送
+	connect(m_pCentralLabel, SIGNAL(signalModelDetail(FMUInfo)),
+		m_pDetailStack, SLOT(slotModelDetail(FMUInfo)));
 }
 
 void FMISimulator::createCentralLabel() {
@@ -74,7 +78,7 @@ void FMISimulator::createCentralLabel() {
 
 void FMISimulator::createDetailStack() {
 	m_pDetailStack = new DetailStack();
-	m_pDetailStack->setTitle("Info");
+	m_pDetailStack->setTitle("Detail");
 }
 
 void FMISimulator::createPlotStack() {

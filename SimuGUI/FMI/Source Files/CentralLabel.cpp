@@ -196,6 +196,9 @@ void CentralLabel::slotOpen() {
 		activeModel = item;
 
 		modelMap.insert(modelPath, item);
+
+		//œÍ«Èœ‘ æ
+		signalModelDetail(info);
 	}
 }
 

@@ -81,12 +81,12 @@ FMUInfo FMISupport::loadFMU(QString filePath) {
 	default: info.message = "unzip unknown problem"; return info;
 	}
 
-	QString descriptionPath = targetDir;
-	descriptionPath.append("modelDescription.xml");
+	QString xmlPath = targetDir;
+	xmlPath.append("modelDescription.xml");
 
 	//校验及写入版本号，目前仅支持2.0
 	//TODO:注掉了一句关闭xml的话
-	char* xmlFmiVersion = extractVersion(descriptionPath.toLocal8Bit().constData());
+	char* xmlFmiVersion = extractVersion(xmlPath.toLocal8Bit().constData());
 	if (xmlFmiVersion == NULL) {
 		info.message = "The FMI version of the FMU could not be read";
 		return info;
@@ -99,27 +99,11 @@ FMUInfo FMISupport::loadFMU(QString filePath) {
 
 	//模型基础
 	FMU fmu;
-	//TODO:注掉了一句关闭xml的话
-	fmu.modelDescription = parse(descriptionPath.toLocal8Bit().data());
 
-	//解析。。。
-	Element* e = (Element*)(fmu.modelDescription);
-	int n;
-	const char **attributes = getAttributesAsArray(e, &n);
-	if (!attributes) {
-		info.message = "ModelDescription printing aborted.";
-		return info;
-	}
-	QString des1;
-	for (int i = 0; i < n; i += 2) {
-		QString s1 = attributes[i];
-		QString s2 = " = ";
-		QString s3 = attributes[i + 1];
-		des1.append(s1 + s2 + s3).append("\n");
-	}
+	//TODO:注掉了一句关闭xml的话
+	fmu.modelDescription = parse(xmlPath.toLocal8Bit().data());
 
 	//获取类型
-	QString simuType;
 	Component *component = getModelExchange(fmu.modelDescription);
 	if (!component) {
 		component = getCoSimulation(fmu.modelDescription);
@@ -128,13 +112,77 @@ FMUInfo FMISupport::loadFMU(QString filePath) {
 			return info;
 		}
 		else {
-			simuType = FMI_COSIMULATION;
+			info.simuType = FMI_COSIMULATION;
 		}
 	}
 	else {
-		simuType = FMI_MODEL_EXCHANGE;
+		info.simuType = FMI_MODEL_EXCHANGE;
 	}
 
+	//获取id
+	info.modelId = getAttributeValue((Element*)component, att_modelIdentifier);
+
+	//获取dll路径并写入全名和三个路径
+	QString dllPath = targetDir;
+	dllPath.append(DLL_DIR).append(info.modelId).append(".dll");
+	info.globalName = globalName;
+	info.targetDir = targetDir;
+	info.xmlPath = xmlPath;
+	info.dllPath = dllPath;
+
+	//加载dll功能
+	if (!loadDll(dllPath.toLocal8Bit().constData(), &fmu)) {
+		info.message = "load dll error";
+		return info;
+	}
+
+	//头部基本信息
+	Element* ele = (Element*)(fmu.modelDescription);
+	QString result;
+	result = getAttributeValue(ele, att_modelName);
+	if (result != NULL) {
+		info.basicInfo.insert("modelName", result);
+	}
+	result = getAttributeValue(ele, att_guid);
+	if (result != NULL) {
+		info.basicInfo.insert("guid", result);
+	}
+	result = getAttributeValue(ele, att_description);
+	if (result != NULL) {
+		info.basicInfo.insert("description", result);
+	}
+	result = getAttributeValue(ele, att_author);
+	if (result != NULL) {
+		info.basicInfo.insert("author", result);
+	}
+	result = getAttributeValue(ele, att_copyright);
+	if (result != NULL) {
+		info.basicInfo.insert("copyright", result);
+	}
+	result = getAttributeValue(ele, att_license);
+	if (result != NULL) {
+		info.basicInfo.insert("license", result);
+	}
+	result = getAttributeValue(ele, att_generationTool);
+	if (result != NULL) {
+		info.basicInfo.insert("generationTool", result);
+	}
+	result = getAttributeValue(ele, att_generationDateAndTime);
+	if (result != NULL) {
+		info.basicInfo.insert("generationDateAndTime", result);
+	}
+	result = getAttributeValue(ele, att_variableNamingConvention);
+	if (result != NULL) {
+		info.basicInfo.insert("variableNamingConvention", result);
+	}
+	result = getAttributeValue(ele, att_numberOfEventIndicators);
+	if (result != NULL) {
+		info.basicInfo.insert("numberOfEventIndicators", result);
+	}
+
+	//TODO:变量信息
+
+	/*
 	//类型描述
 	attributes = getAttributesAsArray((Element*)component, &n);
 	if (!attributes) {
@@ -148,35 +196,12 @@ FMUInfo FMISupport::loadFMU(QString filePath) {
 		QString s3 = attributes[i + 1];
 		des2.append(s1 + s2 + s3).append("\n");
 	}
+	*/
 
-	//获取id
-	const char *modelId;
-	if (simuType == FMI_MODEL_EXCHANGE) {
-		modelId = getAttributeValue((Element*)getModelExchange(fmu.modelDescription), att_modelIdentifier);
-	}
-	else if (simuType == FMI_COSIMULATION) {
-		modelId = getAttributeValue((Element*)getCoSimulation(fmu.modelDescription), att_modelIdentifier);
-	}
-
-	//获取dll路径
-	QString dllPath = targetDir;
-	dllPath.append(DLL_DIR).append(modelId).append(".dll");
-
-	//加载dll功能
-	if (!loadDll(dllPath.toLocal8Bit().constData(), &fmu)) {
-		info.message = "load dll error";
-		return info;
-	}
-
+	//结束并返回
 	info.fmu = fmu;
-	info.simuType = simuType;
-	info.globalName = globalName;
-	info.targetDir = targetDir;
-	info.descriptionPath = descriptionPath;
-	info.dllPath = dllPath;
 	info.isSuccess = true;
 	info.message = "success";
-
 	return info;
 }
 

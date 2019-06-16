@@ -12,6 +12,8 @@
 #include "ministack.h"
 #include "fancybutton.h"
 
+#include "FMISupport.h"
+
 class DetailStack :public MiniStack {
 
 	Q_OBJECT
@@ -21,8 +23,11 @@ public:
 	~DetailStack() {};
 
 public slots:
-	void slotModelDetail();
+	void slotModelDetail(FMUInfo);
 
+private:
+	QWidget *infoWidget;
+	QGridLayout *infoLayout;
 };
 
 #endif // DETAILSTACK_H
