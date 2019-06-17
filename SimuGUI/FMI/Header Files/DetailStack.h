@@ -23,7 +23,7 @@ public:
 	~DetailStack() {};
 
 public slots:
-	void slotModelDetail(FMUInfo);
+	void slotModelDetail(FMUInfo*);
 
 private:
 	QWidget *infoWidget;

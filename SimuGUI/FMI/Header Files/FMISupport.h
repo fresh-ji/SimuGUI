@@ -14,6 +14,10 @@ constexpr auto FMI_COSIMULATION = "CoSimulation";
 
 using namespace std;
 
+struct FMIVariable {
+
+};
+
 struct FMUInfo {
 	bool isSuccess;
 	QString message;

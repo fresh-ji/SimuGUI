@@ -46,7 +46,7 @@ signals:
 	void signalSendMessage(QString);
 signals:
 	//向DetailStack发送要显示的
-	void signalModelDetail(FMUInfo);
+	void signalModelDetail(FMUInfo*);
 
 private:
 	//模型库

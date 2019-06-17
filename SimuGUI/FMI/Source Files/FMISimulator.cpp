@@ -68,8 +68,8 @@ void FMISimulator::createConnects() {
 		this, SLOT(slotReceiveMessage(QString)));
 
 	//FMUœÍ«È∑¢ÀÕ
-	connect(m_pCentralLabel, SIGNAL(signalModelDetail(FMUInfo)),
-		m_pDetailStack, SLOT(slotModelDetail(FMUInfo)));
+	connect(m_pCentralLabel, SIGNAL(signalModelDetail(FMUInfo*)),
+		m_pDetailStack, SLOT(slotModelDetail(FMUInfo*)));
 }
 
 void FMISimulator::createCentralLabel() {

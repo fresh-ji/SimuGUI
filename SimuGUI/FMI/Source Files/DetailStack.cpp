@@ -17,33 +17,34 @@ DetailStack::DetailStack(QWidget *p) : MiniStack(p) {
 	addTab(tr("Simulation"), simuInfoStack);
 }
 
-void DetailStack::slotModelDetail(FMUInfo info) {
+void DetailStack::slotModelDetail(FMUInfo* info) {
 
-	//infoLayout->destroyed();
-	infoLayout = new QGridLayout();
-
-	QLabel *typeLabel = new QLabel();
-	typeLabel->setText("FMI type");
-	infoLayout->addWidget(typeLabel, 0, 0);
-	QLabel *type = new QLabel();
-	type->setText(info.simuType);
-	infoLayout->addWidget(type, 0, 1);
-
-	QMap<QString, QString>::iterator it;
-	int count;
-	for (count = 1, it = info.basicInfo.begin(); it != info.basicInfo.end(); ++it, ++count){
-		QLabel *title = new QLabel();
-		title->setText(it.key());
-		infoLayout->addWidget(title, count, 0);
-		QLabel *content = new QLabel();
-		content->setText(it.value());
-		infoLayout->addWidget(content, count, 1);
+	//删除之前布局
+	QLayoutItem *child;
+	while ((child = infoLayout->takeAt(0)) != 0)
+	{
+		infoLayout->removeWidget(child->widget());
+		child->widget()->setParent(0);
+		delete child;
 	}
 
-	//infoWidget->setLayout(infoLayout);
-	//infoWidget->layout()
+	if (info != NULL) {
+		QLabel *typeLabel = new QLabel();
+		typeLabel->setText("FMI type");
+		infoLayout->addWidget(typeLabel, 0, 0);
+		QLabel *type = new QLabel();
+		type->setText(info->simuType);
+		infoLayout->addWidget(type, 0, 1);
 
-	update();
-	infoWidget->update();
-
+		QMap<QString, QString>::iterator it;
+		int count;
+		for (count = 1, it = info->basicInfo.begin(); it != info->basicInfo.end(); ++it, ++count) {
+			QLabel *title = new QLabel();
+			title->setText(it.key());
+			infoLayout->addWidget(title, count, 0);
+			QLabel *content = new QLabel();
+			content->setText(it.value());
+			infoLayout->addWidget(content, count, 1);
+		}
+	}
 }

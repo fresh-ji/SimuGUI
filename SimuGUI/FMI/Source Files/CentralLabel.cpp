@@ -91,10 +91,14 @@ int CentralLabel::mousePressPreprocess(QPoint pressPoint) {
 			activeModel->active();
 			activeModel->raise();
 			//点中了某个模型，存在了activeModel里
+			QString modelName = modelMap.key(ie);
+			FMUInfo info = modelRepo.value(modelName);
+			emit signalModelDetail(&info);
 			return 1;
 		}
 	}
 	//未点中模型
+	emit signalModelDetail(NULL);
 	return 0;
 }
 
@@ -159,6 +163,12 @@ void CentralLabel::addToolBar() {
 	gobutton->setStyleSheet("QToolButton{border: none;border-radius: 25px;}");
 	gobutton->setIcon(QIcon("./Icon/function/go"));
 	connect(gobutton, SIGNAL(clicked()), this, SLOT(slotGo()));
+
+	QToolButton *infoButton = new QToolButton(this);
+	infoButton->setGeometry(320, 5, 50, 50);
+	infoButton->setStyleSheet("QToolButton{border: none;border-radius: 25px;}");
+	infoButton->setIcon(QIcon("./Icon/function/info"));
+	infoButton->setToolTip("Only FMI-2.0 and WIN64 are supported");
 }
 
 void CentralLabel::slotOpen() {
@@ -198,7 +208,7 @@ void CentralLabel::slotOpen() {
 		modelMap.insert(modelPath, item);
 
 		//详情显示
-		signalModelDetail(info);
+		emit signalModelDetail(&info);
 	}
 }
 
