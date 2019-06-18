@@ -36,7 +36,6 @@
 #include "custommode.h"
 #include "menumode.h"
 #include "paintmode.h"
-#include "HLARunControl.h"
 #include "FMISimulator.h"
 #include "Modeling.h"
 
@@ -92,7 +91,6 @@ private:
 	PaintMode *m_pPaintMode;
 	MenuMode *m_pMenuMode;
 
-	//HLARunControl *m_pHLARunControl;
 	FMISimulator *m_pFMISimulator;
 	Modeling *m_pModeling;
 };

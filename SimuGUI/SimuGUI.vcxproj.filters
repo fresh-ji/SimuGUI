@@ -41,15 +41,6 @@
     <Filter Include="FMI">
       <UniqueIdentifier>{a6ec8702-dccf-4248-a4b6-8c07fd2207b3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="HLA">
-      <UniqueIdentifier>{f91456f6-2038-464a-b11c-c0ce25fa73ba}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="HLA\Header Files">
-      <UniqueIdentifier>{baf9362f-7bca-4fb6-b470-333d060aaec8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="HLA\Source Files">
-      <UniqueIdentifier>{051f3285-9339-4c9d-85fe-976b276c890f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="main">
       <UniqueIdentifier>{af2552cd-b54c-4693-a0e4-b8a84620841a}</UniqueIdentifier>
     </Filter>
@@ -248,15 +239,6 @@
     <QtMoc Include="ExampleMode\Header Files\paintmode.h">
       <Filter>ExampleMode\Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="HLA\Header Files\HLAFlowThread.h">
-      <Filter>HLA\Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="HLA\Header Files\HLAPortAdapter.h">
-      <Filter>HLA\Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="HLA\Header Files\HLARunControl.h">
-      <Filter>HLA\Header Files</Filter>
-    </QtMoc>
     <QtMoc Include="main\Header Files\ctablewidget.h">
       <Filter>main\Header Files</Filter>
     </QtMoc>
@@ -443,18 +425,6 @@
     </ClCompile>
     <ClCompile Include="ExampleMode\Source Files\paintmode.cpp">
       <Filter>ExampleMode\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HLA\Source Files\Config.cpp">
-      <Filter>HLA\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HLA\Source Files\HLAFlowThread.cpp">
-      <Filter>HLA\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HLA\Source Files\HLAPortAdapter.cpp">
-      <Filter>HLA\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HLA\Source Files\HLARunControl.cpp">
-      <Filter>HLA\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main\Source Files\ctablewidget.cpp">
       <Filter>main\Source Files</Filter>

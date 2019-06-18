@@ -200,7 +200,6 @@ void MainWindow::createModeBar() {
 	m_pPaintMode = new PaintMode();
 	m_pMenuMode = new MenuMode();
 
-	//m_pHLARunControl = new HLARunControl();
 	m_pFMISimulator = new FMISimulator();
 	m_pModeling = new Modeling();
 	
@@ -210,7 +209,6 @@ void MainWindow::createModeBar() {
 
 	m_modeManager->objectAdded(m_pModeling);
 	m_modeManager->objectAdded(m_pFMISimulator);
-	//m_modeManager->objectAdded(m_pHLARunControl);
 
 	m_modeManager->setCurrentMode(m_pFMISimulator);
 
