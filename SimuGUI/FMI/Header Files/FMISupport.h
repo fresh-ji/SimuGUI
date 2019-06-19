@@ -4,18 +4,21 @@
 #include <QFileInfo>
 #include <QUuid>
 #include <QMap>
-
-#include <fstream>
+#include <QSet>
 
 #include "fmi2.h"
 
 constexpr auto FMI_MODEL_EXCHANGE = "Model Exchange";
 constexpr auto FMI_COSIMULATION = "CoSimulation";
 
-using namespace std;
-
 struct FMIVariable {
-
+	QString name;
+	QString valueReference;
+	QString description;
+	QString causality;
+	QString variability;
+	QString initial;
+	QString canHandleMSPTI;
 };
 
 struct FMUInfo {
@@ -33,6 +36,7 @@ struct FMUInfo {
 	//xml里的基本信息
 	QMap<QString, QString> basicInfo;
 	//xml里的变量信息
+	QSet<FMIVariable*> variableInfo;
 };
 
 class FMISupport : public QObject {
@@ -45,26 +49,24 @@ public:
 
 public:
 	FMUInfo loadFMU(QString);
-	void unLoad();
-	bool simulateByCs(double, double, double, int, char **);
-	bool simulateByMe(double, double, double, int, char **);
+	//void unLoad();
+	//bool simulateByCs(double, double, double, int, char **);
+	//bool simulateByMe(double, double, double, int, char **);
 
 private:
 	bool loadDll(const char*, FMU*);
 	void *getAdr(bool*, HMODULE, const char*);
-	void outputData(ofstream&, double, bool);
+	//void outputData(ofstream&, double, bool);
 
 private:
 	char* currentDir;
-	FMU fmu0;
 	QString type;
-	fmi2Component c;
 
 signals:
 	void postUIMsg(QString);
 };
 
-void fmuLogger(void*, fmi2String, fmi2Status, fmi2String, fmi2String, ...);
-void replaceRefsInMessage(const char*, char*, int, FMU*);
-ScalarVariable* getSV(FMU*, char, fmi2ValueReference);
-const char* fmi2StatusToString(fmi2Status);
+//void fmuLogger(void*, fmi2String, fmi2Status, fmi2String, fmi2String, ...);
+//void replaceRefsInMessage(const char*, char*, int, FMU*);
+//ScalarVariable* getSV(FMU*, char, fmi2ValueReference);
+//const char* fmi2StatusToString(fmi2Status);

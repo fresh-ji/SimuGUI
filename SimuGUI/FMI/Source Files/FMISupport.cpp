@@ -10,9 +10,6 @@
 #include "FMISupport.h"
 #include "xmlVersionParser.h"
 
-#include <sstream>
-#include <string>
-
 #define DIRECTORY_PATH_SIZE 1024
 static char currentDirectory[DIRECTORY_PATH_SIZE];
 
@@ -34,7 +31,7 @@ static char currentDirectory[DIRECTORY_PATH_SIZE];
 #define DLL_DIR   "binaries\\win32\\"
 #endif
 
-ofstream logFile(".\\logs\\FMI.log");
+//ofstream logFile(".\\logs\\FMI.log");
 
 using namespace std;
 
@@ -113,10 +110,12 @@ FMUInfo FMISupport::loadFMU(QString filePath) {
 		}
 		else {
 			info.simuType = FMI_COSIMULATION;
+			type = FMI_COSIMULATION;
 		}
 	}
 	else {
 		info.simuType = FMI_MODEL_EXCHANGE;
+		type = FMI_MODEL_EXCHANGE;
 	}
 
 	//获取id
@@ -136,9 +135,10 @@ FMUInfo FMISupport::loadFMU(QString filePath) {
 		return info;
 	}
 
-	//头部基本信息
-	Element* ele = (Element*)(fmu.modelDescription);
+	Element* ele;
 	QString result;
+	//头部基本信息
+	ele = (Element*)(fmu.modelDescription);
 	result = getAttributeValue(ele, att_modelName);
 	if (result != NULL) {
 		info.basicInfo.insert("modelName", result);
@@ -179,24 +179,20 @@ FMUInfo FMISupport::loadFMU(QString filePath) {
 	if (result != NULL) {
 		info.basicInfo.insert("numberOfEventIndicators", result);
 	}
-
-	//TODO:变量信息
-
-	/*
-	//类型描述
-	attributes = getAttributesAsArray((Element*)component, &n);
-	if (!attributes) {
-		info.message = "ModelDescription printing aborted 2.";
-		return info;
+	//变量信息
+	for (int i = 0; i < getScalarVariableSize(fmu.modelDescription); ++i) {
+		ele = (Element*)getScalarVariable(fmu.modelDescription, i);
+		FMIVariable* fv = new FMIVariable();
+		QString a = getAttributeValue(ele, att_name);
+		fv->name = getAttributeValue(ele, att_name);
+		fv->valueReference = getAttributeValue(ele, att_valueReference);
+		fv->description = getAttributeValue(ele, att_description);
+		fv->causality = getAttributeValue(ele, att_causality);
+		fv->variability = getAttributeValue(ele, att_variability);
+		fv->initial = getAttributeValue(ele, att_initial);
+		fv->canHandleMSPTI = getAttributeValue(ele, att_canHandleMultipleSetPerTimeInstant);
+		info.variableInfo.insert(fv);
 	}
-	QString des2;
-	for (int i = 0; i < n; i += 2) {
-		QString s1 = attributes[i];
-		QString s2 = " = ";
-		QString s3 = attributes[i + 1];
-		des2.append(s1 + s2 + s3).append("\n");
-	}
-	*/
 
 	//结束并返回
 	info.fmu = fmu;
@@ -329,7 +325,7 @@ void* FMISupport::getAdr(bool *success, HMODULE dllHandle, const char *functionN
 	return fp;
 }
 
-
+/*
 void FMISupport::unLoad() {
 	fmu0.terminate(c);
 	fmu0.freeInstance(c);
@@ -784,10 +780,12 @@ void FMISupport::outputData(ofstream& file, double time, bool isHeader) {
 	}
 	file << endl;
 }
+*/
 
 
 
 /**************************************************************/
+/*
 #define MAX_MSG_SIZE 1000
 void fmuLogger(
 	void *componentEnvironment,
@@ -925,3 +923,4 @@ const char* fmi2StatusToString(fmi2Status status) {
 	default:         return "?";
 	}
 }
+*/
