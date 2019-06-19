@@ -323,9 +323,6 @@
     <QtMoc Include="FMI\Header Files\PlotStack.h">
       <Filter>FMI\PlotStack</Filter>
     </QtMoc>
-    <QtMoc Include="FMI\Header Files\FMISupport.h">
-      <Filter>FMI\FMISupport</Filter>
-    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CanPool\Header Files\cursor.h">
@@ -366,6 +363,9 @@
     </ClInclude>
     <ClInclude Include="FMI\Header Files\ErrorLog.h">
       <Filter>FMI\XmlImpl</Filter>
+    </ClInclude>
+    <ClInclude Include="FMI\Header Files\FMISupport.h">
+      <Filter>FMI\FMISupport</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -531,8 +531,5 @@
     <ClCompile Include="FMI\Source Files\FMISupport.cpp">
       <Filter>FMI\FMISupport</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

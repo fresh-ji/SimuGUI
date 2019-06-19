@@ -8,6 +8,8 @@
 #ifndef DETAILSTACK_H
 #define DETAILSTACK_H
 
+#include <QMap>
+
 #include "cwidgets.h"
 #include "ministack.h"
 #include "fancybutton.h"

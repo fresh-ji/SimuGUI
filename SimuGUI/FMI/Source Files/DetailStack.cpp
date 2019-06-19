@@ -19,6 +19,7 @@ DetailStack::DetailStack(QWidget *p) : MiniStack(p) {
 
 void DetailStack::slotModelDetail(FMUInfo* info) {
 
+	/*
 	//删除之前布局
 	QLayoutItem *child;
 	while ((child = infoLayout->takeAt(0)) != 0)
@@ -47,4 +48,5 @@ void DetailStack::slotModelDetail(FMUInfo* info) {
 			infoLayout->addWidget(content, count, 1);
 		}
 	}
+	*/
 }

@@ -1,54 +1,51 @@
 #pragma once
 
-#include <QObject>
-#include <QFileInfo>
-#include <QUuid>
-#include <QMap>
-#include <QSet>
+#include <map>
+#include <set>
 
 #include "fmi2.h"
+
+using namespace std;
 
 constexpr auto FMI_MODEL_EXCHANGE = "Model Exchange";
 constexpr auto FMI_COSIMULATION = "CoSimulation";
 
 struct FMIVariable {
-	QString name;
-	QString valueReference;
-	QString description;
-	QString causality;
-	QString variability;
-	QString initial;
-	QString canHandleMSPTI;
+	string name;
+	string valueReference;
+	string description;
+	string causality;
+	string variability;
+	string initial;
+	string canHandleMSPTI;
 };
 
 struct FMUInfo {
 	bool isSuccess;
-	QString message;
+	string message;
 	FMU fmu;
 	//在本框架的基本信息
-	QString version;//版本号
-	QString simuType;//ME或CS
-	QString modelId;//文件名
-	QString globalName;//带uuid的全局名
-	QString targetDir;//fmu目标文件夹
-	QString xmlPath;//xml路径
-	QString dllPath;//dll路径
+	string version;//版本号
+	string simuType;//ME或CS
+	string modelId;//文件名
+	string globalName;//带uuid的全局名
+	string targetDir;//fmu目标文件夹
+	string xmlPath;//xml路径
+	string dllPath;//dll路径
 	//xml里的基本信息
-	QMap<QString, QString> basicInfo;
+	map<string, string> basicInfo;
 	//xml里的变量信息
-	QSet<FMIVariable*> variableInfo;
+	set<FMIVariable*> variableInfo;
 };
 
-class FMISupport : public QObject {
-
-	Q_OBJECT
+class FMISupport {
 
 public:
-	explicit FMISupport(QObject *parent = NULL);
-	virtual ~FMISupport() {};
+	FMISupport() {}
+	virtual ~FMISupport() {}
 
 public:
-	FMUInfo loadFMU(QString);
+	FMUInfo loadFMU(const char*, string);
 	//void unLoad();
 	//bool simulateByCs(double, double, double, int, char **);
 	//bool simulateByMe(double, double, double, int, char **);
@@ -60,10 +57,7 @@ private:
 
 private:
 	char* currentDir;
-	QString type;
-
-signals:
-	void postUIMsg(QString);
+	string type;
 };
 
 //void fmuLogger(void*, fmi2String, fmi2Status, fmi2String, fmi2String, ...);

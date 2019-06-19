@@ -187,9 +187,11 @@ void CentralLabel::slotOpen() {
 		}
 
 		//看是不是正确的FMU
-		FMUInfo info = FMIsupport->loadFMU(modelPath);
+		FMUInfo info = FMIsupport->loadFMU(
+			modelPath.toLocal8Bit().constData(), 
+			QUuid::createUuid().toString().toStdString());
 		if (!info.isSuccess) {
-			signalSendMessage(info.message);
+			emit signalSendMessage(QString::fromStdString(info.message));
 			return;
 		}
 		modelRepo.insert(modelPath, info);

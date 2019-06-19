@@ -33,20 +33,14 @@ static char currentDirectory[DIRECTORY_PATH_SIZE];
 
 //ofstream logFile(".\\logs\\FMI.log");
 
-using namespace std;
-
-FMISupport::FMISupport(QObject *parent) : QObject(parent) {
-}
-
-FMUInfo FMISupport::loadFMU(QString filePath) {
+FMUInfo FMISupport::loadFMU(const char* filePath, string uuid) {
 
 	FMUInfo info;
 	info.isSuccess = false;
 	//TODO：所有错误回复都要清理解压缩文件及内存回收
 
 	//判断fmu文件是否存在
-	QFileInfo fileInfo(filePath);
-	if (!fileInfo.isFile()) {
+	if (fopen(filePath, "r") == NULL) {
 		info.message = "fmu file not exists";
 		return info;
 	}
@@ -55,19 +49,21 @@ FMUInfo FMISupport::loadFMU(QString filePath) {
 	currentDir = GetCurrentDir(currentDirectory, DIRECTORY_PATH_SIZE);
 
 	//命名，添加一个uuid
-	QString globalName = filePath.section('/', -1);
-	globalName.append(QUuid::createUuid().toString());
-	QString targetDir;
+	string str_filePath = filePath;
+	string globalName = str_filePath.substr(str_filePath.find_last_of('/') + 1);
+	globalName.append(uuid);
+	string targetDir;
+
 	targetDir.append(currentDir)
 		.append("\\FMI\\extracted\\").append(globalName).append("\\");
 
 	//拼接cmd命令，原先用的是sstream，清空需要(ss.clear() + ss.str(""))
-	QString command;
+	string command;
 	command.append(UNZIP_CMD).append("\"").append(targetDir)
 		.append("\"").append(" \"").append(filePath).append("\" > NUL");
 
 	//解压缩
-	int code = system(command.toLocal8Bit().constData());
+	int code = system(command.data());
 	switch (code) {
 	case SEVEN_ZIP_NO_ERROR: break;
 	case SEVEN_ZIP_WARNING: info.message = "unzip warning"; return info;
@@ -78,12 +74,12 @@ FMUInfo FMISupport::loadFMU(QString filePath) {
 	default: info.message = "unzip unknown problem"; return info;
 	}
 
-	QString xmlPath = targetDir;
+	string xmlPath = targetDir;
 	xmlPath.append("modelDescription.xml");
 
 	//校验及写入版本号，目前仅支持2.0
 	//TODO:注掉了一句关闭xml的话
-	char* xmlFmiVersion = extractVersion(xmlPath.toLocal8Bit().constData());
+	char* xmlFmiVersion = extractVersion(xmlPath.data());
 	if (xmlFmiVersion == NULL) {
 		info.message = "The FMI version of the FMU could not be read";
 		return info;
@@ -98,7 +94,7 @@ FMUInfo FMISupport::loadFMU(QString filePath) {
 	FMU fmu;
 
 	//TODO:注掉了一句关闭xml的话
-	fmu.modelDescription = parse(xmlPath.toLocal8Bit().data());
+	fmu.modelDescription = parse(const_cast<char*>(xmlPath.c_str()));
 
 	//获取类型
 	Component *component = getModelExchange(fmu.modelDescription);
@@ -122,7 +118,7 @@ FMUInfo FMISupport::loadFMU(QString filePath) {
 	info.modelId = getAttributeValue((Element*)component, att_modelIdentifier);
 
 	//获取dll路径并写入全名和三个路径
-	QString dllPath = targetDir;
+	string dllPath = targetDir;
 	dllPath.append(DLL_DIR).append(info.modelId).append(".dll");
 	info.globalName = globalName;
 	info.targetDir = targetDir;
@@ -130,67 +126,87 @@ FMUInfo FMISupport::loadFMU(QString filePath) {
 	info.dllPath = dllPath;
 
 	//加载dll功能
-	if (!loadDll(dllPath.toLocal8Bit().constData(), &fmu)) {
+	if (!loadDll(dllPath.data(), &fmu)) {
 		info.message = "load dll error";
 		return info;
 	}
 
 	Element* ele;
-	QString result;
+	const char* result;
 	//头部基本信息
 	ele = (Element*)(fmu.modelDescription);
 	result = getAttributeValue(ele, att_modelName);
 	if (result != NULL) {
-		info.basicInfo.insert("modelName", result);
+		info.basicInfo.insert(make_pair("modelName", result));
 	}
 	result = getAttributeValue(ele, att_guid);
 	if (result != NULL) {
-		info.basicInfo.insert("guid", result);
+		info.basicInfo.insert(make_pair("guid", result));
 	}
 	result = getAttributeValue(ele, att_description);
 	if (result != NULL) {
-		info.basicInfo.insert("description", result);
+		info.basicInfo.insert(make_pair("description", result));
 	}
 	result = getAttributeValue(ele, att_author);
 	if (result != NULL) {
-		info.basicInfo.insert("author", result);
+		info.basicInfo.insert(make_pair("author", result));
 	}
 	result = getAttributeValue(ele, att_copyright);
 	if (result != NULL) {
-		info.basicInfo.insert("copyright", result);
+		info.basicInfo.insert(make_pair("copyright", result));
 	}
 	result = getAttributeValue(ele, att_license);
 	if (result != NULL) {
-		info.basicInfo.insert("license", result);
+		info.basicInfo.insert(make_pair("license", result));
 	}
 	result = getAttributeValue(ele, att_generationTool);
 	if (result != NULL) {
-		info.basicInfo.insert("generationTool", result);
+		info.basicInfo.insert(make_pair("generationTool", result));
 	}
 	result = getAttributeValue(ele, att_generationDateAndTime);
 	if (result != NULL) {
-		info.basicInfo.insert("generationDateAndTime", result);
+		info.basicInfo.insert(make_pair("generationDateAndTime", result));
 	}
 	result = getAttributeValue(ele, att_variableNamingConvention);
 	if (result != NULL) {
-		info.basicInfo.insert("variableNamingConvention", result);
+		info.basicInfo.insert(make_pair("variableNamingConvention", result));
 	}
 	result = getAttributeValue(ele, att_numberOfEventIndicators);
 	if (result != NULL) {
-		info.basicInfo.insert("numberOfEventIndicators", result);
+		info.basicInfo.insert(make_pair("numberOfEventIndicators", result));
 	}
 	//变量信息
 	for (int i = 0; i < getScalarVariableSize(fmu.modelDescription); ++i) {
 		ele = (Element*)getScalarVariable(fmu.modelDescription, i);
 		FMIVariable* fv = new FMIVariable();
-		QString a = getAttributeValue(ele, att_name);
-		fv->name = getAttributeValue(ele, att_name);
-		fv->valueReference = getAttributeValue(ele, att_valueReference);
-		fv->description = getAttributeValue(ele, att_description);
-		fv->causality = getAttributeValue(ele, att_causality);
-		fv->variability = getAttributeValue(ele, att_variability);
-		fv->initial = getAttributeValue(ele, att_initial);
-		fv->canHandleMSPTI = getAttributeValue(ele, att_canHandleMultipleSetPerTimeInstant);
+		result = getAttributeValue(ele, att_name);
+		if (result != NULL) {
+			fv->name = result;
+		}
+		result = getAttributeValue(ele, att_valueReference);
+		if (result != NULL) {
+			fv->valueReference = result;
+		}
+		result = getAttributeValue(ele, att_description);
+		if (result != NULL) {
+			fv->description = result;
+		}
+		result = getAttributeValue(ele, att_causality);
+		if (result != NULL) {
+			fv->causality = result;
+		}
+		result = getAttributeValue(ele, att_variability);
+		if (result != NULL) {
+			fv->variability = result;
+		}
+		result = getAttributeValue(ele, att_initial);
+		if (result != NULL) {
+			fv->initial = result;
+		}
+		result = getAttributeValue(ele, att_canHandleMultipleSetPerTimeInstant);
+		if (result != NULL) {
+			fv->canHandleMSPTI = result;
+		}
 		info.variableInfo.insert(fv);
 	}
 
@@ -487,7 +503,7 @@ bool FMISupport::simulateByMe(
 	//ss << currentDir << OUT_PATH << "resources\\";
 	str = ss.str();
 
-	//回调 
+	//回调
 	fmi2CallbackFunctions callbacks = { fmuLogger, calloc, free, NULL, &fmu0 };
 
 	//无可视化组件

@@ -8,6 +8,8 @@
 #ifndef CENTRALLABEL_H
 #define CENTRALLABEL_H
 
+#include <QUuid>
+
 #include "cwidgets.h"
 #include "fancybutton.h"
 
