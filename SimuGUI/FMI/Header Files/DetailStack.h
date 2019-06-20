@@ -22,14 +22,33 @@ class DetailStack :public MiniStack {
 
 public:
 	explicit DetailStack(QWidget *p = 0);
-	~DetailStack() {};
+	~DetailStack() {}
 
 public slots:
 	void slotModelDetail(FMUInfo*);
 
+private slots :
+	void slotGo();
+signals:
+	void signalRunSimulation(double, double, double);
+signals:
+	void signalSendMessage(QString);
+
 private:
+	//基本信息
 	QWidget *infoWidget;
 	QGridLayout *infoLayout;
+	//变量信息
+	QTableWidget *variableTable;
+	//运行信息
+	QLineEdit *startTime;
+	QLineEdit *stopTime;
+	QLineEdit *stepSize;
+
+private:
+	FMUInfo *info;
+	void refreshInfo();
+	void refreshVariable();
 };
 
 #endif // DETAILSTACK_H

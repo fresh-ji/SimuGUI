@@ -74,6 +74,10 @@ FMUInfo FMISupport::loadFMU(const char* filePath, string uuid) {
 	default: info.message = "unzip unknown problem"; return info;
 	}
 
+	string resultDir = targetDir;
+	resultDir.append(currentDir)
+		.append("\\FMI\\result\\").append(globalName).append("\\");
+
 	string xmlPath = targetDir;
 	xmlPath.append("modelDescription.xml");
 
@@ -122,6 +126,7 @@ FMUInfo FMISupport::loadFMU(const char* filePath, string uuid) {
 	dllPath.append(DLL_DIR).append(info.modelId).append(".dll");
 	info.globalName = globalName;
 	info.targetDir = targetDir;
+	info.resultDir = resultDir;
 	info.xmlPath = xmlPath;
 	info.dllPath = dllPath;
 
@@ -341,55 +346,43 @@ void* FMISupport::getAdr(bool *success, HMODULE dllHandle, const char *functionN
 	return fp;
 }
 
-/*
-void FMISupport::unLoad() {
-	fmu0.terminate(c);
-	fmu0.freeInstance(c);
-	FreeLibrary(fmu0.dllHandle);
-	freeModelDescription(fmu0.modelDescription);
-	ostringstream ss;
-	string str;
-	//ss << "rmdir /S /Q " << currentDir << OUT_PATH;
-	str = ss.str();
-	system(str.c_str());
-}
-
-bool FMISupport::simulateByCs(
+simuInfo FMISupport::simulateByCs(
+	FMU fmu,
+	string resultDir,
 	double tStart,
 	double tEnd,
 	double h,
 	int nCategories,
 	char **categories) {
-	ModelDescription* md = fmu0.modelDescription;
+
+	simuInfo info;
+	info.isSucess = false;
+
+	ModelDescription* md = fmu.modelDescription;
 	//获取信息
 	const char* guid = getAttributeValue((Element*)md, att_guid);
 	const char *instanceName = getAttributeValue((Element*)getCoSimulation(md), att_modelIdentifier);
 
-	ostringstream ss;
-	string str;
-
-	//ss << currentDir << OUT_PATH << "resources\\";
-	str = ss.str();
-
 	//回调
-	fmi2CallbackFunctions callbacks = { fmuLogger, calloc, free, NULL, &fmu0 };
+	fmi2CallbackFunctions callbacks = { fmuLogger, calloc, free, NULL, &fmu };
 
 	//是否有可视化组件
 	fmi2Boolean visible = fmi2False;
 
 	//最后一项为loggingOn
-	c = fmu0.instantiate(instanceName, fmi2CoSimulation, guid, str.c_str(), &callbacks, visible, true);
+	fmi2Component c = fmu.instantiate(instanceName, fmi2CoSimulation, 
+		guid, resultDir.c_str(), &callbacks, visible, true);
 
 	if (!c) {
-		emit postUIMsg("could not instantiate model");
-		return false;
+		info.message = "could not instantiate model";
+		return info;
 	}
 
 	if (nCategories > 0) {
-		fmi2Status fmi2Flag = fmu0.setDebugLogging(c, fmi2True, nCategories, categories);
+		fmi2Status fmi2Flag = fmu.setDebugLogging(c, fmi2True, nCategories, categories);
 		if (fmi2Flag > fmi2Warning) {
-			emit postUIMsg("failed FMI set debug logging");
-			return false;
+			info.message = "failed FMI set debug logging";
+			return info;
 		}
 	}
 
@@ -405,23 +398,27 @@ bool FMISupport::simulateByCs(
 		}
 	}
 
-	fmi2Status fmi2Flag = fmu0.setupExperiment(c, toleranceDefined, tolerance, tStart, fmi2True, tEnd);
+	fmi2Status fmi2Flag = fmu.setupExperiment(c, 
+		toleranceDefined, tolerance, tStart, fmi2True, tEnd);
+
 	if (fmi2Flag > fmi2Warning) {
-		emit postUIMsg("failed FMI setup experiment");
-		return false;
+		info.message = "failed FMI setup experiment";
+		return info;
 	}
 
-	fmi2Flag = fmu0.enterInitializationMode(c);
+	fmi2Flag = fmu.enterInitializationMode(c);
 	if (fmi2Flag > fmi2Warning) {
-		emit postUIMsg("failed FMI enter initialization mode");
-		return false;
+		info.message = "failed FMI enter initialization mode";
+		return info;
 	}
 
-	fmi2Flag = fmu0.exitInitializationMode(c);
+	fmi2Flag = fmu.exitInitializationMode(c);
 	if (fmi2Flag > fmi2Warning) {
-		emit postUIMsg("failed FMI exit initialization mode");
-		return false;
+		info.message = "failed FMI exit initialization mode";
+		return info;
 	}
+
+
 
 	QString ss1 = ".\\logs\\fmics";
 	QString ss2 = instanceName;
@@ -744,64 +741,7 @@ bool FMISupport::simulateByMe(
 	return true;
 }
 
-void FMISupport::outputData(ofstream& file, double time, bool isHeader) {
-
-	if (isHeader) {
-		file << "time";
-	}
-	else {
-		file << time;
-	}
-	for (int k = 0; k < getScalarVariableSize(fmu0.modelDescription); ++k) {
-		ScalarVariable *sv = getScalarVariable(fmu0.modelDescription, k);
-		if (isHeader) {
-			const char *s = getAttributeValue((Element*)sv, att_name);
-			file << ",";
-			while (*s) {
-				//忽略空格和逗号
-				if (*s != ' ') {
-					file << (*s == ',' ? '.' : *s);
-				}
-				s++;
-			}
-		}
-		else {
-			fmi2ValueReference vr = getValueReference(sv);
-			switch (getElementType(getTypeSpec(sv))) {
-			case elm_Real:
-				fmi2Real r;
-				fmu0.getReal(c, &vr, 1, &r);
-				file << "," << r;
-				break;
-			case elm_Integer:
-			case elm_Enumeration:
-				fmi2Integer i;
-				fmu0.getInteger(c, &vr, 1, &i);
-				file << "," << i;
-				break;
-			case elm_Boolean:
-				fmi2Boolean b;
-				fmu0.getBoolean(c, &vr, 1, &b);
-				file << "," << b;
-				break;
-			case elm_String:
-				fmi2String s;
-				fmu0.getString(c, &vr, 1, &s);
-				file << "," << s;
-				break;
-			default:
-				file << ",NoValueForType=" << getElementType(getTypeSpec(sv));
-			}
-		}
-	}
-	file << endl;
-}
-*/
-
-
-
 /**************************************************************/
-/*
 #define MAX_MSG_SIZE 1000
 void fmuLogger(
 	void *componentEnvironment,
@@ -938,5 +878,71 @@ const char* fmi2StatusToString(fmi2Status status) {
 	case fmi2Pending: return "fmi2PendingIFCS";
 	default:         return "?";
 	}
+}
+/**************************************************************/
+
+/*
+void FMISupport::unLoad() {
+	fmu0.terminate(c);
+	fmu0.freeInstance(c);
+	FreeLibrary(fmu0.dllHandle);
+	freeModelDescription(fmu0.modelDescription);
+	ostringstream ss;
+	string str;
+	//ss << "rmdir /S /Q " << currentDir << OUT_PATH;
+	str = ss.str();
+	system(str.c_str());
+}
+void FMISupport::outputData(ofstream& file, double time, bool isHeader) {
+
+	if (isHeader) {
+		file << "time";
+	}
+	else {
+		file << time;
+	}
+	for (int k = 0; k < getScalarVariableSize(fmu0.modelDescription); ++k) {
+		ScalarVariable *sv = getScalarVariable(fmu0.modelDescription, k);
+		if (isHeader) {
+			const char *s = getAttributeValue((Element*)sv, att_name);
+			file << ",";
+			while (*s) {
+				//忽略空格和逗号
+				if (*s != ' ') {
+					file << (*s == ',' ? '.' : *s);
+				}
+				s++;
+			}
+		}
+		else {
+			fmi2ValueReference vr = getValueReference(sv);
+			switch (getElementType(getTypeSpec(sv))) {
+			case elm_Real:
+				fmi2Real r;
+				fmu0.getReal(c, &vr, 1, &r);
+				file << "," << r;
+				break;
+			case elm_Integer:
+			case elm_Enumeration:
+				fmi2Integer i;
+				fmu0.getInteger(c, &vr, 1, &i);
+				file << "," << i;
+				break;
+			case elm_Boolean:
+				fmi2Boolean b;
+				fmu0.getBoolean(c, &vr, 1, &b);
+				file << "," << b;
+				break;
+			case elm_String:
+				fmi2String s;
+				fmu0.getString(c, &vr, 1, &s);
+				file << "," << s;
+				break;
+			default:
+				file << ",NoValueForType=" << getElementType(getTypeSpec(sv));
+			}
+		}
+	}
+	file << endl;
 }
 */

@@ -157,15 +157,8 @@ void CentralLabel::addToolBar() {
 	deleteButton->setIcon(QIcon("./Icon/function/delete"));
 	connect(deleteButton, SIGNAL(clicked()), this, SLOT(slotDelete()));
 
-	QToolButton *gobutton = new QToolButton(this);
-	gobutton->setGeometry(270, 5, 50, 50);
-	gobutton->setCursor(Qt::PointingHandCursor);
-	gobutton->setStyleSheet("QToolButton{border: none;border-radius: 25px;}");
-	gobutton->setIcon(QIcon("./Icon/function/go"));
-	connect(gobutton, SIGNAL(clicked()), this, SLOT(slotGo()));
-
 	QToolButton *infoButton = new QToolButton(this);
-	infoButton->setGeometry(320, 5, 50, 50);
+	infoButton->setGeometry(270, 5, 50, 50);
 	infoButton->setStyleSheet("QToolButton{border: none;border-radius: 25px;}");
 	infoButton->setIcon(QIcon("./Icon/function/info"));
 	infoButton->setToolTip("Only FMI-2.0 and WIN64 are supported");
@@ -228,6 +221,6 @@ void CentralLabel::slotDelete() {
 
 }
 
-void CentralLabel::slotGo() {
+void CentralLabel::slotRunSimulation(double start, double stop, double step) {
 
 }

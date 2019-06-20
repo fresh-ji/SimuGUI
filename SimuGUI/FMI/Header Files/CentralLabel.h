@@ -42,13 +42,14 @@ private slots:
 	void slotRedo();
 	void slotGrid();
 	void slotDelete();
-	void slotGo();
 signals:
 	//向ui发送消息
 	void signalSendMessage(QString);
 signals:
 	//向DetailStack发送要显示的
 	void signalModelDetail(FMUInfo*);
+public slots:
+	void slotRunSimulation(double, double, double);
 
 private:
 	//模型库

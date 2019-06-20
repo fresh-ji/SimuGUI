@@ -30,12 +30,18 @@ struct FMUInfo {
 	string modelId;//文件名
 	string globalName;//带uuid的全局名
 	string targetDir;//fmu目标文件夹
+	string resultDir;//fmu结果文件夹
 	string xmlPath;//xml路径
 	string dllPath;//dll路径
 	//xml里的基本信息
 	map<string, string> basicInfo;
 	//xml里的变量信息
 	set<FMIVariable*> variableInfo;
+};
+
+struct simuInfo {
+	bool isSucess;
+	string message;
 };
 
 class FMISupport {
@@ -46,13 +52,15 @@ public:
 
 public:
 	FMUInfo loadFMU(const char*, string);
+	simuInfo simulateByCs(FMU, string, double, double, double, int, char **);
+	bool simulateByMe(double, double, double, int, char **);
+
 	//void unLoad();
-	//bool simulateByCs(double, double, double, int, char **);
-	//bool simulateByMe(double, double, double, int, char **);
 
 private:
 	bool loadDll(const char*, FMU*);
 	void *getAdr(bool*, HMODULE, const char*);
+
 	//void outputData(ofstream&, double, bool);
 
 private:
@@ -60,7 +68,7 @@ private:
 	string type;
 };
 
-//void fmuLogger(void*, fmi2String, fmi2Status, fmi2String, fmi2String, ...);
-//void replaceRefsInMessage(const char*, char*, int, FMU*);
-//ScalarVariable* getSV(FMU*, char, fmi2ValueReference);
-//const char* fmi2StatusToString(fmi2Status);
+void fmuLogger(void*, fmi2String, fmi2Status, fmi2String, fmi2String, ...);
+void replaceRefsInMessage(const char*, char*, int, FMU*);
+ScalarVariable* getSV(FMU*, char, fmi2ValueReference);
+const char* fmi2StatusToString(fmi2Status);

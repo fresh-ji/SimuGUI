@@ -66,10 +66,17 @@ void FMISimulator::createConnects() {
 	//接收消息发送
 	connect(m_pCentralLabel, SIGNAL(signalSendMessage(QString)),
 		this, SLOT(slotReceiveMessage(QString)));
+	connect(m_pDetailStack, SIGNAL(signalSendMessage(QString)),
+		this, SLOT(slotReceiveMessage(QString)));
 
 	//FMU详情发送
 	connect(m_pCentralLabel, SIGNAL(signalModelDetail(FMUInfo*)),
 		m_pDetailStack, SLOT(slotModelDetail(FMUInfo*)));
+
+	//仿真FMU
+	connect(m_pDetailStack, SIGNAL(signalRunSimulation(double, double, double)),
+		m_pCentralLabel, SLOT(slotRunSimulation(double, double, double)));
+	
 }
 
 void FMISimulator::createCentralLabel() {
