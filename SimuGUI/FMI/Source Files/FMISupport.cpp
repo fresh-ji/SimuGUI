@@ -9,6 +9,9 @@
 
 #include "FMISupport.h"
 #include "xmlVersionParser.h"
+#include "ErrorLog.h"
+
+#include <string>
 
 #define DIRECTORY_PATH_SIZE 1024
 static char currentDirectory[DIRECTORY_PATH_SIZE];
@@ -74,9 +77,9 @@ FMUInfo FMISupport::loadFMU(const char* filePath, string uuid) {
 	default: info.message = "unzip unknown problem"; return info;
 	}
 
-	string resultDir = targetDir;
+	string resultDir;
 	resultDir.append(currentDir)
-		.append("\\FMI\\result\\").append(globalName).append("\\");
+		.append("\\FMI\\result\\").append(globalName);
 
 	string xmlPath = targetDir;
 	xmlPath.append("modelDescription.xml");
@@ -364,13 +367,14 @@ simuInfo FMISupport::simulateByCs(
 	const char *instanceName = getAttributeValue((Element*)getCoSimulation(md), att_modelIdentifier);
 
 	//回调
+	this->currentFMU = fmu;
 	fmi2CallbackFunctions callbacks = { fmuLogger, calloc, free, NULL, &fmu };
 
 	//是否有可视化组件
 	fmi2Boolean visible = fmi2False;
 
 	//最后一项为loggingOn
-	fmi2Component c = fmu.instantiate(instanceName, fmi2CoSimulation, 
+	fmi2Component c = fmu.instantiate(instanceName, fmi2CoSimulation,
 		guid, resultDir.c_str(), &callbacks, visible, true);
 
 	if (!c) {
@@ -398,7 +402,7 @@ simuInfo FMISupport::simulateByCs(
 		}
 	}
 
-	fmi2Status fmi2Flag = fmu.setupExperiment(c, 
+	fmi2Status fmi2Flag = fmu.setupExperiment(c,
 		toleranceDefined, tolerance, tStart, fmi2True, tEnd);
 
 	if (fmi2Flag > fmi2Warning) {
@@ -418,17 +422,12 @@ simuInfo FMISupport::simulateByCs(
 		return info;
 	}
 
+	//结果输出
+	string resultFile = resultDir + "-CS-" + LOG::getCurrentTime() + ".csv";
+	ofstream dataFile(resultFile, ios::ate);
 
-
-	QString ss1 = ".\\logs\\fmics";
-	QString ss2 = instanceName;
-	QString ss3 = ".csv";
-	QString s = ss1 + ss2 + ss3;
-
-	ofstream dataFile(s.toStdString().data());
-
-	outputData(dataFile, tStart, true);
-	outputData(dataFile, tStart, false);
+	outputData(dataFile, tStart, true, fmu, c);
+	outputData(dataFile, tStart, false, fmu, c);
 
 	int nSteps = 0;
 	double hh = h;
@@ -438,86 +437,85 @@ simuInfo FMISupport::simulateByCs(
 		if (h > tEnd - time) {
 			hh = tEnd - time;
 		}
-		fmi2Flag = fmu0.doStep(c, time, hh, fmi2True);
+		fmi2Flag = fmu.doStep(c, time, hh, fmi2True);
 		if (fmi2Flag == fmi2Discard) {
 			fmi2Boolean b;
-			if (fmi2OK != fmu0.getBooleanStatus(c, fmi2Terminated, &b)) {
-				emit postUIMsg(
-					"could not complete simulation of the model. getBooleanStatus return other than fmi2OK");
-				return false;
+			if (fmi2OK != fmu.getBooleanStatus(c, fmi2Terminated, &b)) {
+				info.message =
+					"could not complete simulation of the model. getBooleanStatus return other than fmi2OK";
+				return info;
 			}
 			if (b == fmi2True) {
-				emit postUIMsg("the model requested to end the simulation");
-				return false;
+				break;
 			}
-			emit postUIMsg("could not complete simulation of the model 1");
-			return false;
+			info.message = "could not complete simulation of the model 1";
+			return info;
 		}
 		if (fmi2Flag != fmi2OK) {
-			emit postUIMsg("could not complete simulation of the model 2");
-			return false;
+			info.message = "could not complete simulation of the model 2";
+			return info;
 		}
 		time += hh;
-		outputData(dataFile, time, false);
+		outputData(dataFile, time, false, fmu, c);
 		//计步
 		nSteps++;
 	}
 
-	QString s1 = "Simulation from ";
-	QString s2 = QString::number(tStart);
-	QString s3 = " to ";
-	QString s4 = QString::number(tEnd);;
-	emit postUIMsg(s1 + s2 + s3 + s4);
+	info.message += "Simulation from ";
+	info.message += to_string(tStart);
+	info.message += " to ";
+	info.message += to_string(time);
 
-	QString s5 = "steps ............ ";
-	QString s6 = QString::number(nSteps);
-	emit postUIMsg(s5 + s6);
+	info.message += "   steps = ";
+	info.message += to_string(nSteps);
 
-	QString s7 = "fixed step size .. ";
-	QString s8 = QString::number(h);
-	emit postUIMsg(s7 + s8);
+	info.message += "   fixed step size = ";
+	info.message += to_string(h);
 
-	return true;
+	info.isSucess = true;
+	info.resultPath = resultFile;
+	return info;
 }
 
-bool FMISupport::simulateByMe(
+simuInfo FMISupport::simulateByMe(
+	FMU fmu,
+	string resultDir,
 	double tStart,
 	double tEnd,
 	double h,
 	int nCategories,
 	char **categories) {
 
+	simuInfo info;
+	info.isSucess = false;
+
 	bool loggingOn = true;
 
-	ModelDescription* md = fmu0.modelDescription;
+	ModelDescription* md = fmu.modelDescription;
 	//获取信息
 	const char* guid = getAttributeValue((Element*)md, att_guid);
-	const char* instanceName = getAttributeValue((Element*)getModelExchange(md), att_modelIdentifier);
-
-	ostringstream ss;
-	string str;
-
-	//ss << currentDir << OUT_PATH << "resources\\";
-	str = ss.str();
+	const char* instanceName = getAttributeValue(
+		(Element*)getModelExchange(md), att_modelIdentifier);
 
 	//回调
-	fmi2CallbackFunctions callbacks = { fmuLogger, calloc, free, NULL, &fmu0 };
+	fmi2CallbackFunctions callbacks = { fmuLogger, calloc, free, NULL, &fmu };
 
 	//无可视化组件
 	fmi2Boolean visible = fmi2False;
 
 	//最后一项为loggingOn
-	fmi2Component c = fmu0.instantiate(instanceName, fmi2ModelExchange, guid, str.c_str(), &callbacks, visible, loggingOn);
+	fmi2Component c = fmu.instantiate(instanceName, fmi2ModelExchange,
+		guid, resultDir.c_str(), &callbacks, visible, loggingOn);
 	if (!c) {
-		emit postUIMsg("could not instantiate model");
-		return false;
+		info.message = "could not instantiate model";
+		return info;
 	}
 
 	if (nCategories > 0) {
-		fmi2Status fmi2Flag = fmu0.setDebugLogging(c, fmi2True, nCategories, categories);
+		fmi2Status fmi2Flag = fmu.setDebugLogging(c, fmi2True, nCategories, categories);
 		if (fmi2Flag > fmi2Warning) {
-			emit postUIMsg("failed FMI set debug logging");
-			return 0;
+			info.message = "failed FMI set debug logging";
+			return info;
 		}
 	}
 
@@ -541,29 +539,29 @@ bool FMISupport::simulateByMe(
 		prez = (double*)calloc(nz, sizeof(double));
 	}
 	if ((!x || !xdot) || (nz > 0 && (!z || !prez))) {
-		emit postUIMsg("out of memory");
-		return false;
+		info.message = "out of memory";
+		return info;
 	}
 
 	fmi2Boolean toleranceDefined = fmi2False;
 	fmi2Real tolerance = 0;
 	//准备
-	fmi2Status fmi2Flag = fmu0.setupExperiment(c, toleranceDefined, tolerance, tStart, fmi2True, tEnd);
+	fmi2Status fmi2Flag = fmu.setupExperiment(c, toleranceDefined, tolerance, tStart, fmi2True, tEnd);
 	if (fmi2Flag > fmi2Warning) {
-		emit postUIMsg("failed FMI setup experiment");
-		return false;
+		info.message = "failed FMI setup experiment";
+		return info;
 	}
 
 	//模型初始化
-	fmi2Flag = fmu0.enterInitializationMode(c);
+	fmi2Flag = fmu.enterInitializationMode(c);
 	if (fmi2Flag > fmi2Warning) {
-		emit postUIMsg("failed FMI enter initialization mode");
-		return false;
+		info.message = "failed FMI enter initialization mode";
+		return info;
 	}
-	fmi2Flag = fmu0.exitInitializationMode(c);
+	fmi2Flag = fmu.exitInitializationMode(c);
 	if (fmi2Flag > fmi2Warning) {
-		emit postUIMsg("failed FMI exit initialization mode");
-		return false;
+		info.message = "failed FMI exit initialization mode";
+		return info;
 	}
 
 	//事件迭代
@@ -571,19 +569,15 @@ bool FMISupport::simulateByMe(
 	eventInfo.newDiscreteStatesNeeded = fmi2True;
 	eventInfo.terminateSimulation = fmi2False;
 	while (eventInfo.newDiscreteStatesNeeded && !eventInfo.terminateSimulation) {
-		fmi2Flag = fmu0.newDiscreteStates(c, &eventInfo);
+		fmi2Flag = fmu.newDiscreteStates(c, &eventInfo);
 		if (fmi2Flag > fmi2Warning) {
-			emit postUIMsg("could not set a new discrete state");
-			return 0;
+			info.message = "could not set a new discrete state";
+			return info;
 		}
 	}
 
-	QString ss1 = ".\\logs\\fmime\\";
-	QString ss2 = instanceName;
-	QString ss3 = ".csv";
-	QString s = ss1 + ss2 + ss3;
-
-	ofstream dataFile(s.toStdString().data());
+	string resultFile = resultDir + "-ME-" + LOG::getCurrentTime() + ".csv";
+	ofstream dataFile(resultFile, ios::ate);
 
 	double time = tStart;
 	double dt, tPre;
@@ -593,25 +587,26 @@ bool FMISupport::simulateByMe(
 	int nStateEvents = 0;
 	int nStepEvents = 0;
 	if (eventInfo.terminateSimulation) {
-		emit postUIMsg("model requested termination at t = " + QString::number(time));
+		info.message = "model requested termination at t = " + to_string(time);
 	}
 	else {
-		fmu0.enterContinuousTimeMode(c);
-		outputData(dataFile, tStart, true);
-		outputData(dataFile, tStart, false);
+		fmu.enterContinuousTimeMode(c);
+
+		outputData(dataFile, tStart, true, fmu, c);
+		outputData(dataFile, tStart, false, fmu, c);
 
 		while (time < tEnd) {
 			//1.获取当前状态
-			fmi2Flag = fmu0.getContinuousStates(c, x, nx);
+			fmi2Flag = fmu.getContinuousStates(c, x, nx);
 			if (fmi2Flag > fmi2Warning) {
-				emit postUIMsg("could not retrieve states");
-				return false;
+				info.message = "could not retrieve states";
+				return info;
 			}
 			//2.获取状态导数
-			fmi2Flag = fmu0.getDerivatives(c, xdot, nx);
+			fmi2Flag = fmu.getDerivatives(c, xdot, nx);
 			if (fmi2Flag > fmi2Warning) {
-				emit postUIMsg("could not retrieve derivatives");
-				return false;
+				info.message = "could not retrieve derivatives";
+				return info;
 			}
 			//3.时间事件
 			tPre = time;
@@ -621,128 +616,181 @@ bool FMISupport::simulateByMe(
 				time = eventInfo.nextEventTime;
 			}
 			dt = time - tPre;
-			fmi2Flag = fmu0.setTime(c, time);
+			fmi2Flag = fmu.setTime(c, time);
 			if (fmi2Flag > fmi2Warning) {
-				emit postUIMsg("could not set time");
-				return false;
+				info.message = "could not set time";
+				return info;
 			}
 			//4.前进一步
 			for (int i = 0; i < nx; i++) {
 				//欧拉折线
 				x[i] += dt * xdot[i];
 			}
-			fmi2Flag = fmu0.setContinuousStates(c, x, nx);
+			fmi2Flag = fmu.setContinuousStates(c, x, nx);
 			if (fmi2Flag > fmi2Warning) {
-				emit postUIMsg("could not set states");
-				return false;
+				info.message = "could not set states";
+				return info;
 			}
-			if (loggingOn) {
-				logFile << "Step " << nSteps << " to t = " << time << endl;
-			}
+
+			//"Step " << nSteps << " to t = " << time
+
 			//5.检查状态事件
 			for (int i = 0; i < nz; i++) {
 				prez[i] = z[i];
 			}
-			fmi2Flag = fmu0.getEventIndicators(c, z, nz);
+			fmi2Flag = fmu.getEventIndicators(c, z, nz);
 			if (fmi2Flag > fmi2Warning) {
-				emit postUIMsg("could not retrieve event indicators");
-				return false;
+				info.message = "could not retrieve event indicators";
+				return info;
 			}
 			stateEvent = FALSE;
 			for (int i = 0; i < nz; i++) {
 				stateEvent = stateEvent || (prez[i] * z[i] < 0);
 			}
 			//6.检查步进事件
-			fmi2Flag = fmu0.completedIntegratorStep(c, fmi2True, &stepEvent, &terminateSimulation);
+			fmi2Flag = fmu.completedIntegratorStep(c, fmi2True, &stepEvent, &terminateSimulation);
 			if (fmi2Flag > fmi2Warning) {
-				emit postUIMsg("could not complete integrator step");
-				return false;
+				info.message = "could not complete integrator step";
+				return info;
 			}
 			if (terminateSimulation) {
-				emit postUIMsg("model requested termination at t=" + QString::number(time));
 				break;
 			}
 			//7.处理事件
 			if (timeEvent || stateEvent || stepEvent) {
-				fmu0.enterEventMode(c);
+				fmu.enterEventMode(c);
 				if (timeEvent) {
 					nTimeEvents++;
-					if (loggingOn) {
-						logFile << "time event at t=" << time << endl;
-					}
+					//"time event at t=" << time
 				}
 				if (stateEvent) {
 					nStateEvents++;
-					if (loggingOn) {
-						for (int i = 0; i < nz; i++) {
-							logFile << "state event " << ((prez[i] > 0 && z[i] < 0) ? "-\\-" : "-/-")
-								<< " z[" << i << "] at t=" << time << endl;
-						}
+					for (int i = 0; i < nz; i++) {
+						//"state event " << ((prez[i] > 0 && z[i] < 0) ? "-\\-" : "-/-") << " z[" << i << "] at t=" << time
 					}
 				}
 				if (stepEvent) {
 					nStepEvents++;
-					if (loggingOn) {
-						logFile << "step event at t = " << time << endl;
-					}
+					//"step event at t = " << time
 				}
 				eventInfo.newDiscreteStatesNeeded = fmi2True;
 				eventInfo.terminateSimulation = fmi2False;
 				while (eventInfo.newDiscreteStatesNeeded && !eventInfo.terminateSimulation) {
-					fmi2Flag = fmu0.newDiscreteStates(c, &eventInfo);
+					fmi2Flag = fmu.newDiscreteStates(c, &eventInfo);
 					if (fmi2Flag > fmi2Warning) {
-						emit postUIMsg("could not set a new discrete state");
-						return false;
+						info.message = "could not set a new discrete state";
+						return info;
 					}
-					if (eventInfo.valuesOfContinuousStatesChanged && loggingOn) {
-						emit postUIMsg("continuous state values changed at t=" + QString::number(time));
+					if (eventInfo.valuesOfContinuousStatesChanged) {
+						//"continuous state values changed at t=" + QString::number(time)
 					}
-					if (eventInfo.nominalsOfContinuousStatesChanged && loggingOn) {
-						emit postUIMsg("nominals of continuous state changed  at t=" + QString::number(time));
+					if (eventInfo.nominalsOfContinuousStatesChanged) {
+						//"nominals of continuous state changed  at t=" + QString::number(time)
 					}
 				}
 				if (eventInfo.terminateSimulation) {
-					emit postUIMsg("model requested termination at t=" + QString::number(time));
 					break;
 				}
-				fmu0.enterContinuousTimeMode(c);
+				fmu.enterContinuousTimeMode(c);
 			}
-			outputData(dataFile, time, false);
+			outputData(dataFile, time, false, fmu, c);
 			nSteps++;
 		}
 	}
 
-	QString s1 = "Simulation from ";
-	QString s2 = QString::number(tStart);
-	QString s3 = " to ";
-	QString s4 = QString::number(tEnd);;
-	emit postUIMsg(s1 + s2 + s3 + s4);
+	info.message += "Simulation from ";
+	info.message += to_string(tStart);
+	info.message += " to ";
+	info.message += to_string(time);
 
-	QString s5 = "steps ............ ";
-	QString s6 = QString::number(nSteps);
-	emit postUIMsg(s5 + s6);
+	info.message += "steps = ";
+	info.message += to_string(nSteps);
 
-	QString s7 = "fixed step size .. ";
-	QString s8 = QString::number(h);
-	emit postUIMsg(s7 + s8);
+	info.message += "fixed step size .. ";
+	info.message += to_string(h);
 
-	QString s9 = "time events ...... ";
-	QString s10 = QString::number(nTimeEvents);
-	emit postUIMsg(s9 + s10);
+	info.message += "time events ...... ";
+	info.message += to_string(nTimeEvents);
 
-	QString s11 = "state events ..... ";
-	QString s12 = QString::number(nStateEvents);
-	emit postUIMsg(s11 + s12);
+	info.message += "state events ..... ";
+	info.message += to_string(nStateEvents);
 
-	QString s13 = "step events ...... ";
-	QString s14 = QString::number(nStepEvents);
-	emit postUIMsg(s13 + s14);
+	info.message += "step events ...... ";
+	info.message += to_string(nStepEvents);
 
-	return true;
+	info.isSucess = true;
+	info.resultPath = resultFile;
+	return info;
+}
+
+void FMISupport::outputData(
+	ofstream& file, double time, bool isHeader, FMU fmu, fmi2Component c) {
+	if (isHeader) {
+		file << "time";
+	}
+	else {
+		file << time;
+	}
+	for (int k = 0; k < getScalarVariableSize(fmu.modelDescription); ++k) {
+		ScalarVariable *sv = getScalarVariable(fmu.modelDescription, k);
+		if (isHeader) {
+			const char *s = getAttributeValue((Element*)sv, att_name);
+			file << ",";
+			while (*s) {
+				//忽略空格和逗号
+				if (*s != ' ') {
+					file << (*s == ',' ? '.' : *s);
+				}
+				s++;
+			}
+		}
+		else {
+			fmi2ValueReference vr = getValueReference(sv);
+			switch (getElementType(getTypeSpec(sv))) {
+			case elm_Real:
+				fmi2Real r;
+				fmu.getReal(c, &vr, 1, &r);
+				file << "," << r;
+				break;
+			case elm_Integer:
+			case elm_Enumeration:
+				fmi2Integer i;
+				fmu.getInteger(c, &vr, 1, &i);
+				file << "," << i;
+				break;
+			case elm_Boolean:
+				fmi2Boolean b;
+				fmu.getBoolean(c, &vr, 1, &b);
+				file << "," << b;
+				break;
+			case elm_String:
+				fmi2String s;
+				fmu.getString(c, &vr, 1, &s);
+				file << "," << s;
+				break;
+			default:
+				file << ",NoValueForType=" << getElementType(getTypeSpec(sv));
+			}
+		}
+	}
+	file << endl;
+}
+
+//TODO:目前不支持
+void FMISupport::unLoad() {
+	//fmu0.terminate(c);
+	//fmu0.freeInstance(c);
+	//FreeLibrary(fmu0.dllHandle);
+	//freeModelDescription(fmu0.modelDescription);
+	//ostringstream ss;
+	//string str;
+	////ss << "rmdir /S /Q " << currentDir << OUT_PATH;
+	//str = ss.str();
+	//system(str.c_str());
 }
 
 /**************************************************************/
-#define MAX_MSG_SIZE 1000
+constexpr auto MAX_MSG_SIZE = 1000;
 void fmuLogger(
 	void *componentEnvironment,
 	fmi2String instanceName,
@@ -750,7 +798,6 @@ void fmuLogger(
 	fmi2String category,
 	fmi2String message,
 	...) {
-
 	char msg[MAX_MSG_SIZE];
 	char* copy;
 	va_list argp;
@@ -766,21 +813,21 @@ void fmuLogger(
 	free(copy);
 
 	// print the final message
-	if (!instanceName) instanceName = "?";
-	if (!category) category = "?";
+	if (!instanceName) {
+		instanceName = "?";
+	}
+	if (!category) {
+		category = "?";
+	}
 
-	logFile << fmi2StatusToString(status)
-		<< "  "
-		<< instanceName
-		<< "("
-		<< category
-		<< "):"
-		<< msg
-		<< endl;
+	char infoMsg[512];
+	sprintf(infoMsg, "[INFO] %s  %s  (%s):%s",
+		fmi2StatusToString(status), instanceName, category, msg);
+	LOG::logToSystem(infoMsg);
 }
 // replace e.g. #r1365# by variable name and ## by # in message
 // copies the result to buffer
-void replaceRefsInMessage(const char* msg, char* buffer, int nBuffer, FMU* fmu0) {
+void replaceRefsInMessage(const char* msg, char* buffer, int nBuffer, FMU* fmu) {
 	int i = 0; // position in msg
 	int k = 0; // position in buffer
 	int n;
@@ -801,10 +848,11 @@ void replaceRefsInMessage(const char* msg, char* buffer, int nBuffer, FMU* fmu0)
 		else {
 			char* end = (char*)strchr(msg + i + 1, '#');
 			if (!end) {
-				logFile << "<error>unmatched '#' in '"
-					<< msg
-					<< "'"
-					<< endl;
+
+				char errMsg[512];
+				sprintf(errMsg, "[ERROR] unmatched '#' in '%s'", msg);
+				LOG::logToSystem(msg);
+
 				buffer[k++] = '#';
 				break;
 			}
@@ -814,7 +862,6 @@ void replaceRefsInMessage(const char* msg, char* buffer, int nBuffer, FMU* fmu0)
 				buffer[k++] = '#';
 				i += 2;
 				c = msg[i];
-
 			}
 			else {
 				char type = msg[i + 1]; // one of ribs
@@ -822,22 +869,21 @@ void replaceRefsInMessage(const char* msg, char* buffer, int nBuffer, FMU* fmu0)
 				int nvr = sscanf(msg + i + 2, "%u", &vr);
 				if (nvr == 1) {
 					// vr of type detected, e.g. #r12#
-					ScalarVariable* sv = getSV(fmu0, type, vr);
+					ScalarVariable* sv = getSV(type, vr, fmu);
 					const char* name = sv ? getAttributeValue((Element *)sv, att_name) : "?";
 					sprintf(buffer + k, "%s", name);
 					k += strlen(name);
 					i += (n + 1);
 					c = msg[i];
-
 				}
 				else {
 					// could not parse the number
-					logFile << "<error>illegal value reference at position "
-						<< i + 2
-						<< " in '"
-						<< msg
-						<< "'"
-						<< endl;
+
+					char errMsg[512];
+					sprintf(errMsg, "[ERROR] illegal value reference at position %d in '%s'",
+						i + 2, msg);
+					LOG::logToSystem(msg);
+
 					buffer[k++] = '#';
 					break;
 				}
@@ -848,9 +894,9 @@ void replaceRefsInMessage(const char* msg, char* buffer, int nBuffer, FMU* fmu0)
 }
 // search a fmu for the given variable, matching the type specified.
 // return NULL if not found
-ScalarVariable* getSV(FMU* fmu0, char type, fmi2ValueReference vr) {
+ScalarVariable* getSV(char type, fmi2ValueReference vr, FMU* fmu) {
 	int i;
-	int n = getScalarVariableSize(fmu0->modelDescription);
+	int n = getScalarVariableSize(fmu->modelDescription);
 	Elm tp;
 
 	switch (type) {
@@ -861,7 +907,7 @@ ScalarVariable* getSV(FMU* fmu0, char type, fmi2ValueReference vr) {
 	default: tp = elm_BAD_DEFINED;
 	}
 	for (i = 0; i < n; i++) {
-		ScalarVariable* sv = getScalarVariable(fmu0->modelDescription, i);
+		ScalarVariable* sv = getScalarVariable(fmu->modelDescription, i);
 		if (vr == getValueReference(sv) && tp == getElementType(getTypeSpec(sv))) {
 			return sv;
 		}
@@ -879,70 +925,5 @@ const char* fmi2StatusToString(fmi2Status status) {
 	default:         return "?";
 	}
 }
+
 /**************************************************************/
-
-/*
-void FMISupport::unLoad() {
-	fmu0.terminate(c);
-	fmu0.freeInstance(c);
-	FreeLibrary(fmu0.dllHandle);
-	freeModelDescription(fmu0.modelDescription);
-	ostringstream ss;
-	string str;
-	//ss << "rmdir /S /Q " << currentDir << OUT_PATH;
-	str = ss.str();
-	system(str.c_str());
-}
-void FMISupport::outputData(ofstream& file, double time, bool isHeader) {
-
-	if (isHeader) {
-		file << "time";
-	}
-	else {
-		file << time;
-	}
-	for (int k = 0; k < getScalarVariableSize(fmu0.modelDescription); ++k) {
-		ScalarVariable *sv = getScalarVariable(fmu0.modelDescription, k);
-		if (isHeader) {
-			const char *s = getAttributeValue((Element*)sv, att_name);
-			file << ",";
-			while (*s) {
-				//忽略空格和逗号
-				if (*s != ' ') {
-					file << (*s == ',' ? '.' : *s);
-				}
-				s++;
-			}
-		}
-		else {
-			fmi2ValueReference vr = getValueReference(sv);
-			switch (getElementType(getTypeSpec(sv))) {
-			case elm_Real:
-				fmi2Real r;
-				fmu0.getReal(c, &vr, 1, &r);
-				file << "," << r;
-				break;
-			case elm_Integer:
-			case elm_Enumeration:
-				fmi2Integer i;
-				fmu0.getInteger(c, &vr, 1, &i);
-				file << "," << i;
-				break;
-			case elm_Boolean:
-				fmi2Boolean b;
-				fmu0.getBoolean(c, &vr, 1, &b);
-				file << "," << b;
-				break;
-			case elm_String:
-				fmi2String s;
-				fmu0.getString(c, &vr, 1, &s);
-				file << "," << s;
-				break;
-			default:
-				file << ",NoValueForType=" << getElementType(getTypeSpec(sv));
-			}
-		}
-	}
-	file << endl;
-}
-*/

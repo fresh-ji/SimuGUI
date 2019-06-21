@@ -187,6 +187,9 @@ void CentralLabel::slotOpen() {
 			emit signalSendMessage(QString::fromStdString(info.message));
 			return;
 		}
+		else {
+			signalWriteLog(QString::fromStdString(info.message));
+		}
 		modelRepo.insert(modelPath, info);
 
 		QPixmap *pixmap = new QPixmap("./Icon/simutool/fmi");
@@ -222,5 +225,12 @@ void CentralLabel::slotDelete() {
 }
 
 void CentralLabel::slotRunSimulation(double start, double stop, double step) {
-
+	if (activeModel != NULL) {
+		FMUInfo FMUinfo = modelRepo.value(modelMap.key(activeModel));
+		simuInfo info = FMIsupport->simulateByCs(
+			FMUinfo.fmu, FMUinfo.resultDir, start, stop, step, 0, NULL);
+		if (info.isSucess) {
+			signalWriteLog(QString::fromStdString(info.message));
+		}
+	}
 }

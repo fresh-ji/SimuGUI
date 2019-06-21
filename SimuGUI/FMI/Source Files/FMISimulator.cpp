@@ -68,6 +68,12 @@ void FMISimulator::createConnects() {
 		this, SLOT(slotReceiveMessage(QString)));
 	connect(m_pDetailStack, SIGNAL(signalSendMessage(QString)),
 		this, SLOT(slotReceiveMessage(QString)));
+	//接受日志
+	connect(m_pCentralLabel, SIGNAL(signalWriteLog(QString)),
+		this, SLOT(slotWriteLog(QString)));
+	connect(m_pDetailStack, SIGNAL(signalWriteLog(QString)),
+		this, SLOT(slotWriteLog(QString)));
+
 
 	//FMU详情发送
 	connect(m_pCentralLabel, SIGNAL(signalModelDetail(FMUInfo*)),
@@ -93,42 +99,12 @@ void FMISimulator::createPlotStack() {
 	m_pPlotStack->setTitle("Plot");
 }
 
-/*
-	//QPushButton *button = new QPushButton(widget);
-	//connect(button, SIGNAL(clicked()), this, SLOT(test()));
-
-	//textBrowser = new QTextBrowser(widget);
-
-	//QGridLayout *layout = new QGridLayout();
-	//layout->setMargin(10);
-	//layout->setSpacing(10);
-	//layout->addWidget(button, 0, 0, 1, 1);
-	//layout->addWidget(textBrowser, 0, 1, 1, 1);
-
-	//widget->setLayout(layout);
-
-	//QTextBrowser *tb4 = new QTextBrowser();
-	//widget->addCornerWidget(tb4, FancyTabWidget::Bottom);
-
-void FMISimulator::test() {
-	FMISupport *fs = new FMISupport();
-	connect(fs, SIGNAL(postUIMsg(QString)), this, SLOT(DisplayFMIMsg(QString)));
-	if (!fs->loadFMU("D:\\bouncingBall.fmu", FMI_COSIMULATION)) {
-		//textBrowser->append("error in load fmu");
-		return;
-	}
-
-	fs->simulateByCs(0.0, 30.0, 0.1, 0, NULL);
-	//f->unLoad();
-}
-
-void FMISimulator::DisplayFMIMsg(QString s) {
-	//textBrowser->append(s);
-}
-*/
-
 void FMISimulator::slotReceiveMessage(QString info) {
 	QMessageBox::information(NULL, "Title", info, QMessageBox::Yes, QMessageBox::Yes);
+}
+
+void FMISimulator::slotWriteLog(QString info) {
+	m_logBrowser->append(info);
 }
 
 void FMISimulator::slotResizable(bool resizable) {

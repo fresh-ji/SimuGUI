@@ -4,9 +4,10 @@
 #define ERRORLOG_H
 
 #include <fstream>
-#include <chrono>
-#include <ctime>
-#include <iomanip>
+#include <assert.h>
+#include <time.h>
+
+using namespace std;
 
 class LOG {
 public:
@@ -18,13 +19,14 @@ public:
 			return;
 		}
 
-		auto now = std::chrono::system_clock::now();
-		auto ticks = std::chrono::system_clock::to_time_t(now);
-		auto local_time = localtime(&ticks);
+		file << getCurrentTime().data() << message << std::endl;
+	}
 
-		file << "[" << std::put_time(local_time, "%F") << "  "
-			<< std::put_time(local_time, "%T") << "]  " << message << std::endl;
-
+	static string getCurrentTime() {
+		time_t t = time(0);
+		char ch[64];
+		strftime(ch, sizeof(ch), "[%Y-%m-%d %H-%M-%S]", localtime(&t));
+		return ch;
 	}
 };
 

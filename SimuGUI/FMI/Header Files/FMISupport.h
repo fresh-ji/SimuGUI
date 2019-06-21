@@ -1,5 +1,11 @@
 #pragma once
 
+/*
+* 非常牛逼的FMI仿真引擎，写死tm我了
+* @date : 2019/06/21
+* @author : jihang
+*/
+
 #include <map>
 #include <set>
 
@@ -42,6 +48,7 @@ struct FMUInfo {
 struct simuInfo {
 	bool isSucess;
 	string message;
+	string resultPath;
 };
 
 class FMISupport {
@@ -53,22 +60,21 @@ public:
 public:
 	FMUInfo loadFMU(const char*, string);
 	simuInfo simulateByCs(FMU, string, double, double, double, int, char **);
-	bool simulateByMe(double, double, double, int, char **);
-
-	//void unLoad();
+	simuInfo simulateByMe(FMU, string, double, double, double, int, char **);
+	void unLoad();
 
 private:
 	bool loadDll(const char*, FMU*);
 	void *getAdr(bool*, HMODULE, const char*);
-
-	//void outputData(ofstream&, double, bool);
+	void outputData(ofstream&, double, bool, FMU, fmi2Component);	
 
 private:
 	char* currentDir;
 	string type;
+	FMU currentFMU;
 };
 
 void fmuLogger(void*, fmi2String, fmi2Status, fmi2String, fmi2String, ...);
 void replaceRefsInMessage(const char*, char*, int, FMU*);
-ScalarVariable* getSV(FMU*, char, fmi2ValueReference);
+ScalarVariable* getSV(char, fmi2ValueReference, FMU*);
 const char* fmi2StatusToString(fmi2Status);
