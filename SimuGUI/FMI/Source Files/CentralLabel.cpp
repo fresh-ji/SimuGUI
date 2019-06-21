@@ -211,7 +211,6 @@ void CentralLabel::slotOpen() {
 }
 
 void CentralLabel::slotUndo() {
-
 }
 
 void CentralLabel::slotRedo() {
@@ -221,14 +220,20 @@ void CentralLabel::slotGrid() {
 }
 
 void CentralLabel::slotDelete() {
-
 }
 
 void CentralLabel::slotRunSimulation(double start, double stop, double step) {
 	if (activeModel != NULL) {
 		FMUInfo FMUinfo = modelRepo.value(modelMap.key(activeModel));
-		simuInfo info = FMIsupport->simulateByCs(
-			FMUinfo.fmu, FMUinfo.resultDir, start, stop, step, 0, NULL);
+		simuInfo info;
+		if (FMUinfo.simuType == FMI_MODEL_EXCHANGE) {
+			info = FMIsupport->simulateByMe(
+				FMUinfo.fmu, FMUinfo.resultDir, start, stop, step, 0, NULL);
+		}
+		if (FMUinfo.simuType == FMI_COSIMULATION) {
+			info = FMIsupport->simulateByCs(
+				FMUinfo.fmu, FMUinfo.resultDir, start, stop, step, 0, NULL);
+		}
 		if (info.isSucess) {
 			signalWriteLog(QString::fromStdString(info.message));
 		}

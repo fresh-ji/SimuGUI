@@ -34,8 +34,6 @@ static char currentDirectory[DIRECTORY_PATH_SIZE];
 #define DLL_DIR   "binaries\\win32\\"
 #endif
 
-//ofstream logFile(".\\logs\\FMI.log");
-
 FMUInfo FMISupport::loadFMU(const char* filePath, string uuid) {
 
 	FMUInfo info;
