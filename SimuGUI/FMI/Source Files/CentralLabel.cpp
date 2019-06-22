@@ -1,9 +1,4 @@
 
-/*
-* @date : 2019/06/01
-* @author : jihang
-*/
-
 #include "CentralLabel.h"
 
 CentralLabel::CentralLabel(QWidget *p) : QLabel(p) {
@@ -17,7 +12,7 @@ CentralLabel::CentralLabel(QWidget *p) : QLabel(p) {
 	activeModel = NULL;
 
 	//初始文件选择路径
-	openPath = QDir::currentPath();
+	openPath = QDir::currentPath() + "\\FMI\\examples\\cs\\x64";
 
 	//fmi
 	FMIsupport = new FMISupport();
@@ -181,14 +176,14 @@ void CentralLabel::slotOpen() {
 
 		//看是不是正确的FMU
 		FMUInfo info = FMIsupport->loadFMU(
-			modelPath.toLocal8Bit().constData(), 
+			modelPath.toLocal8Bit().constData(),
 			QUuid::createUuid().toString().toStdString());
 		if (!info.isSuccess) {
 			emit signalSendMessage(QString::fromStdString(info.message));
 			return;
 		}
 		else {
-			signalWriteLog(QString::fromStdString(info.message));
+			emit signalWriteLog("load " + name + " success");
 		}
 		modelRepo.insert(modelPath, info);
 
@@ -224,7 +219,8 @@ void CentralLabel::slotDelete() {
 
 void CentralLabel::slotRunSimulation(double start, double stop, double step) {
 	if (activeModel != NULL) {
-		FMUInfo FMUinfo = modelRepo.value(modelMap.key(activeModel));
+		QString key = modelMap.key(activeModel);
+		FMUInfo FMUinfo = modelRepo.value(key);
 		simuInfo info;
 		if (FMUinfo.simuType == FMI_MODEL_EXCHANGE) {
 			info = FMIsupport->simulateByMe(
@@ -235,7 +231,25 @@ void CentralLabel::slotRunSimulation(double start, double stop, double step) {
 				FMUinfo.fmu, FMUinfo.resultDir, start, stop, step, 0, NULL);
 		}
 		if (info.isSucess) {
-			signalWriteLog(QString::fromStdString(info.message));
+			FMUinfo.resultFile = info.resultPath;
+			modelRepo.insert(key, FMUinfo);
+			emit signalSendMessage(QString::fromStdString(info.message));
+			emit signalWriteLog(QString::fromStdString(info.message));
+			emit signalWriteLog("reslut file is saved in : "
+				+ QString::fromStdString(info.resultPath));
 		}
+	}
+}
+
+void CentralLabel::slotPlot(QString name) {
+	if (activeModel != NULL) {
+		FMUInfo FMUinfo = modelRepo.value(modelMap.key(activeModel));
+		QFileInfo fileInfo(QString::fromStdString(FMUinfo.resultFile));
+		if (!fileInfo.exists()) {
+			emit signalSendMessage("no relative result file");
+			return;
+		}
+		//TODO：从第一行找到列id，抓出此列所有数据，进行绘制
+
 	}
 }

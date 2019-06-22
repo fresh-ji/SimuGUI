@@ -5,7 +5,6 @@
 */
 
 #include "FMISimulator.h"
-//#include "FMISupport.h"
 
 FMISimulator::FMISimulator(QWidget *parent) : IMode(parent) {
 	setObjectName(QLatin1String("FMISimulator"));
@@ -19,20 +18,17 @@ void FMISimulator::createWindow() {
 
 	createCentralLabel();
 	createDetailStack();
-	createPlotStack();
 
 	createConnects();
 
 	QGridLayout *layout = new QGridLayout();
 	layout->setMargin(10);
 	layout->setSpacing(10);
-	
+
 	//TODO：想要加弹簧
 	m_pDetailStack->setMaximumWidth(600);
-	m_pPlotStack->setMaximumWidth(600);
-	layout->addWidget(m_pCentralLabel, 0, 0, 2, 1);
+	layout->addWidget(m_pCentralLabel, 0, 0);
 	layout->addWidget(m_pDetailStack, 0, 1);
-	layout->addWidget(m_pPlotStack, 1, 1);
 
 	QWidget *carryWidget = new QWidget();
 	carryWidget->setLayout(layout);
@@ -63,6 +59,7 @@ void FMISimulator::createWindow() {
 }
 
 void FMISimulator::createConnects() {
+
 	//接收消息发送
 	connect(m_pCentralLabel, SIGNAL(signalSendMessage(QString)),
 		this, SLOT(slotReceiveMessage(QString)));
@@ -82,7 +79,10 @@ void FMISimulator::createConnects() {
 	//仿真FMU
 	connect(m_pDetailStack, SIGNAL(signalRunSimulation(double, double, double)),
 		m_pCentralLabel, SLOT(slotRunSimulation(double, double, double)));
-	
+
+	//画图
+	connect(m_pDetailStack, SIGNAL(signalPlot(QString)),
+		m_pCentralLabel, SLOT(slotPlot(QString)));
 }
 
 void FMISimulator::createCentralLabel() {
@@ -92,11 +92,6 @@ void FMISimulator::createCentralLabel() {
 void FMISimulator::createDetailStack() {
 	m_pDetailStack = new DetailStack();
 	m_pDetailStack->setTitle("Detail");
-}
-
-void FMISimulator::createPlotStack() {
-	m_pPlotStack = new PlotStack();
-	m_pPlotStack->setTitle("Plot");
 }
 
 void FMISimulator::slotReceiveMessage(QString info) {

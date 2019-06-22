@@ -1,20 +1,18 @@
 #pragma once
 
 /*
-* 非常牛逼的FMI仿真引擎，写死tm我了
+* FMI仿真引擎，64位进程版
 * @date : 2019/06/21
 * @author : jihang
 */
 
 #include <map>
 #include <set>
+#include <string>
 
-#include "fmi2.h"
+#include "Constant.h"
 
 using namespace std;
-
-constexpr auto FMI_MODEL_EXCHANGE = "Model Exchange";
-constexpr auto FMI_COSIMULATION = "CoSimulation";
 
 struct FMIVariable {
 	string name;
@@ -31,14 +29,16 @@ struct FMUInfo {
 	string message;
 	FMU fmu;
 	//在本框架的基本信息
-	string version;//版本号
-	string simuType;//ME或CS
+	string version;//版本号，目前仅支持2.0
+	string platform;//WIN_64或WIN_32
+	string simuType;//FMI_MODEL_EXCHANGE或FMI_COSIMULATION
 	string modelId;//文件名
 	string globalName;//带uuid的全局名
 	string targetDir;//fmu目标文件夹
 	string resultDir;//fmu结果文件夹
 	string xmlPath;//xml路径
 	string dllPath;//dll路径
+	string resultFile;//最近一次的结果文件
 	//xml里的基本信息
 	map<string, string> basicInfo;
 	//xml里的变量信息
@@ -71,7 +71,6 @@ private:
 private:
 	char* currentDir;
 	string type;
-	FMU currentFMU;
 };
 
 void fmuLogger(void*, fmi2String, fmi2Status, fmi2String, fmi2String, ...);

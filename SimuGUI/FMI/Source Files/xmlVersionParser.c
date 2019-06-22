@@ -17,6 +17,8 @@
 #include <libxml/xmlreader.h>
 #include "xmlVersionParser.h"
 
+#define LOG_FILE ".\\FMI\\log.log"
+
 // Element and attribute that identify the fmiVersion.
 #define ELM_fmiModelDescription_NAME "fmiModelDescription"
 #define ATT_fmiVersion_NAME "fmiVersion"
@@ -44,7 +46,7 @@ static char *extractFmiVersionAttribute(xmlTextReaderPtr xmlReader) {
 // The receiver must free the return.
 static char *streamFile(const char *xmlPath) {
 
-	FILE *fp = fopen(".\\FMI\\error.log", "a+");
+	FILE *fp = fopen(LOG_FILE, "a+");
 
     xmlTextReaderPtr xmlReader;
     char *fmiVersion = NULL;

@@ -53,6 +53,8 @@ signals:
 	void signalModelDetail(FMUInfo*);
 public slots:
 	void slotRunSimulation(double, double, double);
+public slots:
+	void slotPlot(QString);
 
 private:
 	//Ä£ÐÍ¿â

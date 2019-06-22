@@ -29,10 +29,17 @@ public slots:
 
 private slots :
 	void slotGo();
+	void slotPlot();
 signals:
 	void signalRunSimulation(double, double, double);
 signals:
+	void signalPlot(QString);
+signals:
+	//向ui发送消息
 	void signalSendMessage(QString);
+signals:
+	//向ui写日志
+	void signalWriteLog(QString);
 
 private:
 	//基本信息
@@ -46,7 +53,7 @@ private:
 	QLineEdit *stepSize;
 
 private:
-	FMUInfo *info;
+	FMUInfo* activeInfo;
 	void refreshInfo();
 	void refreshVariable();
 };

@@ -15,7 +15,6 @@
 #include "cwidgets.h"
 #include "CentralLabel.h"
 #include "DetailStack.h"
-#include "PlotStack.h"
 
 class FMISimulator : public IMode {
 
@@ -30,8 +29,6 @@ private:
 	void createCentralLabel();
 	//2
 	void createDetailStack();
-	//3
-	void createPlotStack();
 
 	void createConnects();
 
@@ -51,10 +48,8 @@ private:
 	//2
 	DetailStack *m_pDetailStack;
 	//3
-	PlotStack *m_pPlotStack;
-	//4
 	QStatusBar *m_logBar;
-	//5
+	//4
 	QTextBrowser *m_logBrowser;
 };
 #endif // FMISIMULATOR_H

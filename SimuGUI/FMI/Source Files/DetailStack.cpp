@@ -5,16 +5,16 @@
 DetailStack::DetailStack(QWidget *p) : MiniStack(p) {
 
 	setTitleHeight(40);
-	info = NULL;
+	activeInfo = NULL;
 
-	//基本信息
+	//1.基本信息
 	infoWidget = new QWidget();
 	infoWidget->setStyleSheet("border: 2px solid black;");
 	infoLayout = new QGridLayout();
 	infoWidget->setLayout(infoLayout);
 	addTab(tr("Info"), infoWidget);
 
-	//变量信息
+	//2.变量信息
 	variableTable = new QTableWidget();
 	//设置
 	variableTable->setColumnCount(7);
@@ -27,40 +27,52 @@ DetailStack::DetailStack(QWidget *p) : MiniStack(p) {
 	FancyButton *plotButton = new FancyButton();
 	plotButton->setIcon(QIcon("./Icon/function/plot"));
 	plotButton->setCursor(QCursor(Qt::PointingHandCursor));
-	//connect(plotButton, SIGNAL(clicked()), this, SLOT());
+	plotButton->setFixedWidth(50);
+	connect(plotButton, SIGNAL(clicked()), this, SLOT(slotPlot()));
 
 	addTab(tr("Variables"), variableTable, plotButton);
 
-	//运行信息
+	//3.运行信息
 	QWidget *simuInfoStack = new QWidget();
 	QGridLayout *simuLayout = new QGridLayout();
 
 	QLabel *startTimeLabel = new QLabel();
-	startTimeLabel->setText("start time : ");
+	startTimeLabel->setText("simulation start time : ");
+	startTimeLabel->setFixedWidth(200);
 	simuLayout->addWidget(startTimeLabel, 0, 0);
 	startTime = new QLineEdit();
+	startTime->setFixedWidth(100);
+	startTime->setText("0.0");
 	simuLayout->addWidget(startTime, 0, 1);
 	startTime->setValidator(new QDoubleValidator(0.0, 1024.0, 10));
 
 	QLabel *stopTimeLabel = new QLabel();
-	stopTimeLabel->setText("stop time : ");
+	stopTimeLabel->setText("simulation stop time : ");
+	stopTimeLabel->setFixedWidth(200);
 	simuLayout->addWidget(stopTimeLabel, 1, 0);
 	stopTime = new QLineEdit();
+	stopTime->setFixedWidth(100);
+	stopTime->setText("10.0");
 	simuLayout->addWidget(stopTime, 1, 1);
 	stopTime->setValidator(new QDoubleValidator(0.0, 1024.0, 10));
 
 	QLabel *stepSizeLabel = new QLabel();
-	stepSizeLabel->setText("step size : ");
+	stepSizeLabel->setText("simulation step size : ");
+	stepSizeLabel->setFixedWidth(200);
 	simuLayout->addWidget(stepSizeLabel, 2, 0);
 	stepSize = new QLineEdit();
+	stepSize->setFixedWidth(100);
+	stepSize->setText("0.1");
 	simuLayout->addWidget(stepSize, 2, 1);
 	stepSize->setValidator(new QDoubleValidator(0.0, 1024.0, 10));
 
+	simuLayout->setAlignment(Qt::AlignTop);
 	simuInfoStack->setLayout(simuLayout);
 
 	FancyButton *goButton = new FancyButton();
 	goButton->setIcon(QIcon("./Icon/function/go"));
 	goButton->setCursor(QCursor(Qt::PointingHandCursor));
+	goButton->setFixedWidth(50);
 	connect(goButton, SIGNAL(clicked()), this, SLOT(slotGo()));
 
 	addTab(tr("Simulation"), simuInfoStack, goButton);
@@ -79,7 +91,7 @@ void DetailStack::slotModelDetail(FMUInfo* info) {
 	variableTable->clearContents();
 	variableTable->setRowCount(0);
 
-	this->info = info;
+	this->activeInfo = info;
 
 	if (info != NULL) {
 		refreshInfo();
@@ -91,16 +103,16 @@ void DetailStack::refreshInfo() {
 	//装填基本信息
 	QLabel *typeLabel = new QLabel();
 	typeLabel->setText("FMI type");
+	typeLabel->setStyleSheet("border: 0px;");
 	infoLayout->addWidget(typeLabel, 0, 0);
 	QLabel *type = new QLabel();
-	type->setText(QString::fromStdString(info->simuType));
-	typeLabel->setStyleSheet("border: 0px;");
+	type->setText(QString::fromStdString(activeInfo->simuType));
 	type->setStyleSheet("border: 0px;");
 	infoLayout->addWidget(type, 0, 1);
 
 	map<string, string>::iterator it;
 	int count;
-	for (count = 1, it = info->basicInfo.begin(); it != info->basicInfo.end(); ++it, ++count) {
+	for (count = 1, it = activeInfo->basicInfo.begin(); it != activeInfo->basicInfo.end(); ++it, ++count) {
 		QLabel *title = new QLabel();
 		title->setText(QString::fromStdString(it->first));
 		infoLayout->addWidget(title, count, 0);
@@ -111,16 +123,18 @@ void DetailStack::refreshInfo() {
 			content->setStyleSheet("background-color: lightgray;" "border: 0px;");
 		}
 		else {
-			title->setStyleSheet("border: 0px;");
-			content->setStyleSheet("border: 0px;");
+			title->setStyleSheet("border: 0px solid black;");
+			content->setStyleSheet("border: 0px solid black;");
 		}
 		infoLayout->addWidget(content, count, 1);
 	}
+	infoLayout->setAlignment(Qt::AlignTop);
 }
 
 void DetailStack::refreshVariable() {
 	//装填变量信息
-	for (FMIVariable* fv : info->variableInfo) {
+	//TODO：变量过多怎么办，变量分级怎么显示
+	for (FMIVariable* fv : activeInfo->variableInfo) {
 		int row = variableTable->rowCount();
 		variableTable->insertRow(row);
 
@@ -157,16 +171,15 @@ void DetailStack::refreshVariable() {
 }
 
 void DetailStack::slotGo() {
-	if (info == NULL) {
-		signalSendMessage("No model Select!");
+
+	if (activeInfo == NULL) {
+		emit signalSendMessage("no active model");
 		return;
 	}
 
-	if (startTime->text().isEmpty() ||
-		stopTime->text().isEmpty() ||
+	if (startTime->text().isEmpty() || stopTime->text().isEmpty() ||
 		stepSize->text().isEmpty()) {
-
-		signalSendMessage("Empty items!");
+		emit signalSendMessage("time setting wrong");
 		return;
 	}
 
@@ -175,10 +188,20 @@ void DetailStack::slotGo() {
 	double step = stepSize->text().toDouble();
 
 	if (start >= stop) {
-		signalSendMessage("Stop time wrong!");
+		emit signalSendMessage("stop not behind start");
 		return;
 	}
 
 	signalRunSimulation(start, stop, step);
+}
 
+void DetailStack::slotPlot() {
+	if (!variableTable->currentItem()) {
+		emit signalSendMessage("no variable selected");
+		return;
+	}
+	if (variableTable->currentItem()->isSelected()) {
+		int row = variableTable->currentItem()->row();
+		emit signalPlot(variableTable->item(row, 0)->text());
+	}
 }

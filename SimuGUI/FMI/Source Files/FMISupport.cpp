@@ -11,28 +11,8 @@
 #include "xmlVersionParser.h"
 #include "ErrorLog.h"
 
-#include <string>
-
 #define DIRECTORY_PATH_SIZE 1024
 static char currentDirectory[DIRECTORY_PATH_SIZE];
-
-#define UNZIP_CMD ".\\FMI\\7z\\7z x -aoa -o"
-// -x   Extracts files from an archive with their full paths in the current dir, or in an output dir if specified
-// -aoa Overwrite All existing files without prompt
-// -o   Specifies a destination directory where files are to be extracted
-#define SEVEN_ZIP_NO_ERROR 0
-#define SEVEN_ZIP_WARNING 1
-#define SEVEN_ZIP_ERROR 2
-#define SEVEN_ZIP_COMMAND_LINE_ERROR 7
-#define SEVEN_ZIP_OUT_OF_MEMORY 8
-#define SEVEN_ZIP_STOPPED_BY_USER 255
-
-//TODO:应该既支持32又支持64
-#ifdef _WIN64
-#define DLL_DIR   "binaries\\win64\\"
-#else
-#define DLL_DIR   "binaries\\win32\\"
-#endif
 
 FMUInfo FMISupport::loadFMU(const char* filePath, string uuid) {
 
@@ -56,7 +36,7 @@ FMUInfo FMISupport::loadFMU(const char* filePath, string uuid) {
 	string targetDir;
 
 	targetDir.append(currentDir)
-		.append("\\FMI\\extracted\\").append(globalName).append("\\");
+		.append(UNZIP_DIR).append(globalName).append("\\");
 
 	//拼接cmd命令，原先用的是sstream，清空需要(ss.clear() + ss.str(""))
 	string command;
@@ -76,11 +56,10 @@ FMUInfo FMISupport::loadFMU(const char* filePath, string uuid) {
 	}
 
 	string resultDir;
-	resultDir.append(currentDir)
-		.append("\\FMI\\result\\").append(globalName);
+	resultDir.append(currentDir).append(RESULT_DIR).append(globalName);
 
 	string xmlPath = targetDir;
-	xmlPath.append("modelDescription.xml");
+	xmlPath.append(MD_FILE_NAME);
 
 	//校验及写入版本号，目前仅支持2.0
 	//TODO:注掉了一句关闭xml的话
@@ -133,7 +112,7 @@ FMUInfo FMISupport::loadFMU(const char* filePath, string uuid) {
 
 	//加载dll功能
 	if (!loadDll(dllPath.data(), &fmu)) {
-		info.message = "load dll error";
+		info.message = "64 process not support 32 model";
 		return info;
 	}
 
@@ -365,7 +344,6 @@ simuInfo FMISupport::simulateByCs(
 	const char *instanceName = getAttributeValue((Element*)getCoSimulation(md), att_modelIdentifier);
 
 	//回调
-	this->currentFMU = fmu;
 	fmi2CallbackFunctions callbacks = { fmuLogger, calloc, free, NULL, &fmu };
 
 	//是否有可视化组件
@@ -701,19 +679,19 @@ simuInfo FMISupport::simulateByMe(
 	info.message += " to ";
 	info.message += to_string(time);
 
-	info.message += "steps = ";
+	info.message += "   steps = ";
 	info.message += to_string(nSteps);
 
-	info.message += "fixed step size .. ";
+	info.message += "   fixed step size = ";
 	info.message += to_string(h);
 
-	info.message += "time events ...... ";
+	info.message += "   time events = ";
 	info.message += to_string(nTimeEvents);
 
-	info.message += "state events ..... ";
+	info.message += "   state events = ";
 	info.message += to_string(nStateEvents);
 
-	info.message += "step events ...... ";
+	info.message += "   step events = ";
 	info.message += to_string(nStepEvents);
 
 	info.isSucess = true;

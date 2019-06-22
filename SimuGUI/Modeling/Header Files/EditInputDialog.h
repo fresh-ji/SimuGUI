@@ -17,7 +17,7 @@ class EditInputDialog : public FancyDialog {
 public:
 	explicit EditInputDialog(QString, QSet<inputInfo>, QWidget *p = 0);
 	//Îö¹¹Æ÷
-	~EditInputDialog() {};
+	~EditInputDialog() {}
 
 private slots:
 	void pSlotFinish();
