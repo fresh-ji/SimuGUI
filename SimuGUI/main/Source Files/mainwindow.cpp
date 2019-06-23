@@ -210,7 +210,7 @@ void MainWindow::createModeBar() {
 	m_modeManager->objectAdded(m_pModeling);
 	m_modeManager->objectAdded(m_pFMISimulator);
 
-	m_modeManager->setCurrentMode(m_pFMISimulator);
+	m_modeManager->setCurrentMode(m_pModeling);
 
 	//仿QT组件，没用
 	//QAction *action = new QAction(QIcon("./Icon/tools/start"), tr("Start"), this);

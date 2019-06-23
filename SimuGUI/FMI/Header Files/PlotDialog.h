@@ -22,4 +22,4 @@ public:
 	~PlotDialog() {}
 };
 
-#endif // PLOTDIALOG_H	
+#endif // PLOTDIALOG_H

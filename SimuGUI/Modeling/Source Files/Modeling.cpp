@@ -100,6 +100,12 @@ void Modeling::createConnects() {
 	//自定义数据类型改变发给interface
 	connect(m_pDataTypeStack, SIGNAL(refreshTypeSet(QString, QString)),
 		m_pInterfaceInfoStack, SLOT(slotRefreshTypeSet(QString, QString)));
+
+	//drop统一获取overview信息
+	connect(m_pDropLabel, SIGNAL(signalDataTypeOverview()),
+		m_pDataTypeStack, SLOT(slotGetOverview()));
+	connect(m_pDropLabel, SIGNAL(signalInterfaceOverview()),
+		m_pInterfaceInfoStack, SLOT(slotGetOverview()));
 }
 
 void Modeling::createToolDragStack() {

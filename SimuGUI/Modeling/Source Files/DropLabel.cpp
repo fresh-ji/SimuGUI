@@ -1,9 +1,4 @@
 
-/*
-* @date : 2019/01/15
-* @author : jihang
-*/
-
 #include "DropLabel.h"
 
 DropLabel::DropLabel(QWidget *p) : QLabel(p) {
@@ -426,11 +421,19 @@ void DropLabel::slotCut() {
 
 void DropLabel::slotGenerate() {
 	if (0 == modelList.size()) {
-		return;
+		//测试注释
+		//return;
 	}
 	if (connectMap.size() != modelList.size()) {
 		emit signalSendMessage("check model link!");
 	}
-	//弹出dialog，显示结果
-
+	//显示结果
+	QMap<QString, dataTypeInfo> datas = signalDataTypeOverview();
+	QMap<QString, interfaceInfo> ios = signalInterfaceOverview();
+	QList<QString> models;
+	for (ItemElement* it : modelList) {
+		models << it->getName();
+	}
+	dialog = new OverviewDialog(datas, ios, models);
+	dialog->exec();
 }

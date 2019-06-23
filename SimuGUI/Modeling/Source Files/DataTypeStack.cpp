@@ -153,6 +153,10 @@ void DataTypeStack::slotRefreshDataType(bool isAdd, QString preName, QString new
 	}
 }
 
+QMap<QString, dataTypeInfo> DataTypeStack::slotGetOverview() {
+	return dataTypeMap;
+}
+
 void DataTypeStack::slotMessageFromDialog(QString message) {
 	//
 }

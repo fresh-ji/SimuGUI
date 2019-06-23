@@ -101,20 +101,23 @@
     <Filter Include="FMI\ui">
       <UniqueIdentifier>{05f58f4b-8ceb-45bd-a014-c2239dd542db}</UniqueIdentifier>
     </Filter>
-    <Filter Include="FMI\DetailStack">
-      <UniqueIdentifier>{6a271b19-6366-4a80-94d5-b1e61120d27f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="FMI\CentralLabel">
-      <UniqueIdentifier>{5e8e2941-4e1a-474c-8c71-4a8202104e21}</UniqueIdentifier>
-    </Filter>
     <Filter Include="FMI\FMISupport">
       <UniqueIdentifier>{5e34437e-0964-4184-849c-a4038accfee5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="FMI\XmlImpl">
+    <Filter Include="FMI\centralLabel">
+      <UniqueIdentifier>{5e8e2941-4e1a-474c-8c71-4a8202104e21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FMI\common">
+      <UniqueIdentifier>{7db2268c-1e3a-4ff1-a61a-a8ddbaea5b64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FMI\detailStack">
+      <UniqueIdentifier>{6a271b19-6366-4a80-94d5-b1e61120d27f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FMI\xmlImpl">
       <UniqueIdentifier>{4e737050-e306-4c1d-90c2-ac97d323d890}</UniqueIdentifier>
     </Filter>
-    <Filter Include="FMI\Common">
-      <UniqueIdentifier>{7db2268c-1e3a-4ff1-a61a-a8ddbaea5b64}</UniqueIdentifier>
+    <Filter Include="Modeling\overview">
+      <UniqueIdentifier>{ad20e88e-4c24-4340-aa5a-7d024c0bd998}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -315,13 +318,16 @@
       <Filter>FMI\ui</Filter>
     </QtMoc>
     <QtMoc Include="FMI\Header Files\CentralLabel.h">
-      <Filter>FMI\CentralLabel</Filter>
+      <Filter>FMI\centralLabel</Filter>
     </QtMoc>
     <QtMoc Include="FMI\Header Files\DetailStack.h">
-      <Filter>FMI\DetailStack</Filter>
+      <Filter>FMI\detailStack</Filter>
     </QtMoc>
     <QtMoc Include="FMI\Header Files\PlotDialog.h">
-      <Filter>FMI\CentralLabel</Filter>
+      <Filter>FMI\centralLabel</Filter>
+    </QtMoc>
+    <QtMoc Include="Modeling\Header Files\OverviewDialog.h">
+      <Filter>Modeling\overview</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -347,28 +353,28 @@
       <Filter>Modeling</Filter>
     </ClInclude>
     <ClInclude Include="FMI\Header Files\XmlElement.h">
-      <Filter>FMI\XmlImpl</Filter>
+      <Filter>FMI\xmlImpl</Filter>
     </ClInclude>
     <ClInclude Include="FMI\Header Files\XmlParser.h">
-      <Filter>FMI\XmlImpl</Filter>
+      <Filter>FMI\xmlImpl</Filter>
     </ClInclude>
     <ClInclude Include="FMI\Header Files\XmlParserCApi.h">
-      <Filter>FMI\XmlImpl</Filter>
+      <Filter>FMI\xmlImpl</Filter>
     </ClInclude>
     <ClInclude Include="FMI\Header Files\XmlParserException.h">
-      <Filter>FMI\XmlImpl</Filter>
+      <Filter>FMI\xmlImpl</Filter>
     </ClInclude>
     <ClInclude Include="FMI\Header Files\xmlVersionParser.h">
-      <Filter>FMI\XmlImpl</Filter>
+      <Filter>FMI\xmlImpl</Filter>
     </ClInclude>
     <ClInclude Include="FMI\Header Files\FMISupport.h">
       <Filter>FMI\FMISupport</Filter>
     </ClInclude>
     <ClInclude Include="FMI\Header Files\ErrorLog.h">
-      <Filter>FMI\Common</Filter>
+      <Filter>FMI\common</Filter>
     </ClInclude>
     <ClInclude Include="FMI\Header Files\Constant.h">
-      <Filter>FMI\Common</Filter>
+      <Filter>FMI\common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -511,28 +517,31 @@
       <Filter>FMI\ui</Filter>
     </ClCompile>
     <ClCompile Include="FMI\Source Files\xmlVersionParser.c">
-      <Filter>FMI\XmlImpl</Filter>
+      <Filter>FMI\xmlImpl</Filter>
     </ClCompile>
     <ClCompile Include="FMI\Source Files\XmlParserCApi.cpp">
-      <Filter>FMI\XmlImpl</Filter>
+      <Filter>FMI\xmlImpl</Filter>
     </ClCompile>
     <ClCompile Include="FMI\Source Files\XmlParser.cpp">
-      <Filter>FMI\XmlImpl</Filter>
+      <Filter>FMI\xmlImpl</Filter>
     </ClCompile>
     <ClCompile Include="FMI\Source Files\XmlElement.cpp">
-      <Filter>FMI\XmlImpl</Filter>
+      <Filter>FMI\xmlImpl</Filter>
     </ClCompile>
     <ClCompile Include="FMI\Source Files\CentralLabel.cpp">
-      <Filter>FMI\CentralLabel</Filter>
+      <Filter>FMI\centralLabel</Filter>
     </ClCompile>
     <ClCompile Include="FMI\Source Files\DetailStack.cpp">
-      <Filter>FMI\DetailStack</Filter>
+      <Filter>FMI\detailStack</Filter>
     </ClCompile>
     <ClCompile Include="FMI\Source Files\FMISupport.cpp">
       <Filter>FMI\FMISupport</Filter>
     </ClCompile>
     <ClCompile Include="FMI\Source Files\PlotDialog.cpp">
-      <Filter>FMI\CentralLabel</Filter>
+      <Filter>FMI\centralLabel</Filter>
+    </ClCompile>
+    <ClCompile Include="Modeling\Source Files\OverviewDialog.cpp">
+      <Filter>Modeling\overview</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

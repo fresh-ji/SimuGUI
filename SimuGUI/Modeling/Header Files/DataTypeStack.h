@@ -43,6 +43,9 @@ signals:
 public slots:
 	void slotMessageFromDialog(QString);
 
+public slots:
+	QMap<QString, dataTypeInfo> slotGetOverview();
+
 private:
 	//主表
 	QTableWidget *m_pDataTypeList;
@@ -50,7 +53,7 @@ private:
 	//改数据类型对话框
 	EditDataTypeDialog *dialog;
 
-public:
+private:
 	//core
 	QMap<QString, dataTypeInfo> dataTypeMap;
 };

@@ -48,6 +48,9 @@ signals:
 public slots:
 	void slotMessageFromDialog(QString);
 
+public slots:
+	QMap<QString, interfaceInfo> slotGetOverview();
+
 private:
 	//主表
 	QTableWidget *m_pOutputList;
@@ -65,7 +68,7 @@ private:
 	//目前的自定义数据类型
 	QList<QString> types;
 
-public:
+private:
 	//core
 	QMap<QString, interfaceInfo> interfaceMap;
 };

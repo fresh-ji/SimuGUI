@@ -15,6 +15,7 @@
 #include "fancybutton.h"
 #include "BusElement.h"
 #include "ItemElement.h"
+#include "OverviewDialog.h"
 #include "Regulation.h"
 
 class DropLabel : public QLabel {
@@ -58,6 +59,10 @@ public slots:
 	//接收模型选择改变
 	void slotModelChange(QString);
 signals:
+	QMap<QString, dataTypeInfo> signalDataTypeOverview();
+signals:
+	QMap<QString, interfaceInfo> signalInterfaceOverview();
+signals:
 	//向ui发送消息
 	void signalSendMessage(QString);
 
@@ -84,6 +89,9 @@ private:
 
 	//拖动时的相对起始坐标
 	QPoint moveStartPoint;
+
+	//概览对话框
+	OverviewDialog *dialog;
 };
 
 #endif // DROPLABEL_H

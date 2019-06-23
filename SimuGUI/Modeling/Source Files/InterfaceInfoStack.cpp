@@ -375,6 +375,10 @@ void InterfaceInfoStack::slotRefreshTypeSet(QString type1, QString type2) {
 	}
 }
 
+QMap<QString, interfaceInfo> InterfaceInfoStack::slotGetOverview() {
+	return interfaceMap;
+}
+
 void InterfaceInfoStack::slotMessageFromDialog(QString message) {
 	//
 }
