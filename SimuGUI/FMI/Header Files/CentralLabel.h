@@ -15,6 +15,7 @@
 
 #include "ItemElement.h"
 #include "FMISupport.h"
+#include "PlotDialog.h"
 
 class CentralLabel : public QLabel {
 
@@ -73,6 +74,9 @@ private:
 
 	//ÕûfmuµÄ
 	FMISupport *FMIsupport;
+
+	//×÷»­¿ò
+	PlotDialog *dialog;
 };
 
 #endif // CENTRALLABEL_H

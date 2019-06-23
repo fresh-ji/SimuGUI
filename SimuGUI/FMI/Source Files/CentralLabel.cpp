@@ -244,12 +244,48 @@ void CentralLabel::slotRunSimulation(double start, double stop, double step) {
 void CentralLabel::slotPlot(QString name) {
 	if (activeModel != NULL) {
 		FMUInfo FMUinfo = modelRepo.value(modelMap.key(activeModel));
-		QFileInfo fileInfo(QString::fromStdString(FMUinfo.resultFile));
-		if (!fileInfo.exists()) {
+		QFile file(QString::fromStdString(FMUinfo.resultFile));
+		if (!file.exists()) {
 			emit signalSendMessage("no relative result file");
 			return;
 		}
-		//TODO：从第一行找到列id，抓出此列所有数据，进行绘制
+		if (file.open(QIODevice::ReadOnly)) {
+			QTextStream stream(&file);
+			QStringList firstRow = stream.readLine().split(",");
+			
+			//检测第一列是否是时间
+			if (firstRow.at(0) != "time") {
+				emit signalSendMessage("first column is now time");
+				return;
+			}
+			//检索列序
+			int index = firstRow.indexOf(name);
+			if (index < 0) {
+				emit signalSendMessage("file not found target name");
+				return;
+			}
+			int timeIndex = 0;
 
+			QVector<double> timeLine;
+			QVector<double> dataLine;
+			while (true) {
+				QString row = stream.readLine();
+				if (row.size() == 0) {
+					//结束
+					break;
+				}
+				//填入数据
+				QStringList line = row.split(",");
+				QString time = line.at(timeIndex);
+				QString data = line.at(index);
+				timeLine << time.toDouble();
+				dataLine << data.toDouble();
+			}
+			dialog = new PlotDialog(name, timeLine, dataLine);
+			dialog->exec();
+		}
+		else {
+			emit signalSendMessage("target file can not open");
+		}
 	}
 }

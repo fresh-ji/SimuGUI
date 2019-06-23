@@ -48,12 +48,12 @@ void QCustomChart::setYaxisRange(double lower, double upper)
 	m_pCustomPlot->replot();
 }
 
-//void QCustomChart::setData(const QVector<double> &keys, const QVector<double> &values)
-//{
-//    m_pCustomPlot->graph(0)->setData(keys, values);
-//    m_pCustomPlot->rescaleAxes();
-//    m_pCustomPlot->replot();
-//}
+void QCustomChart::setData(const QVector<double> &keys, const QVector<double> &values)
+{
+    m_pCustomPlot->graph(0)->setData(keys, values);
+    m_pCustomPlot->rescaleAxes();
+    m_pCustomPlot->replot();
+}
 
 void QCustomChart::createWindow()
 {
@@ -98,7 +98,9 @@ void QCustomChart::createWindow()
 
 	m_pStackedWidget = new QStackedWidget();
 	m_pCustomPlot = new CustomPlotZoom();
-	//    initCustomPlot();
+
+	initCustomPlot();
+
 	m_pTextBrowser = new QTextBrowser();
 	m_pStackedWidget->addWidget(m_pCustomPlot);
 	m_pStackedWidget->addWidget(m_pTextBrowser);
@@ -120,32 +122,32 @@ void QCustomChart::createWindow()
 	m_pChartAction->setChecked(true);
 }
 
-//void QCustomChart::initCustomPlot()
-//{
-//    // 添加一个图表
-//    m_pCustomPlot->addGraph();
-//    // 设置关键点的显示效果
-//    m_pCustomPlot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle,
-//                                                             QPen(QColor(41,138,220), 2), QBrush(QColor(5,189,251)), 10));
+void QCustomChart::initCustomPlot()
+{
+    // 添加一个图表
+    m_pCustomPlot->addGraph();
+    // 设置关键点的显示效果
+    m_pCustomPlot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle,
+                                                             QPen(QColor(41,138,220), 2), QBrush(QColor(5,189,251)), 10));
 
-//    // 设置x轴显示时间
-//    // configure bottom axis to show date instead of number:
-//    QSharedPointer<QCPAxisTickerDateTime> dateTicker(new QCPAxisTickerDateTime);
-//    dateTicker->setDateTimeFormat("MM-dd hh:mm");
-//    m_pCustomPlot->xAxis->setTicker(dateTicker);
+    // 设置x轴显示时间
+    // configure bottom axis to show date instead of number:
+    QSharedPointer<QCPAxisTickerDateTime> dateTicker(new QCPAxisTickerDateTime);
+    dateTicker->setDateTimeFormat("MM-dd hh:mm");
+    m_pCustomPlot->xAxis->setTicker(dateTicker);
 
-//    // make range draggable and zoomable:
-//    m_pCustomPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+    // make range draggable and zoomable:
+    m_pCustomPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 
-//    // make top right axes clones of bottom left axes:
-//    m_pCustomPlot->axisRect()->setupFullAxesBox();
-//    // connect signals so top and right axes move in sync with bottom and left axes:
-//    connect(m_pCustomPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), m_pCustomPlot->xAxis2, SLOT(setRange(QCPRange)));
-//    connect(m_pCustomPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), m_pCustomPlot->yAxis2, SLOT(setRange(QCPRange)));
+    // make top right axes clones of bottom left axes:
+    m_pCustomPlot->axisRect()->setupFullAxesBox();
+    // connect signals so top and right axes move in sync with bottom and left axes:
+    connect(m_pCustomPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), m_pCustomPlot->xAxis2, SLOT(setRange(QCPRange)));
+    connect(m_pCustomPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), m_pCustomPlot->yAxis2, SLOT(setRange(QCPRange)));
 
-//    // 设置轴的标题
-//    m_pCustomPlot->xAxis->setLabel(tr("- Time -"));
-//}
+    // 设置轴的标题
+    m_pCustomPlot->xAxis->setLabel(tr("- Time -"));
+}
 
 void QCustomChart::slotRefresh()
 {

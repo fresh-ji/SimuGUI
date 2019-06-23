@@ -1,9 +1,4 @@
 
-/*
-* @date : 2019/03/20
-* @author : jihang
-*/
-
 #include "EditInputDialog.h"
 
 EditInputDialog::EditInputDialog(QString modelName, QSet<inputInfo> subInfo,

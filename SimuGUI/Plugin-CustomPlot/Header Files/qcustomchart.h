@@ -29,11 +29,11 @@ public:
 
 	void setYaxisRange(double lower, double upper);
 
-	//    void setData(const QVector<double> &keys, const QVector<double> &values);
+	void setData(const QVector<double> &keys, const QVector<double> &values);
 
 private:
 	void createWindow();
-	//    void initCustomPlot();
+	void initCustomPlot();
 
 signals:
 
