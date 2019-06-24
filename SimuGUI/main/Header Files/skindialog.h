@@ -10,6 +10,8 @@
 
 #include <QMap>
 
+#include "GlobalConstant.h"
+
 #include "tinytabwidget.h"
 #include "skinitem.h"
 #include "centralarea.h"

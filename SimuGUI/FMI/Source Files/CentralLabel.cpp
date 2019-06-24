@@ -38,7 +38,7 @@ void CentralLabel::mousePressEvent(QMouseEvent *event) {
 
 			QDrag *dg = new QDrag(activeModel);
 			QMimeData *md = new QMimeData;
-			md->setText(DRAG_MOVE);
+			md->setText(FMU_DRAG_MOVE);
 			dg->setMimeData(md);
 			dg->exec();
 		}
@@ -60,10 +60,10 @@ int CentralLabel::mousePressPreprocess(QPoint pressPoint) {
 	if (activeModel) {
 		//判断当前模型中其他点
 		QRect rect(
-			activeModel->geometry().x() + FRAMESHIFTX,
-			activeModel->geometry().y() + FRAMESHIFTY,
-			WIDTH,
-			WIDTH + EDGE * 2);
+			activeModel->geometry().x() + FMUFRAMESHIFTX,
+			activeModel->geometry().y() + FMUFRAMESHIFTY,
+			FMUWIDTH,
+			FMUWIDTH + FMUEDGE * 2);
 		if (rect.contains(pressPoint)) {
 			//点中了当前模型
 			return 1;
@@ -75,12 +75,12 @@ int CentralLabel::mousePressPreprocess(QPoint pressPoint) {
 	}
 
 	//遍历其他模型并判断，包括本身无active和未点active两种情况会到这
-	for (ItemElement* ie : modelMap.values()) {
+	for (FMUElement* ie : modelMap.values()) {
 		QRect rect(
-			ie->geometry().x() + FRAMESHIFTX,
-			ie->geometry().y() + FRAMESHIFTY,
-			WIDTH,
-			WIDTH + EDGE * 2);
+			ie->geometry().x() + FMUFRAMESHIFTX,
+			ie->geometry().y() + FMUFRAMESHIFTY,
+			FMUWIDTH,
+			FMUWIDTH + FMUEDGE * 2);
 		if (rect.contains(pressPoint)) {
 			activeModel = ie;
 			activeModel->active();
@@ -98,7 +98,7 @@ int CentralLabel::mousePressPreprocess(QPoint pressPoint) {
 }
 
 void CentralLabel::dragMoveEvent(QDragMoveEvent *event) {
-	if (DRAG_MOVE == event->mimeData()->text()) {
+	if (FMU_DRAG_MOVE == event->mimeData()->text()) {
 		//移动距离
 		int moveX = event->pos().x() - moveStartPoint.x();
 		int moveY = event->pos().y() - moveStartPoint.y();
@@ -117,45 +117,54 @@ void CentralLabel::dropEvent(QDropEvent *event) {
 }
 
 void CentralLabel::addToolBar() {
+
+	QString iconPath;
+
 	QToolButton *openButton = new QToolButton(this);
 	openButton->setGeometry(20, 5, 50, 50);
 	openButton->setCursor(Qt::PointingHandCursor);
 	openButton->setStyleSheet("QToolButton{border: none;border-radius: 25px;}");
-	openButton->setIcon(QIcon("./Icon/function/open"));
+	iconPath = ICON_PATH;
+	openButton->setIcon(QIcon(iconPath.append("function/open")));
 	connect(openButton, SIGNAL(clicked()), this, SLOT(slotOpen()));
 
 	QToolButton *undoButton = new QToolButton(this);
 	undoButton->setGeometry(70, 5, 50, 50);
 	undoButton->setCursor(Qt::PointingHandCursor);
 	undoButton->setStyleSheet("QToolButton{border: none;border-radius: 25px;}");
-	undoButton->setIcon(QIcon("./Icon/function/undo"));
+	iconPath = ICON_PATH;
+	undoButton->setIcon(QIcon(iconPath.append("function/undo")));
 	connect(undoButton, SIGNAL(clicked()), this, SLOT(slotUndo()));
 
 	QToolButton *redoButton = new QToolButton(this);
 	redoButton->setGeometry(120, 5, 50, 50);
 	redoButton->setCursor(Qt::PointingHandCursor);
 	redoButton->setStyleSheet("QToolButton{border: none;border-radius: 25px;}");
-	redoButton->setIcon(QIcon("./Icon/function/redo"));
+	iconPath = ICON_PATH;
+	redoButton->setIcon(QIcon(iconPath.append("function/redo")));
 	connect(redoButton, SIGNAL(clicked()), this, SLOT(slotRedo()));
 
 	QToolButton *gridButton = new QToolButton(this);
 	gridButton->setGeometry(170, 5, 50, 50);
 	gridButton->setCursor(Qt::PointingHandCursor);
 	gridButton->setStyleSheet("QToolButton{border: none;border-radius: 25px;}");
-	gridButton->setIcon(QIcon("./Icon/function/grid"));
+	iconPath = ICON_PATH;
+	gridButton->setIcon(QIcon(iconPath.append("function/grid")));
 	connect(gridButton, SIGNAL(clicked()), this, SLOT(slotGrid()));
 
 	QToolButton *deleteButton = new QToolButton(this);
 	deleteButton->setGeometry(220, 5, 50, 50);
 	deleteButton->setCursor(Qt::PointingHandCursor);
 	deleteButton->setStyleSheet("QToolButton{border: none;border-radius: 25px;}");
-	deleteButton->setIcon(QIcon("./Icon/function/delete"));
+	iconPath = ICON_PATH;
+	deleteButton->setIcon(QIcon(iconPath.append("function/delete")));
 	connect(deleteButton, SIGNAL(clicked()), this, SLOT(slotDelete()));
 
 	QToolButton *infoButton = new QToolButton(this);
 	infoButton->setGeometry(270, 5, 50, 50);
 	infoButton->setStyleSheet("QToolButton{border: none;border-radius: 25px;}");
-	infoButton->setIcon(QIcon("./Icon/function/info"));
+	iconPath = ICON_PATH;
+	infoButton->setIcon(QIcon(iconPath.append("function/info")));
 	infoButton->setToolTip("Only FMI-2.0 and WIN64 are supported");
 }
 
@@ -187,8 +196,18 @@ void CentralLabel::slotOpen() {
 		}
 		modelRepo.insert(modelPath, info);
 
-		QPixmap *pixmap = new QPixmap("./Icon/simutool/fmi");
-		ItemElement *item = new ItemElement(pixmap, name, "FMU", 0, this);
+		int inputNumber = 0;
+		int outputNumber = 0;
+		for (FMIVariable* fv : info.variableInfo) {
+			if ("input" == fv->causality) {
+				inputNumber++;
+			}
+			if ("output" == fv->causality) {
+				outputNumber++;
+			}
+		}
+
+		FMUElement *item = new FMUElement(name, inputNumber, outputNumber, this);
 		//TODO：做一个灵活定位的
 		item->setGeometry(100, 100, 1, 1);
 		item->show();
@@ -252,7 +271,7 @@ void CentralLabel::slotPlot(QString name) {
 		if (file.open(QIODevice::ReadOnly)) {
 			QTextStream stream(&file);
 			QStringList firstRow = stream.readLine().split(",");
-			
+
 			//检测第一列是否是时间
 			if (firstRow.at(0) != "time") {
 				emit signalSendMessage("first column is now time");

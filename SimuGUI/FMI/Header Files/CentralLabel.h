@@ -10,10 +10,12 @@
 
 #include <QUuid>
 
+#include "GlobalConstant.h"
+
 #include "cwidgets.h"
 #include "fancybutton.h"
 
-#include "ItemElement.h"
+#include "FMUElement.h"
 #include "FMISupport.h"
 #include "PlotDialog.h"
 
@@ -62,9 +64,9 @@ private:
 	QMap<QString, FMUInfo> modelRepo;
 
 	//模型列表
-	QMap<QString, ItemElement*> modelMap;
+	QMap<QString, FMUElement*> modelMap;
 	//被选中模型
-	ItemElement *activeModel;
+	FMUElement *activeModel;
 
 	//拖动时的相对起始坐标
 	QPoint moveStartPoint;

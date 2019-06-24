@@ -10,6 +10,9 @@
 
 #include <QMap>
 
+#include "GlobalConstant.h"
+#include "Regulation.h"
+
 #include "cwidgets.h"
 #include "ministack.h"
 #include "fancybutton.h"
@@ -27,9 +30,11 @@ public:
 public slots:
 	void slotModelDetail(FMUInfo*);
 
-private slots :
+private slots:
 	void slotGo();
 	void slotPlot();
+private slots:
+	void sort(int);
 signals:
 	void signalRunSimulation(double, double, double);
 signals:

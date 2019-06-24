@@ -8,6 +8,8 @@
 #ifndef FMISIMULATOR_H
 #define FMISIMULATOR_H
 
+#include "GlobalConstant.h"
+
 #include "imode.h"
 #include "fancytabwidget.h"
 #include "fancynavbar.h"
@@ -48,8 +50,12 @@ private:
 	//2
 	DetailStack *m_pDetailStack;
 	//3
-	QStatusBar *m_logBar;
+	QSplitter *splitterMain;
+
 	//4
+	QStatusBar *m_logBar;
+	//5
 	QTextBrowser *m_logBrowser;
 };
+
 #endif // FMISIMULATOR_H

@@ -8,6 +8,8 @@
 #ifndef PLOTDIALOG_H
 #define PLOTDIALOG_H
 
+#include "GlobalConstant.h"
+
 #include "cwidgets.h"
 #include "fancydialog.h"
 #include "qcustomchart.h"

@@ -1,9 +1,4 @@
 
-/*
-* @date : 2019/05/05
-* @author : jihang
-*/
-
 #include "ItemElement.h"
 
 ItemElement::ItemElement(QPixmap *pixmap, QString name,

@@ -1,6 +1,5 @@
 
 #include "DetailStack.h"
-#include "Regulation.h"
 
 DetailStack::DetailStack(QWidget *p) : MiniStack(p) {
 
@@ -19,13 +18,17 @@ DetailStack::DetailStack(QWidget *p) : MiniStack(p) {
 	//设置
 	variableTable->setColumnCount(7);
 	QStringList header;
-	header << "Name" << "valueReference" << "description"
-		<< "causality" << "variability" << "initial" << "canHandleMSPTI";
+	header << "causality" << "Name" << "valueReference"
+		<< "description" << "variability" << "initial" << "canHandleMSPTI";
 	variableTable->setHorizontalHeaderLabels(header);
 	tableStandardize(variableTable);
+	//点击表头排序
+	connect(variableTable->horizontalHeader(),
+		SIGNAL(sectionClicked(int)), this, SLOT(sort(int)));
 
 	FancyButton *plotButton = new FancyButton();
-	plotButton->setIcon(QIcon("./Icon/function/plot"));
+	QString iconPath = ICON_PATH;
+	plotButton->setIcon(QIcon(iconPath.append("function/plot")));
 	plotButton->setCursor(QCursor(Qt::PointingHandCursor));
 	plotButton->setFixedWidth(50);
 	connect(plotButton, SIGNAL(clicked()), this, SLOT(slotPlot()));
@@ -70,7 +73,8 @@ DetailStack::DetailStack(QWidget *p) : MiniStack(p) {
 	simuInfoStack->setLayout(simuLayout);
 
 	FancyButton *goButton = new FancyButton();
-	goButton->setIcon(QIcon("./Icon/function/go"));
+	iconPath = ICON_PATH;
+	goButton->setIcon(QIcon(iconPath.append("function/go")));
 	goButton->setCursor(QCursor(Qt::PointingHandCursor));
 	goButton->setFixedWidth(50);
 	connect(goButton, SIGNAL(clicked()), this, SLOT(slotGo()));
@@ -140,19 +144,31 @@ void DetailStack::refreshVariable() {
 
 		QTableWidgetItem *item;
 
-		item = new QTableWidgetItem(QString::fromStdString(fv->name));
+		QString cau = QString::fromStdString(fv->causality);
+		if ("input" == cau) {
+			QString iconPath = ICON_PATH;
+			item = new QTableWidgetItem(QIcon(iconPath.append("function/input")), "input");
+		}
+		else if ("output" == cau) {
+			QString iconPath = ICON_PATH;
+			item = new QTableWidgetItem(QIcon(iconPath.append("function/output")), "output");
+		}
+		else {
+			item = new QTableWidgetItem(cau);
+		}
+		item->setTextAlignment(Qt::AlignCenter);
 		item->setFlags(item->flags() & (~Qt::ItemIsEditable));
 		variableTable->setItem(row, 0, item);
 
-		item = new QTableWidgetItem(QString::fromStdString(fv->valueReference));
+		item = new QTableWidgetItem(QString::fromStdString(fv->name));
 		item->setFlags(item->flags() & (~Qt::ItemIsEditable));
 		variableTable->setItem(row, 1, item);
 
-		item = new QTableWidgetItem(QString::fromStdString(fv->description));
+		item = new QTableWidgetItem(QString::fromStdString(fv->valueReference));
 		item->setFlags(item->flags() & (~Qt::ItemIsEditable));
 		variableTable->setItem(row, 2, item);
 
-		item = new QTableWidgetItem(QString::fromStdString(fv->causality));
+		item = new QTableWidgetItem(QString::fromStdString(fv->description));
 		item->setFlags(item->flags() & (~Qt::ItemIsEditable));
 		variableTable->setItem(row, 3, item);
 
@@ -202,6 +218,10 @@ void DetailStack::slotPlot() {
 	}
 	if (variableTable->currentItem()->isSelected()) {
 		int row = variableTable->currentItem()->row();
-		emit signalPlot(variableTable->item(row, 0)->text());
+		emit signalPlot(variableTable->item(row, 1)->text());
 	}
+}
+
+void DetailStack::sort(int col) {
+	variableTable->sortItems(col, Qt::AscendingOrder);
 }

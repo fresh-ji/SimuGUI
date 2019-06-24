@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "qcustomplot.h"
+#include "GlobalConstant.h"
 
 class QLabel;
 class QToolBar;
@@ -15,12 +16,13 @@ class QTextBrowser;
 ///////////////////////////////////////////////////////////////
 /// \brief The QCustomChart class
 ///
-class QCustomChart : public QWidget
-{
+class QCustomChart : public QWidget {
+
 	Q_OBJECT
+
 public:
 	explicit QCustomChart(QWidget *parent = 0);
-	~QCustomChart();
+	~QCustomChart() {}
 
 	void setTitle(const QString &text);
 
@@ -71,8 +73,8 @@ private:
 ///////////////////////////////////////////////////////////
 /// \brief The CustomPlotZoom class
 ///
-class CustomPlotZoom : public QCustomPlot
-{
+class CustomPlotZoom : public QCustomPlot {
+
 	Q_OBJECT
 
 public:

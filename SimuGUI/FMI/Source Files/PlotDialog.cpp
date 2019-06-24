@@ -5,7 +5,8 @@ PlotDialog::PlotDialog(QString name, QVector<double> timeLine,
 	QVector<double> dataLine, QWidget *p) : FancyDialog(p) {
 
 	setWindowTitle("Plot for " + name);
-	setWindowIcon(QIcon("./Icon/function/window"));
+	QString iconPath = ICON_PATH;
+	setWindowIcon(QIcon(iconPath.append("function/window")));
 	setStyleSheet("background: #1890FF;");
 
 	QWidget *centerWidget = new QWidget();

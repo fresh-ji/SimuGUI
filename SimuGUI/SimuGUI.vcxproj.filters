@@ -329,6 +329,9 @@
     <QtMoc Include="Modeling\Header Files\OverviewDialog.h">
       <Filter>Modeling\overview</Filter>
     </QtMoc>
+    <QtMoc Include="FMI\Header Files\FMUElement.h">
+      <Filter>FMI\centralLabel</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CanPool\Header Files\cursor.h">
@@ -375,6 +378,9 @@
     </ClInclude>
     <ClInclude Include="FMI\Header Files\Constant.h">
       <Filter>FMI\common</Filter>
+    </ClInclude>
+    <ClInclude Include="main\Header Files\GlobalConstant.h">
+      <Filter>main\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -542,6 +548,9 @@
     </ClCompile>
     <ClCompile Include="Modeling\Source Files\OverviewDialog.cpp">
       <Filter>Modeling\overview</Filter>
+    </ClCompile>
+    <ClCompile Include="FMI\Source Files\FMUElement.cpp">
+      <Filter>FMI\centralLabel</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

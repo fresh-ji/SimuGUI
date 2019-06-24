@@ -1,42 +1,29 @@
 
-/*
-* @date : 2019/01/01
-* @author : jihang
-*/
-
 #include "FMISimulator.h"
 
 FMISimulator::FMISimulator(QWidget *parent) : IMode(parent) {
+
 	setObjectName(QLatin1String("FMISimulator"));
 	setDisplayName(tr("FMI\nSimulator"));
-	setIcon(QIcon("./Icon/mode/fmi"));
+	QString iconPath = ICON_PATH;
+	setIcon(QIcon(iconPath.append("mode/fmi")));
 
 	createWindow();
 }
 
 void FMISimulator::createWindow() {
 
+	splitterMain = new QSplitter(Qt::Horizontal, 0);
+
 	createCentralLabel();
 	createDetailStack();
 
 	createConnects();
 
-	QGridLayout *layout = new QGridLayout();
-	layout->setMargin(10);
-	layout->setSpacing(10);
-
-	//TODO：想要加弹簧
-	m_pDetailStack->setMaximumWidth(600);
-	layout->addWidget(m_pCentralLabel, 0, 0);
-	layout->addWidget(m_pDetailStack, 0, 1);
-
-	QWidget *carryWidget = new QWidget();
-	carryWidget->setLayout(layout);
-
 	FancyTabWidget *widget = new FancyTabWidget();
 
 	//装配核心widget
-	widget->insertTab(0, carryWidget, QIcon(), NULL, false);
+	widget->insertTab(0, splitterMain, QIcon(), NULL, false);
 	widget->closeSideEffect();
 
 	//装配日志区域
@@ -86,11 +73,12 @@ void FMISimulator::createConnects() {
 }
 
 void FMISimulator::createCentralLabel() {
-	m_pCentralLabel = new CentralLabel();
+	m_pCentralLabel = new CentralLabel(splitterMain);
+	m_pCentralLabel->setMinimumWidth(400);
 }
 
 void FMISimulator::createDetailStack() {
-	m_pDetailStack = new DetailStack();
+	m_pDetailStack = new DetailStack(splitterMain);
 	m_pDetailStack->setTitle("Detail");
 }
 

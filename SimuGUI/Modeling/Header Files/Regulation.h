@@ -77,7 +77,6 @@ static void tableStandardize(QTableWidget* table) {
 	font.setBold(true);
 	table->horizontalHeader()->setFont(font);
 	table->horizontalHeader()->setStyleSheet("QHeaderView::section{background:#93D5FD;}");
-	table->horizontalHeader()->setSectionsClickable(false);
 
 	//СаЭЗ
 	table->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);

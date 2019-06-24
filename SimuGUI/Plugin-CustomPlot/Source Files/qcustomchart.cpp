@@ -9,33 +9,26 @@
 /// \param parent
 ///
 QCustomChart::QCustomChart(QWidget *parent)
-	: QWidget(parent)
-{
+	: QWidget(parent) {
+
 	createWindow();
-}
-
-QCustomChart::~QCustomChart()
-{
 
 }
 
-void QCustomChart::setTitle(const QString &text)
-{
+void QCustomChart::setTitle(const QString &text) {
 	m_pTitleLabel->setText(text);
 }
 
-void QCustomChart::setXaxisLabel(const QString &text)
-{
+void QCustomChart::setXaxisLabel(const QString &text) {
 	m_pCustomPlot->xAxis->setLabel(text);
 }
 
-void QCustomChart::setYaxisLabel(const QString &text)
-{
+void QCustomChart::setYaxisLabel(const QString &text) {
 	m_pCustomPlot->yAxis->setLabel(text);
 }
 
-void QCustomChart::setYaxisRange(double lower, double upper)
-{
+void QCustomChart::setYaxisRange(double lower, double upper) {
+
 	// 自动调整轴上值的显示范围
 	m_pCustomPlot->rescaleAxes();
 
@@ -48,27 +41,36 @@ void QCustomChart::setYaxisRange(double lower, double upper)
 	m_pCustomPlot->replot();
 }
 
-void QCustomChart::setData(const QVector<double> &keys, const QVector<double> &values)
-{
-    m_pCustomPlot->graph(0)->setData(keys, values);
-    m_pCustomPlot->rescaleAxes();
-    m_pCustomPlot->replot();
+void QCustomChart::setData(const QVector<double> &keys, const QVector<double> &values) {
+	
+	m_pCustomPlot->graph(0)->setData(keys, values);
+	m_pCustomPlot->rescaleAxes();
+	m_pCustomPlot->replot();
+
+	for (int i = 0; i < keys.size(); ++i) {
+		m_pTextBrowser->append(QString::number(keys.at(i), 10, 5)
+			+ "   " + QString::number(values.at(i), 10, 5));
+	}
 }
 
-void QCustomChart::createWindow()
-{
+void QCustomChart::createWindow() {
 	QFont font("Segoe UI", 10);
-	m_pTitleLabel = new QLabel(tr("Title"));
+	m_pTitleLabel = new QLabel(tr("This is a normal plot"));
 	font.setBold(true);
 	font.setPointSize(12);
 	m_pTitleLabel->setFont(font);
 
 	// action
 	//by jh
-	m_pPrimaryAction = new QAction(QIcon("./Icon/chart/data"), tr("Primary Data"), this);
-	m_pChartAction = new QAction(QIcon("./Icon/chart/line"), tr("Chart"), this);
-	m_pRefreshAction = new QAction(QIcon("./Icon/chart/refresh"), tr("Refresh"), this);
-	m_pDownloadAction = new QAction(QIcon("./Icon/chart/download"), tr("Download"), this);
+	QString iconPath;
+	iconPath = ICON_PATH;
+	m_pPrimaryAction = new QAction(QIcon(iconPath.append("chart/data")), tr("Primary Data"), this);
+	iconPath = ICON_PATH;
+	m_pChartAction = new QAction(QIcon(iconPath.append("chart/line")), tr("Chart"), this);
+	iconPath = ICON_PATH;
+	m_pRefreshAction = new QAction(QIcon(iconPath.append("chart/refresh")), tr("Refresh"), this);
+	iconPath = ICON_PATH;
+	m_pDownloadAction = new QAction(QIcon(iconPath.append("chart/download")), tr("Download"), this);
 
 	QActionGroup *actionGroup = new QActionGroup(this);
 	m_pPrimaryAction->setCheckable(true);
@@ -122,31 +124,32 @@ void QCustomChart::createWindow()
 	m_pChartAction->setChecked(true);
 }
 
-void QCustomChart::initCustomPlot()
-{
-    // 添加一个图表
-    m_pCustomPlot->addGraph();
-    // 设置关键点的显示效果
-    m_pCustomPlot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssCircle,
-                                                             QPen(QColor(41,138,220), 2), QBrush(QColor(5,189,251)), 10));
+void QCustomChart::initCustomPlot() {
 
-    // 设置x轴显示时间
-    // configure bottom axis to show date instead of number:
-    QSharedPointer<QCPAxisTickerDateTime> dateTicker(new QCPAxisTickerDateTime);
-    dateTicker->setDateTimeFormat("MM-dd hh:mm");
-    m_pCustomPlot->xAxis->setTicker(dateTicker);
+	// 添加一个图表
+	m_pCustomPlot->addGraph();
+	// 设置关键点的显示效果
+	m_pCustomPlot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDot,
+		QPen(QColor(41, 138, 220), 2), QBrush(QColor(5, 189, 251)), 10));
 
-    // make range draggable and zoomable:
-    m_pCustomPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
+	// 设置x轴显示时间
+	// configure bottom axis to show date instead of number:
+	//QSharedPointer<QCPAxisTickerDateTime> dateTicker(new QCPAxisTickerDateTime);
+	//dateTicker->setDateTimeFormat("MM-dd hh:mm");
+	//m_pCustomPlot->xAxis->setTicker(dateTicker);
 
-    // make top right axes clones of bottom left axes:
-    m_pCustomPlot->axisRect()->setupFullAxesBox();
-    // connect signals so top and right axes move in sync with bottom and left axes:
-    connect(m_pCustomPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), m_pCustomPlot->xAxis2, SLOT(setRange(QCPRange)));
-    connect(m_pCustomPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), m_pCustomPlot->yAxis2, SLOT(setRange(QCPRange)));
+	// make range draggable and zoomable:
+	m_pCustomPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 
-    // 设置轴的标题
-    m_pCustomPlot->xAxis->setLabel(tr("- Time -"));
+	// make top right axes clones of bottom left axes:
+	m_pCustomPlot->axisRect()->setupFullAxesBox();
+	// connect signals so top and right axes move in sync with bottom and left axes:
+	connect(m_pCustomPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), m_pCustomPlot->xAxis2, SLOT(setRange(QCPRange)));
+	connect(m_pCustomPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), m_pCustomPlot->yAxis2, SLOT(setRange(QCPRange)));
+
+	// 设置轴的标题
+	m_pCustomPlot->xAxis->setLabel(tr("- Time -"));
+
 }
 
 void QCustomChart::slotRefresh()

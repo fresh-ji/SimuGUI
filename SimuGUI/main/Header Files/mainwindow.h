@@ -20,6 +20,8 @@
 #include <QSettings>
 #include <QAction>
 
+#include "GlobalConstant.h"
+
 #include "fancywindow.h"
 #include "fancytabbar.h"
 #include "modemanager.h"

@@ -15,10 +15,10 @@
 using namespace std;
 
 struct FMIVariable {
+	string causality;
 	string name;
 	string valueReference;
 	string description;
-	string causality;
 	string variability;
 	string initial;
 	string canHandleMSPTI;
@@ -66,7 +66,7 @@ public:
 private:
 	bool loadDll(const char*, FMU*);
 	void *getAdr(bool*, HMODULE, const char*);
-	void outputData(ofstream&, double, bool, FMU, fmi2Component);	
+	void outputData(ofstream&, double, bool, FMU, fmi2Component);
 
 private:
 	char* currentDir;

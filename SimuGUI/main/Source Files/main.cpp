@@ -55,14 +55,15 @@ int main(int argc, char *argv[]) {
 	//加载qss样式，没有被执行-----
 #if 0
 	//by jh
-	QString theme = QString("./Icon/qss/classic");
+	QString iconPath = ICON_PATH;
+	QString theme = QString(iconPath.append("qss/classic"));
 	QFile qssFile(theme);
 	qssFile.open(QFile::ReadOnly);
 	if (qssFile.isOpen()) {
 		QString qss = QLatin1String(qssFile.readAll());
 		qApp->setStyleSheet(qss);
 		qssFile.close();
-	}
+}
 #endif
 	//加载qss样式，没有被执行-----
 
