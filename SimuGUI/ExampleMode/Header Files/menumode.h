@@ -8,6 +8,8 @@
 #ifndef MENUMODE_H
 #define MENUMODE_H
 
+#include "GlobalConstant.h"
+
 #include "imode.h"
 
 class MenuMode : public IMode {
@@ -20,5 +22,8 @@ public:
 signals:
 
 public slots:
+
+private:
+	QString iconPath = ICON_PATH;
 };
 #endif // MENUMODE_H

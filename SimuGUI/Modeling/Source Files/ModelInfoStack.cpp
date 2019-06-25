@@ -1,11 +1,5 @@
 
-/*
-* @date : 2019/01/27
-* @author : jihang
-*/
-
 #include "ModelInfoStack.h"
-#include "Regulation.h"
 
 ModelInfoStack::ModelInfoStack(QWidget *p) : MiniStack(p) {
 
@@ -22,12 +16,12 @@ ModelInfoStack::ModelInfoStack(QWidget *p) : MiniStack(p) {
 	tableStandardize(m_pModelList);
 
 	FancyButton *editButton = new FancyButton();
-	editButton->setIcon(QIcon("./Icon/function/edit"));
+	editButton->setIcon(QIcon(iconPath + "function/edit"));
 	editButton->setCursor(QCursor(Qt::PointingHandCursor));
 	connect(editButton, SIGNAL(clicked()), this, SLOT(pSlotEditModel()));
 
 	FancyButton *deleteButton = new FancyButton();
-	deleteButton->setIcon(QIcon("./Icon/function/delete"));
+	deleteButton->setIcon(QIcon(iconPath + "function/delete"));
 	deleteButton->setCursor(QCursor(Qt::PointingHandCursor));
 	connect(deleteButton, SIGNAL(clicked()), this, SLOT(pSlotDeleteModel()));
 

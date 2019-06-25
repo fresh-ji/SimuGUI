@@ -71,5 +71,8 @@ private:
 private:
 	//core
 	QMap<QString, interfaceInfo> interfaceMap;
+
+private:
+	QString iconPath = ICON_PATH;
 };
 #endif // INTERFACEINFOSTACK_H

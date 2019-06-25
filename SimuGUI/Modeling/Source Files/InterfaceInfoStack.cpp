@@ -1,9 +1,4 @@
 
-/*
-* @date : 2019/02/20
-* @author : jihang
-*/
-
 #include "InterfaceInfoStack.h"
 
 //QSet基于哈希表，set基于变种红黑树，还要加上==
@@ -27,17 +22,17 @@ InterfaceInfoStack::InterfaceInfoStack(QWidget *p) : MiniStack(p) {
 	tableStandardize(m_pOutputList);
 
 	FancyButton *addOutputButton = new FancyButton();
-	addOutputButton->setIcon(QIcon("./Icon/function/add"));
+	addOutputButton->setIcon(QIcon(iconPath + "function/add"));
 	addOutputButton->setCursor(QCursor(Qt::PointingHandCursor));
 	connect(addOutputButton, SIGNAL(clicked()), this, SLOT(pSlotAddOutput()));
 
 	FancyButton *editOutputButton = new FancyButton();
-	editOutputButton->setIcon(QIcon("./Icon/function/edit"));
+	editOutputButton->setIcon(QIcon(iconPath + "function/edit"));
 	editOutputButton->setCursor(QCursor(Qt::PointingHandCursor));
 	connect(editOutputButton, SIGNAL(clicked()), this, SLOT(pSlotEditOutput()));
 
 	FancyButton *deleteOutputButton = new FancyButton();
-	deleteOutputButton->setIcon(QIcon("./Icon/function/delete"));
+	deleteOutputButton->setIcon(QIcon(iconPath + "function/delete"));
 	deleteOutputButton->setCursor(QCursor(Qt::PointingHandCursor));
 	connect(deleteOutputButton, SIGNAL(clicked()), this, SLOT(pSlotDeleteOutput()));
 
@@ -64,12 +59,12 @@ InterfaceInfoStack::InterfaceInfoStack(QWidget *p) : MiniStack(p) {
 	tableStandardize(m_pInputList);
 
 	FancyButton *subscribeInputButton = new FancyButton();
-	subscribeInputButton->setIcon(QIcon("./Icon/function/subscribe"));
+	subscribeInputButton->setIcon(QIcon(iconPath + "function/subscribe"));
 	subscribeInputButton->setCursor(QCursor(Qt::PointingHandCursor));
 	connect(subscribeInputButton, SIGNAL(clicked()), this, SLOT(pSlotSubscribeInput()));
 
 	FancyButton *deleteInputButton = new FancyButton();
-	deleteInputButton->setIcon(QIcon("./Icon/function/delete"));
+	deleteInputButton->setIcon(QIcon(iconPath + "function/delete"));
 	deleteInputButton->setCursor(QCursor(Qt::PointingHandCursor));
 	connect(deleteInputButton, SIGNAL(clicked()), this, SLOT(pSlotDeleteInput()));
 

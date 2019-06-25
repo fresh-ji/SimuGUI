@@ -1,9 +1,4 @@
 
-/*
-* @date : 2019/02/16
-* @author : jihang
-*/
-
 #include "EditDataTypeDialog.h"
 
 EditDataTypeDialog::EditDataTypeDialog(QList<QString> currentTypes,
@@ -47,7 +42,7 @@ EditDataTypeDialog::EditDataTypeDialog(
 
 void EditDataTypeDialog::createTemplate(QList<QString> currentTypes) {
 
-	setWindowIcon(QIcon("./Icon/function/window"));
+	setWindowIcon(QIcon(iconPath + "function/window"));
 	setFixedSize(600, 400);
 	setStyleSheet("background: #1890FF;");
 
@@ -87,14 +82,14 @@ void EditDataTypeDialog::createTemplate(QList<QString> currentTypes) {
 	layout->addWidget(typeContent, 2, 1, 1, 1);
 
 	FancyButton *addButton = new FancyButton();
-	addButton->setIcon(QIcon("./Icon/function/add"));
+	addButton->setIcon(QIcon(iconPath + "function/add"));
 	addButton->setCursor(QCursor(Qt::PointingHandCursor));
 	connect(addButton, SIGNAL(clicked()), this, SLOT(pSlotAdd()));
 	addButton->setFixedWidth(40);
 	layout->addWidget(addButton, 3, 0, 1, 1);
 
 	FancyButton *deleteButton = new FancyButton();
-	deleteButton->setIcon(QIcon("./Icon/function/delete"));
+	deleteButton->setIcon(QIcon(iconPath + "function/delete"));
 	deleteButton->setCursor(QCursor(Qt::PointingHandCursor));
 	connect(deleteButton, SIGNAL(clicked()), this, SLOT(pSlotDelete()));
 	deleteButton->setFixedWidth(40);

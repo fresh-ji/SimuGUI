@@ -8,11 +8,12 @@
 #ifndef MODELING_H
 #define MODELING_H
 
+#include "GlobalConstant.h"
+
 #include "imode.h"
 #include "fancytabwidget.h"
 #include "fancynavbar.h"
 
-#include "cwidgets.h"
 #include "ToolDragStack.h"
 #include "DropLabel.h"
 #include "DataTypeStack.h"
@@ -64,5 +65,13 @@ private:
 	QStatusBar *m_logBar;
 	//7
 	QTextBrowser *m_logBrowser;
+
+	//8
+	QSplitter *splitterMain;
+	QSplitter *splitterTop;
+	QSplitter *splitterDown;
+
+private:
+	QString iconPath = ICON_PATH;
 };
 #endif // MODELING_H

@@ -16,10 +16,11 @@ DetailStack::DetailStack(QWidget *p) : MiniStack(p) {
 	//2.变量信息
 	variableTable = new QTableWidget();
 	//设置
-	variableTable->setColumnCount(7);
+	variableTable->setColumnCount(6);
 	QStringList header;
 	header << "causality" << "Name" << "valueReference"
-		<< "description" << "variability" << "initial" << "canHandleMSPTI";
+		<< "description" << "variability" << "initial";
+	//<< "canHandleMSPTI";
 	variableTable->setHorizontalHeaderLabels(header);
 	tableStandardize(variableTable);
 	//点击表头排序
@@ -27,8 +28,7 @@ DetailStack::DetailStack(QWidget *p) : MiniStack(p) {
 		SIGNAL(sectionClicked(int)), this, SLOT(sort(int)));
 
 	FancyButton *plotButton = new FancyButton();
-	QString iconPath = ICON_PATH;
-	plotButton->setIcon(QIcon(iconPath.append("function/plot")));
+	plotButton->setIcon(QIcon(iconPath + "function/plot"));
 	plotButton->setCursor(QCursor(Qt::PointingHandCursor));
 	plotButton->setFixedWidth(50);
 	connect(plotButton, SIGNAL(clicked()), this, SLOT(slotPlot()));
@@ -73,8 +73,7 @@ DetailStack::DetailStack(QWidget *p) : MiniStack(p) {
 	simuInfoStack->setLayout(simuLayout);
 
 	FancyButton *goButton = new FancyButton();
-	iconPath = ICON_PATH;
-	goButton->setIcon(QIcon(iconPath.append("function/go")));
+	goButton->setIcon(QIcon(iconPath + "function/go"));
 	goButton->setCursor(QCursor(Qt::PointingHandCursor));
 	goButton->setFixedWidth(50);
 	connect(goButton, SIGNAL(clicked()), this, SLOT(slotGo()));
@@ -146,12 +145,10 @@ void DetailStack::refreshVariable() {
 
 		QString cau = QString::fromStdString(fv->causality);
 		if ("input" == cau) {
-			QString iconPath = ICON_PATH;
-			item = new QTableWidgetItem(QIcon(iconPath.append("function/input")), "input");
+			item = new QTableWidgetItem(QIcon(iconPath + "function/input"), "input");
 		}
 		else if ("output" == cau) {
-			QString iconPath = ICON_PATH;
-			item = new QTableWidgetItem(QIcon(iconPath.append("function/output")), "output");
+			item = new QTableWidgetItem(QIcon(iconPath + "function/output"), "output");
 		}
 		else {
 			item = new QTableWidgetItem(cau);
@@ -180,9 +177,10 @@ void DetailStack::refreshVariable() {
 		item->setFlags(item->flags() & (~Qt::ItemIsEditable));
 		variableTable->setItem(row, 5, item);
 
-		item = new QTableWidgetItem(QString::fromStdString(fv->canHandleMSPTI));
-		item->setFlags(item->flags() & (~Qt::ItemIsEditable));
-		variableTable->setItem(row, 6, item);
+		//暂时先不加
+		//item = new QTableWidgetItem(QString::fromStdString(fv->canHandleMSPTI));
+		//item->setFlags(item->flags() & (~Qt::ItemIsEditable));
+		//variableTable->setItem(row, 6, item);
 	}
 }
 

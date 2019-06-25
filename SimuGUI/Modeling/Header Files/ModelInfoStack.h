@@ -8,7 +8,8 @@
 #ifndef MODELINFOSTACK_H
 #define MODELINFOSTACK_H
 
-#include "cwidgets.h"
+#include "GlobalConstant.h"
+
 #include "ministack.h"
 #include "fancybutton.h"
 
@@ -41,5 +42,8 @@ signals:
 
 private:
 	QTableWidget *m_pModelList;
+
+private:
+	QString iconPath = ICON_PATH;
 };
 #endif // MODELINFOSTACK_H

@@ -8,8 +8,6 @@
 #ifndef SKINDIALOG_H
 #define SKINDIALOG_H
 
-#include <QMap>
-
 #include "GlobalConstant.h"
 
 #include "tinytabwidget.h"
@@ -17,7 +15,6 @@
 #include "centralarea.h"
 #include "fancydialog.h"
 
-#include "cwidgets.h"
 #include "theme.h"
 
 class SkinDialog : public FancyDialog {
@@ -56,6 +53,9 @@ private:
 	//Ö÷Ìâ
 	QComboBox *m_pThemeComboBox;
 	QMap<QString, QString> m_themeMap;
+
+private:
+	QString iconPath = ICON_PATH;
 };
 
 #endif // SKINDIALOG_H

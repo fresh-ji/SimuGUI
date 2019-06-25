@@ -1,10 +1,4 @@
 
-/*
-* 皮肤源文件
-* @date : 2018/12/18
-* @author : jihang
-*/
-
 #include "skindialog.h"
 
 #define SKIN_NUM 15
@@ -20,14 +14,11 @@ SkinDialog::SkinDialog(QWidget *parent) : FancyDialog(parent) {
 
 	setFixedSize(800, 600);
 	setWindowTitle(tr("Change Skin and Theme"));
-	QString iconPath = ICON_PATH;
-	setWindowIcon(QIcon(iconPath.append("main/logo")));
+	setWindowIcon(QIcon(iconPath + "main/logo"));
 }
 
 //在setting里存储着当前的skin和themeTODO
 void SkinDialog::createWindow() {
-
-	QString iconPath;
 
 	QWidget *pCentralWidget = new QWidget();
 
@@ -56,8 +47,7 @@ void SkinDialog::createWindow() {
 	//全部暂时装填
 	QStringList skinNameList;
 	for (int i = 0; i < SKIN_NUM; i++) {
-		iconPath = ICON_PATH;
-		skinNameList << QString(iconPath.append("skin/%1")).arg(i);
+		skinNameList << QString(iconPath + "skin/%1").arg(i);
 	}
 	//获取当前皮肤
 	QString currentSkin = getSkin();
@@ -82,8 +72,7 @@ void SkinDialog::createWindow() {
 
 	//全部放入comboBox，开始theme
 	m_pThemeComboBox = new QComboBox();
-	iconPath = ICON_PATH;
-	QDir dir(QString(iconPath.append("theme")));
+	QDir dir(QString(iconPath + "theme"));
 	QStringList typeList;
 	typeList << "*.cptheme" << "*.ini";
 	QFileInfoList themeFiles = dir.entryInfoList(typeList, QDir::Files | QDir::Hidden | QDir::NoSymLinks);

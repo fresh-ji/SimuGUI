@@ -1,9 +1,4 @@
 
-/*
-* @date : 2019/02/18
-* @author : jihang
-*/
-
 #include "EditOutputDialog.h"
 
 EditOutputDialog::EditOutputDialog(QList<QString> currentTypes, QString pub,
@@ -33,7 +28,7 @@ EditOutputDialog::EditOutputDialog(
 
 void EditOutputDialog::createTemplate(QList<QString> currentTypes) {
 
-	setWindowIcon(QIcon("./Icon/function/window"));
+	setWindowIcon(QIcon(iconPath + "function/window"));
 	setFixedSize(400, 250);
 	setStyleSheet("background: #1890FF;");
 

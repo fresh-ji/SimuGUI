@@ -12,6 +12,7 @@ CentralLabel::CentralLabel(QWidget *p) : QLabel(p) {
 	activeModel = NULL;
 
 	//初始文件选择路径
+	//TODO：绝对路径测试使用
 	openPath = QDir::currentPath() + "\\FMI\\examples\\cs\\x64";
 
 	//fmi
@@ -118,53 +119,45 @@ void CentralLabel::dropEvent(QDropEvent *event) {
 
 void CentralLabel::addToolBar() {
 
-	QString iconPath;
-
 	QToolButton *openButton = new QToolButton(this);
 	openButton->setGeometry(20, 5, 50, 50);
 	openButton->setCursor(Qt::PointingHandCursor);
 	openButton->setStyleSheet("QToolButton{border: none;border-radius: 25px;}");
-	iconPath = ICON_PATH;
-	openButton->setIcon(QIcon(iconPath.append("function/open")));
+	openButton->setIcon(QIcon(iconPath + "function/open"));
 	connect(openButton, SIGNAL(clicked()), this, SLOT(slotOpen()));
 
 	QToolButton *undoButton = new QToolButton(this);
 	undoButton->setGeometry(70, 5, 50, 50);
 	undoButton->setCursor(Qt::PointingHandCursor);
 	undoButton->setStyleSheet("QToolButton{border: none;border-radius: 25px;}");
-	iconPath = ICON_PATH;
-	undoButton->setIcon(QIcon(iconPath.append("function/undo")));
+	undoButton->setIcon(QIcon(iconPath + "function/undo"));
 	connect(undoButton, SIGNAL(clicked()), this, SLOT(slotUndo()));
 
 	QToolButton *redoButton = new QToolButton(this);
 	redoButton->setGeometry(120, 5, 50, 50);
 	redoButton->setCursor(Qt::PointingHandCursor);
 	redoButton->setStyleSheet("QToolButton{border: none;border-radius: 25px;}");
-	iconPath = ICON_PATH;
-	redoButton->setIcon(QIcon(iconPath.append("function/redo")));
+	redoButton->setIcon(QIcon(iconPath + "function/redo"));
 	connect(redoButton, SIGNAL(clicked()), this, SLOT(slotRedo()));
 
 	QToolButton *gridButton = new QToolButton(this);
 	gridButton->setGeometry(170, 5, 50, 50);
 	gridButton->setCursor(Qt::PointingHandCursor);
 	gridButton->setStyleSheet("QToolButton{border: none;border-radius: 25px;}");
-	iconPath = ICON_PATH;
-	gridButton->setIcon(QIcon(iconPath.append("function/grid")));
+	gridButton->setIcon(QIcon(iconPath + "function/grid"));
 	connect(gridButton, SIGNAL(clicked()), this, SLOT(slotGrid()));
 
 	QToolButton *deleteButton = new QToolButton(this);
 	deleteButton->setGeometry(220, 5, 50, 50);
 	deleteButton->setCursor(Qt::PointingHandCursor);
 	deleteButton->setStyleSheet("QToolButton{border: none;border-radius: 25px;}");
-	iconPath = ICON_PATH;
-	deleteButton->setIcon(QIcon(iconPath.append("function/delete")));
+	deleteButton->setIcon(QIcon(iconPath + "function/delete"));
 	connect(deleteButton, SIGNAL(clicked()), this, SLOT(slotDelete()));
 
 	QToolButton *infoButton = new QToolButton(this);
 	infoButton->setGeometry(270, 5, 50, 50);
 	infoButton->setStyleSheet("QToolButton{border: none;border-radius: 25px;}");
-	iconPath = ICON_PATH;
-	infoButton->setIcon(QIcon(iconPath.append("function/info")));
+	infoButton->setIcon(QIcon(iconPath + "function/info"));
 	infoButton->setToolTip("Only FMI-2.0 and WIN64 are supported");
 }
 

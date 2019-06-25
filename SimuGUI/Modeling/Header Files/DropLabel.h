@@ -11,8 +11,10 @@
 //QSet不好用
 #include <set>
 
-#include "cwidgets.h"
+#include "GlobalConstant.h"
+
 #include "fancybutton.h"
+
 #include "BusElement.h"
 #include "ItemElement.h"
 #include "OverviewDialog.h"
@@ -92,6 +94,9 @@ private:
 
 	//概览对话框
 	OverviewDialog *dialog;
+
+private:
+	QString iconPath = ICON_PATH;
 };
 
 #endif // DROPLABEL_H

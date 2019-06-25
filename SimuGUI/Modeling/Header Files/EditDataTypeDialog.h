@@ -8,6 +8,7 @@
 #ifndef EDITDATATYPEDIALOG_H
 #define EDITDATATYPEDIALOG_H
 
+#include "GlobalConstant.h"
 #include "Regulation.h"
 
 class EditDataTypeDialog : public FancyDialog {
@@ -61,5 +62,8 @@ private:
 
 	//ฯ๊ว้
 	QTableWidget *dataDetailList;
+
+private:
+	QString iconPath = ICON_PATH;
 };
 #endif // EDITDATATYPEDIALOG_H

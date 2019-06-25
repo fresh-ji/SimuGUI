@@ -8,7 +8,6 @@
 #ifndef DATATYPESTACK_H
 #define DATATYPESTACK_H
 
-#include "cwidgets.h"
 #include "ministack.h"
 #include "fancybutton.h"
 
@@ -20,7 +19,7 @@ class DataTypeStack : public MiniStack {
 
 public:
 	explicit DataTypeStack(QWidget *p = 0);
-	~DataTypeStack() {};
+	~DataTypeStack() {}
 
 private slots:
 	//Ìí¼Ó£¬±à¼­£¬É¾³ý
@@ -56,6 +55,9 @@ private:
 private:
 	//core
 	QMap<QString, dataTypeInfo> dataTypeMap;
+
+private:
+	QString iconPath = ICON_PATH;
 };
 
 #endif //  DATATYPESTACK_H

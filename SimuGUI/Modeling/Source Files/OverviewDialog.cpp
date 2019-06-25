@@ -8,7 +8,7 @@ OverviewDialog::OverviewDialog(
 	QWidget *p) : FancyDialog(p) {
 
 	setWindowTitle("Overview");
-	setWindowIcon(QIcon("./Icon/function/window"));
+	setWindowIcon(QIcon(iconPath + "function/window"));
 	setStyleSheet("background: #1890FF;");
 
 	QWidget *centerWidget = new QWidget();
@@ -53,10 +53,10 @@ OverviewDialog::OverviewDialog(
 		while (it2.hasNext()) {
 			it2.next();
 			if (modelName == it2.value().publisher) {
-				name->appendRow(new QStandardItem("---> " + it2.key()));
+				name->appendRow(new QStandardItem("OUT---> " + it2.key()));
 			}
 			if (it2.value().subscribers.contains(modelName)) {
-				name->appendRow(new QStandardItem("<--- " + it2.key()));
+				name->appendRow(new QStandardItem(" IN<--- " + it2.key()));
 			}
 		}
 		modelModel->appendRow(name);

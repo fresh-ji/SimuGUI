@@ -10,7 +10,6 @@
 
 #include "GlobalConstant.h"
 
-#include "cwidgets.h"
 #include "fancydialog.h"
 #include "qcustomchart.h"
 
@@ -22,6 +21,9 @@ public:
 	explicit PlotDialog(QString, QVector<double>, QVector<double>, QWidget *p = 0);
 	//Îö¹¹Æ÷
 	~PlotDialog() {}
+
+private:
+	QString iconPath = ICON_PATH;
 };
 
 #endif // PLOTDIALOG_H

@@ -14,7 +14,6 @@
 #include "fancytabwidget.h"
 #include "fancynavbar.h"
 
-#include "cwidgets.h"
 #include "CentralLabel.h"
 #include "DetailStack.h"
 
@@ -56,6 +55,9 @@ private:
 	QStatusBar *m_logBar;
 	//5
 	QTextBrowser *m_logBrowser;
+
+private:
+	QString iconPath = ICON_PATH;
 };
 
 #endif // FMISIMULATOR_H

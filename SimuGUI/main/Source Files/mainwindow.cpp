@@ -1,10 +1,4 @@
 
-/*
-* 主布局
-* @date : 2018/12/19
-* @author : jihang
-*/
-
 #include "mainwindow.h"
 
 MainWindow *MainWindow::m_instance = 0;
@@ -24,8 +18,7 @@ MainWindow::MainWindow(QWidget *parent) : FancyWindow(parent) {
 	setAcceptDrops(true);
 
 	setWindowTitle(QString::fromUtf8("Simulation Center"));
-	QString iconPath = ICON_PATH;
-	setWindowIcon(QIcon(iconPath.append("main/workhub")));
+	setWindowIcon(QIcon(iconPath + "main/workhub"));
 	setMinimumSize(QSize(1000, 800));
 	setMouseTracking(true);
 
@@ -68,41 +61,35 @@ void MainWindow::createQuickAccessBar() {
 		action->setToolTip(tr("Customize Quick Access Bar"));
 
 		QAction* smallButton;
-		iconPath = ICON_PATH;
-		smallButton = quickAccessBar->addAction(QIcon(iconPath.append("tools/new")), tr("New"));
+		smallButton = quickAccessBar->addAction(QIcon(iconPath + "tools/new"), tr("New"));
 		smallButton->setShortcut(QKeySequence::New);
 		smallButton->setToolTip(tr("New File or Project\nCtrl+N"));
 		connect(smallButton, SIGNAL(triggered()), this, SLOT(slotNew()));
 		quickAccessBar->setActionVisible(smallButton, false);
 
-		iconPath = ICON_PATH;
-		smallButton = quickAccessBar->addAction(QIcon(iconPath.append("tools/open")), tr("Open"));
+		smallButton = quickAccessBar->addAction(QIcon(iconPath + "tools/open"), tr("Open"));
 		smallButton->setShortcut(tr("Ctrl+O"));
 		smallButton->setToolTip(tr("Open File or Project\nCtrl+O"));
 		connect(smallButton, SIGNAL(triggered()), this, SLOT(slotOpen()));
 		quickAccessBar->setActionVisible(smallButton, false);
 
-		iconPath = ICON_PATH;
-		smallButton = quickAccessBar->addAction(QIcon(iconPath.append("tools/save")), tr("Save"));
+		smallButton = quickAccessBar->addAction(QIcon(iconPath + "tools/save"), tr("Save"));
 		smallButton->setShortcut(tr("Ctrl+S"));
 		smallButton->setToolTip(tr("Save the active document\nCtrl+S"));
 		connect(smallButton, SIGNAL(triggered()), this, SLOT(slotSave()));
 		quickAccessBar->setActionVisible(smallButton, false);
 
-		iconPath = ICON_PATH;
-		smallButton = quickAccessBar->addAction(QIcon(iconPath.append("tools/save_all")), tr("Save All"));
+		smallButton = quickAccessBar->addAction(QIcon(iconPath + "tools/save_all"), tr("Save All"));
 		smallButton->setShortcut(tr("Ctrl+Shift+S"));
 		smallButton->setToolTip(tr("Save all active documents\nCtrl+Shift+S"));
 		connect(smallButton, SIGNAL(triggered()), this, SLOT(slotSaveAll()));
 		quickAccessBar->setActionVisible(smallButton, false);
 
-		iconPath = ICON_PATH;
-		smallButton = quickAccessBar->addAction(QIcon(iconPath.append("tools/undo")), tr("&Undo"));
+		smallButton = quickAccessBar->addAction(QIcon(iconPath + "tools/undo"), tr("&Undo"));
 		smallButton->setShortcut(QKeySequence::Undo);
 		smallButton->setEnabled(false);
 
-		iconPath = ICON_PATH;
-		smallButton = quickAccessBar->addAction(QIcon(iconPath.append("tools/redo")), tr("&Redo"));
+		smallButton = quickAccessBar->addAction(QIcon(iconPath + "tools/redo"), tr("&Redo"));
 		smallButton->setShortcut(QKeySequence::Redo);
 		smallButton->setEnabled(false);
 
@@ -144,26 +131,21 @@ void MainWindow::createMenuBar() {
 	QFont ft;
 	ft.setPointSize(34);
 	text->setFont(ft);
-	text->append(tr("还犹豫什么仿就完事了I"));
+	text->append(tr("犹豫什么仿就完事了"));
 	fancyBar()->setApplicationWidget(tr("Application"), text);
 }
 
 //创建拓展栏
 void MainWindow::createAdditionalControls() {
 
-	QString iconPath;
-
-	iconPath = ICON_PATH;
-	QAction *menuAction = new QAction(QIcon(iconPath.append("tools/style")), tr("Style"), this);
+	QAction *menuAction = new QAction(QIcon(iconPath + "tools/style"), tr("Style"), this);
 	fancyBar()->addAdditionalControl(menuAction, FancyBar::TitlePosition);
 
-	iconPath = ICON_PATH;
-	QAction *skinAction = new QAction(QIcon(iconPath.append("tools/skin")), tr("Skin"), this);
+	QAction *skinAction = new QAction(QIcon(iconPath + "tools/skin"), tr("Skin"), this);
 	connect(skinAction, SIGNAL(triggered(bool)), this, SLOT(slotSkin()));
 	fancyBar()->addAdditionalControl(skinAction, FancyBar::TitlePosition);
 
-	iconPath = ICON_PATH;
-	QAction *action = new QAction(QIcon(iconPath.append("tools/option")), tr("Option"), this);
+	QAction *action = new QAction(QIcon(iconPath + "tools/option"), tr("Option"), this);
 	fancyBar()->addAdditionalControl(action, FancyBar::MenuPosition);
 
 	//Style展开的menu
@@ -204,21 +186,21 @@ void MainWindow::createAdditionalControls() {
 
 //创建模式栏
 void MainWindow::createModeBar() {
-	
+
 	QPalette palette;
 	palette.setColor(QPalette::Background, QColor(0, 0, 0, 20));
 
 	FancyTabBar *modeBar = m_modeStack->tabBar();
 	modeBar->setPalette(palette);
 	modeBar->setAutoFillBackground(true);
-	
+
 	m_pCustomMode = new CustomMode();
 	m_pPaintMode = new PaintMode();
 	m_pMenuMode = new MenuMode();
 
 	m_pFMISimulator = new FMISimulator();
 	m_pModeling = new Modeling();
-	
+
 	m_modeManager->objectAdded(m_pCustomMode);
 	m_modeManager->objectAdded(m_pPaintMode);
 	m_modeManager->objectAdded(m_pMenuMode);
@@ -239,7 +221,7 @@ void MainWindow::createModeBar() {
 	modeBar->setSelectedTextColor(QColor(255, 255, 255));
 	modeBar->setHoverColor(QColor(255, 255, 255, 50));
 	modeBar->setFixedWidth(80);
-	
+
 }
 
 //创建中心区域，即m_modeStack
@@ -330,8 +312,7 @@ void MainWindow::slotNew() {
 	//对话框右上角有个按钮示例
 	FancyDialog dialog;
 	dialog.setTitleBarHeight(30);
-	iconPath = ICON_PATH;
-	dialog.addAdditionalControl(new QAction(QIcon(iconPath.append("tools/help")), tr("What is this"), this));
+	dialog.addAdditionalControl(new QAction(QIcon(iconPath + "tools/help"), tr("What is this"), this));
 	dialog.exec();
 
 	//简单dialog示例
@@ -344,8 +325,7 @@ void MainWindow::slotNew() {
 	QDialog dialog3;
 	FancyBanner banner;
 	for (int i = 0; i < 10; i++) {
-		iconPath = ICON_PATH;
-		banner.addPage(QPixmap(QString(iconPath.append("skin/%1")).arg(i)));
+		banner.addPage(QPixmap(QString(iconPath + "skin/%1").arg(i)));
 	}
 	QHBoxLayout layout2;
 	layout2.setMargin(0);

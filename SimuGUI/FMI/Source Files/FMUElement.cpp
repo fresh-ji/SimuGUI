@@ -77,8 +77,7 @@ FMUElement::FMUElement(QString name, int inputNumber,
 		FMUWIDTH - FMUGAP * 2,
 		FMUWIDTH - FMUGAP * 2);
 	imageLabel->setStyleSheet("border:0px solid black;");
-	QString iconPath = ICON_PATH;
-	QPixmap *pixmap = new QPixmap(iconPath.append("simutool/fmi"));
+	QPixmap *pixmap = new QPixmap(iconPath + "simutool/fmi");
 	pixmap->scaled(imageLabel->size(), Qt::KeepAspectRatio);
 	imageLabel->setScaledContents(true);
 	imageLabel->setPixmap(*pixmap);

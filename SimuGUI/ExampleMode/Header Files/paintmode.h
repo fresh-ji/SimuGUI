@@ -8,9 +8,9 @@
 #ifndef PAINTMODE_H
 #define PAINTMODE_H
 
-#include "imode.h"
+#include "GlobalConstant.h"
 
-#include "cwidgets.h"
+#include "imode.h"
 
 #include "tinytabwidget.h"
 #include "centralarea.h"
@@ -54,5 +54,8 @@ private:
 	QWidget *m_pProgressWidget;
 	MiniStack *m_pProgressBarStack;
 	MiniStack *m_pDialStack;
+
+private:
+	QString iconPath = ICON_PATH;
 };
 #endif // PAINTMODE_H

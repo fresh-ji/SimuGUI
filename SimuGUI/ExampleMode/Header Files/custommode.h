@@ -14,16 +14,13 @@
 * @author : jihang
 */
 
+#include "GlobalConstant.h"
+
 #include "imode.h"
 
-#include "minisplitter.h"
 #include "ministack.h"
 #include "minicard.h"
-#include "simplefilter.h"
 #include "tinytabwidget.h"
-
-#include "cwidgets.h"
-//#include "ctablewidget.h"
 
 #include "qcustomchart.h"
 
@@ -45,5 +42,8 @@ public slots:
 private:
 	TinyTabWidget *m_pTabWidget;
 	QList<MiniCard *> m_infoCards;
+
+private:
+	QString iconPath = ICON_PATH;
 };
 #endif // CUSTOMMODE_H

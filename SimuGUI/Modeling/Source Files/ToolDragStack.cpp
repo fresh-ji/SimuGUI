@@ -1,9 +1,4 @@
 
-/*
-* @date : 2019/01/07
-* @author : jihang
-*/
-
 #include "ToolDragStack.h"
 
 //获取类型
@@ -44,7 +39,7 @@ ToolDragStack::ToolDragStack(QWidget *p) : MiniStack(p) {
 	QWidget *toolWidget = new QWidget();
 	toolWidget->setLayout(layout);
 
-	this->setFixedWidth(200);
+	setFixedWidth(200);
 
 	addTab(tr("tool"), toolWidget);
 
@@ -63,22 +58,22 @@ void ToolDragStack::mousePressEvent(QMouseEvent *event) {
 		if (m_cLabel->geometry().contains(point)) {
 			m_dragLabel = m_cLabel;
 			modelType = CTYPE;
-			pixmap = new QPixmap("./Icon/simutool/c");
+			pixmap = new QPixmap(iconPath + "simutool/c");
 		}
 		else if (m_matlabLabel->geometry().contains(point)) {
 			m_dragLabel = m_matlabLabel;
 			modelType = MATLABTYPE;
-			pixmap = new QPixmap("./Icon/simutool/matlab");
+			pixmap = new QPixmap(iconPath + "simutool/matlab");
 		}
 		else if (m_adamsLabel->geometry().contains(point)) {
 			m_dragLabel = m_adamsLabel;
 			modelType = ADAMSTYPE;
-			pixmap = new QPixmap("./Icon/simutool/adams");
+			pixmap = new QPixmap(iconPath + "simutool/adams");
 		}
 		else if (m_simulinkLabel->geometry().contains(point)) {
 			m_dragLabel = m_simulinkLabel;
 			modelType = SIMULINKTYPE;
-			pixmap = new QPixmap("./Icon/simutool/simulink");
+			pixmap = new QPixmap(iconPath + "simutool/simulink");
 		}
 		else {
 			return;
@@ -98,7 +93,7 @@ void ToolDragStack::mousePressEvent(QMouseEvent *event) {
 }
 
 void ToolDragStack::putImage(QString path, QLabel *label) {
-	QPixmap *pixmap = new QPixmap("./Icon/simutool/" + path);
+	QPixmap *pixmap = new QPixmap(iconPath + "simutool/" + path);
 	pixmap->scaled(label->size(), Qt::KeepAspectRatio);
 	label->setScaledContents(true);
 	label->setPixmap(*pixmap);

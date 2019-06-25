@@ -8,6 +8,7 @@
 #ifndef EDITINPUTDIALOG_H
 #define EDITINPUTDIALOG_H
 
+#include "GlobalConstant.h"
 #include "Regulation.h"
 
 class EditInputDialog : public FancyDialog {
@@ -37,5 +38,8 @@ private:
 
 	//core
 	QTreeWidget *treeWidget;
+
+private:
+	QString iconPath = ICON_PATH;
 };
 #endif // EDITINPUTDIALOG_H

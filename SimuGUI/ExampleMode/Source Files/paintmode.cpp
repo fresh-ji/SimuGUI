@@ -1,17 +1,11 @@
 
-/*
-* Mode Bar里的选项卡
-* @date : 2018/12/12
-* @author : jihang
-*/
-
 #include "paintmode.h"
 
 PaintMode::PaintMode(QWidget *parent) : IMode(parent) {
 
 	setObjectName(QLatin1String("PaintMode"));
 	setDisplayName(tr("Painter"));
-	setIcon(QIcon("./Icon/mode/example"));
+	setIcon(QIcon(iconPath + "mode/example"));
 
 	createWindow();
 }

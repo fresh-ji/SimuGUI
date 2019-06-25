@@ -8,12 +8,8 @@
 #ifndef DETAILSTACK_H
 #define DETAILSTACK_H
 
-#include <QMap>
-
 #include "GlobalConstant.h"
-#include "Regulation.h"
 
-#include "cwidgets.h"
 #include "ministack.h"
 #include "fancybutton.h"
 
@@ -61,6 +57,9 @@ private:
 	FMUInfo* activeInfo;
 	void refreshInfo();
 	void refreshVariable();
+
+private:
+	QString iconPath = ICON_PATH;
 };
 
 #endif // DETAILSTACK_H

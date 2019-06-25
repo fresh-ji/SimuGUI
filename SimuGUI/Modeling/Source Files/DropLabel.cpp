@@ -32,6 +32,8 @@ DropLabel::DropLabel(QWidget *p) : QLabel(p) {
 
 	//Ìí¼Ó¹¦ÄÜÀ¸
 	addToolBar();
+
+	setMinimumHeight(400);
 }
 
 void DropLabel::dragEnterEvent(QDragEnterEvent *e) {
@@ -371,35 +373,35 @@ void DropLabel::addToolBar() {
 	undoButton->setGeometry(20, 5, 50, 50);
 	undoButton->setCursor(Qt::PointingHandCursor);
 	undoButton->setStyleSheet("QToolButton{border: none;border-radius: 25px;}");
-	undoButton->setIcon(QIcon("./Icon/function/undo"));
+	undoButton->setIcon(QIcon(iconPath + "function/undo"));
 	connect(undoButton, SIGNAL(clicked()), this, SLOT(slotUndo()));
 
 	QToolButton *redoButton = new QToolButton(this);
 	redoButton->setGeometry(70, 5, 50, 50);
 	redoButton->setCursor(Qt::PointingHandCursor);
 	redoButton->setStyleSheet("QToolButton{border: none;border-radius: 25px;}");
-	redoButton->setIcon(QIcon("./Icon/function/redo"));
+	redoButton->setIcon(QIcon(iconPath + "function/redo"));
 	connect(redoButton, SIGNAL(clicked()), this, SLOT(slotRedo()));
 
 	QToolButton *gridButton = new QToolButton(this);
 	gridButton->setGeometry(120, 5, 50, 50);
 	gridButton->setCursor(Qt::PointingHandCursor);
 	gridButton->setStyleSheet("QToolButton{border: none;border-radius: 25px;}");
-	gridButton->setIcon(QIcon("./Icon/function/grid"));
+	gridButton->setIcon(QIcon(iconPath + "function/grid"));
 	connect(gridButton, SIGNAL(clicked()), this, SLOT(slotGrid()));
 
 	QToolButton *cutbutton = new QToolButton(this);
 	cutbutton->setGeometry(170, 5, 50, 50);
 	cutbutton->setCursor(Qt::PointingHandCursor);
 	cutbutton->setStyleSheet("QToolButton{border: none;border-radius: 25px;}");
-	cutbutton->setIcon(QIcon("./Icon/function/cut"));
+	cutbutton->setIcon(QIcon(iconPath + "function/cut"));
 	connect(cutbutton, SIGNAL(clicked()), this, SLOT(slotCut()));
 
 	QToolButton *generateButton = new QToolButton(this);
 	generateButton->setGeometry(220, 5, 50, 50);
 	generateButton->setCursor(Qt::PointingHandCursor);
 	generateButton->setStyleSheet("QToolButton{border: none;border-radius: 25px;}");
-	generateButton->setIcon(QIcon("./Icon/function/generate"));
+	generateButton->setIcon(QIcon(iconPath + "function/generate"));
 	connect(generateButton, SIGNAL(clicked()), this, SLOT(slotGenerate()));
 }
 

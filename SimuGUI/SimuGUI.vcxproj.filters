@@ -119,6 +119,9 @@
     <Filter Include="Modeling\overview">
       <UniqueIdentifier>{ad20e88e-4c24-4340-aa5a-7d024c0bd998}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Modeling\Common">
+      <UniqueIdentifier>{e614a4c5-f91c-4a78-8917-216a7aad8e55}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="SimuGUI.ui">
@@ -352,9 +355,6 @@
     <ClInclude Include="main\Header Files\theme.h">
       <Filter>main\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Modeling\Header Files\Regulation.h">
-      <Filter>Modeling</Filter>
-    </ClInclude>
     <ClInclude Include="FMI\Header Files\XmlElement.h">
       <Filter>FMI\xmlImpl</Filter>
     </ClInclude>
@@ -381,6 +381,9 @@
     </ClInclude>
     <ClInclude Include="main\Header Files\GlobalConstant.h">
       <Filter>main\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Modeling\Header Files\Regulation.h">
+      <Filter>Modeling\Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

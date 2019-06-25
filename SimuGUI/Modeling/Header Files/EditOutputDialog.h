@@ -8,6 +8,7 @@
 #ifndef EDITOUTPUTDIALOG_H
 #define EDITOUTPUTDIALOG_H
 
+#include "GlobalConstant.h"
 #include "Regulation.h"
 
 class EditOutputDialog : public FancyDialog {
@@ -55,5 +56,8 @@ private:
 
 	//œÍ«ÈœÓ
 	QTextEdit *noticeContent;
+
+private:
+	QString iconPath = ICON_PATH;
 };
 #endif // EDITOUTPUTDIALOG_H

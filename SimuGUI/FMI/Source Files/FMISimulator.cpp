@@ -5,15 +5,14 @@ FMISimulator::FMISimulator(QWidget *parent) : IMode(parent) {
 
 	setObjectName(QLatin1String("FMISimulator"));
 	setDisplayName(tr("FMI\nSimulator"));
-	QString iconPath = ICON_PATH;
-	setIcon(QIcon(iconPath.append("mode/fmi")));
+	setIcon(QIcon(iconPath + "mode/fmi"));
 
 	createWindow();
 }
 
 void FMISimulator::createWindow() {
 
-	splitterMain = new QSplitter(Qt::Horizontal, 0);
+	splitterMain = new QSplitter(Qt::Horizontal);
 
 	createCentralLabel();
 	createDetailStack();

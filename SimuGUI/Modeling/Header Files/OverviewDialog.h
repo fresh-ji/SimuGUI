@@ -8,8 +8,10 @@
 #ifndef OVERVIEWDIALOG_H
 #define OVERVIEWDIALOG_H
 
-#include "cwidgets.h"
+#include "GlobalConstant.h"
+
 #include "fancydialog.h"
+
 #include "Regulation.h"
 
 class OverviewDialog :public FancyDialog {
@@ -21,6 +23,9 @@ public:
 		QMap<QString, interfaceInfo>, QList<QString>, QWidget *p = 0);
 	//Îö¹¹Æ÷
 	~OverviewDialog() {}
+
+private:
+	QString iconPath = ICON_PATH;
 };
 
 #endif // OVERVIEWDIALOG_H

@@ -8,7 +8,8 @@
 #ifndef TOOLDRAGSTACK_H
 #define TOOLDRAGSTACK_H
 
-#include "cwidgets.h"
+#include "GlobalConstant.h"
+
 #include "ministack.h"
 #include "fancybutton.h"
 
@@ -20,7 +21,7 @@ public:
 
 	explicit ToolDragStack(QWidget *p = 0);
 
-	~ToolDragStack() {};
+	~ToolDragStack() {}
 
 	virtual void mousePressEvent(QMouseEvent *e);
 
@@ -34,6 +35,9 @@ private:
 
 private:
 	void putImage(QString, QLabel *);
+
+private:
+	QString iconPath = ICON_PATH;
 };
 
 #endif // TOOLDRAGSTACK_H

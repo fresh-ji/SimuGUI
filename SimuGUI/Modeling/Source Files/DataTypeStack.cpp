@@ -1,9 +1,4 @@
 
-/*
-* @date : 2019/02/14
-* @author : jihang
-*/
-
 #include "DataTypeStack.h"
 
 DataTypeStack::DataTypeStack(QWidget *p) : MiniStack(p) {
@@ -20,17 +15,17 @@ DataTypeStack::DataTypeStack(QWidget *p) : MiniStack(p) {
 	tableStandardize(m_pDataTypeList);
 
 	FancyButton *addButton = new FancyButton();
-	addButton->setIcon(QIcon("./Icon/function/add"));
+	addButton->setIcon(QIcon(iconPath + "function/add"));
 	addButton->setCursor(QCursor(Qt::PointingHandCursor));
 	connect(addButton, SIGNAL(clicked()), this, SLOT(pSlotAddDataType()));
 
 	FancyButton *editButton = new FancyButton();
-	editButton->setIcon(QIcon("./Icon/function/edit"));
+	editButton->setIcon(QIcon(iconPath + "function/edit"));
 	editButton->setCursor(QCursor(Qt::PointingHandCursor));
 	connect(editButton, SIGNAL(clicked()), this, SLOT(pSlotEditDataType()));
 
 	FancyButton *deleteButton = new FancyButton();
-	deleteButton->setIcon(QIcon("./Icon/function/delete"));
+	deleteButton->setIcon(QIcon(iconPath + "function/delete"));
 	deleteButton->setCursor(QCursor(Qt::PointingHandCursor));
 	connect(deleteButton, SIGNAL(clicked()), this, SLOT(pSlotDeleteDataType()));
 
@@ -42,8 +37,6 @@ DataTypeStack::DataTypeStack(QWidget *p) : MiniStack(p) {
 	buttons->setLayout(layout);
 
 	addTab(tr("dataTypeList"), m_pDataTypeList, buttons);
-
-	setFixedWidth(200);
 }
 
 void DataTypeStack::pSlotAddDataType() {

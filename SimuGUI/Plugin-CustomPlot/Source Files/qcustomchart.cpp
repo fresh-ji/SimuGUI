@@ -1,8 +1,5 @@
+
 #include "qcustomchart.h"
-#include <QToolBar>
-#include <QAction>
-#include <QStackedWidget>
-#include <QTextBrowser>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 /// \brief QCustomChart::QCustomChart
@@ -42,7 +39,7 @@ void QCustomChart::setYaxisRange(double lower, double upper) {
 }
 
 void QCustomChart::setData(const QVector<double> &keys, const QVector<double> &values) {
-	
+
 	m_pCustomPlot->graph(0)->setData(keys, values);
 	m_pCustomPlot->rescaleAxes();
 	m_pCustomPlot->replot();
@@ -62,15 +59,10 @@ void QCustomChart::createWindow() {
 
 	// action
 	//by jh
-	QString iconPath;
-	iconPath = ICON_PATH;
-	m_pPrimaryAction = new QAction(QIcon(iconPath.append("chart/data")), tr("Primary Data"), this);
-	iconPath = ICON_PATH;
-	m_pChartAction = new QAction(QIcon(iconPath.append("chart/line")), tr("Chart"), this);
-	iconPath = ICON_PATH;
-	m_pRefreshAction = new QAction(QIcon(iconPath.append("chart/refresh")), tr("Refresh"), this);
-	iconPath = ICON_PATH;
-	m_pDownloadAction = new QAction(QIcon(iconPath.append("chart/download")), tr("Download"), this);
+	m_pPrimaryAction = new QAction(QIcon(iconPath + "chart/data"), tr("Primary Data"), this);
+	m_pChartAction = new QAction(QIcon(iconPath + "chart/line"), tr("Chart"), this);
+	m_pRefreshAction = new QAction(QIcon(iconPath + "chart/refresh"), tr("Refresh"), this);
+	m_pDownloadAction = new QAction(QIcon(iconPath + "chart/download"), tr("Download"), this);
 
 	QActionGroup *actionGroup = new QActionGroup(this);
 	m_pPrimaryAction->setCheckable(true);

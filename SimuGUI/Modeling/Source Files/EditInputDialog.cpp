@@ -5,7 +5,7 @@ EditInputDialog::EditInputDialog(QString modelName, QSet<inputInfo> subInfo,
 	QWidget *p) : FancyDialog(p) {
 
 	setWindowTitle("Subscribe for " + modelName);
-	setWindowIcon(QIcon("./Icon/function/window"));
+	setWindowIcon(QIcon(iconPath + "function/window"));
 	setStyleSheet("background: #1890FF;");
 
 	QFont font("Microsoft YaHei", 13, 50);

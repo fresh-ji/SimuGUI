@@ -8,18 +8,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QTextBrowser>
-#include <QLineEdit>
-#include <QMenu>
-#include <QMenuBar>
-#include <QStatusBar>
-#include <QTreeWidget>
-#include <QDockWidget>
-#include <QTableView>
-#include <QHBoxLayout>
-#include <QSettings>
-#include <QAction>
-
 #include "GlobalConstant.h"
 
 #include "fancywindow.h"
@@ -31,7 +19,6 @@
 #include "pagesorter.h"
 #include "fancybanner.h"
 
-#include "cwidgets.h"
 #include "skindialog.h"
 #include "theme.h"
 
@@ -95,6 +82,9 @@ private:
 
 	FMISimulator *m_pFMISimulator;
 	Modeling *m_pModeling;
+
+private:
+	QString iconPath = ICON_PATH;
 };
 
 #endif // MAINWINDOW_H

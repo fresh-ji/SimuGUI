@@ -32,7 +32,7 @@ ItemElement::ItemElement(QPixmap *pixmap, QString name,
 		TEXTHEIGHT);
 	bottomNameLabel->setStyleSheet("border: 0px solid black;");
 	bottomNameLabel->setAlignment(Qt::AlignCenter);
-	
+
 
 	//3
 	frameLabel = new QLabel(this);

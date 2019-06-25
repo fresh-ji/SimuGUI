@@ -8,11 +8,8 @@
 #ifndef CENTRALLABEL_H
 #define CENTRALLABEL_H
 
-#include <QUuid>
-
 #include "GlobalConstant.h"
 
-#include "cwidgets.h"
 #include "fancybutton.h"
 
 #include "FMUElement.h"
@@ -79,6 +76,9 @@ private:
 
 	//×÷»­¿ò
 	PlotDialog *dialog;
+
+private:
+	QString iconPath = ICON_PATH;
 };
 
 #endif // CENTRALLABEL_H

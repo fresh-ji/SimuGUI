@@ -11,8 +11,6 @@
 
 #include "GlobalConstant.h"
 
-#include "cwidgets.h"
-
 //…Ëº∆
 constexpr auto FMUTOTALWIDTH = 200;
 constexpr auto FMUTEXTHEIGHT = 20;
@@ -69,6 +67,9 @@ public:
 public:
 	QString getName();
 	void setName(QString name);
+
+private:
+	QString iconPath = ICON_PATH;
 };
 
 #endif // FMUELEMENT_H

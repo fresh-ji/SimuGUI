@@ -1,17 +1,11 @@
 #ifndef QCUSTOMCHART_H
 #define QCUSTOMCHART_H
 
-#include <QWidget>
-#include "qcustomplot.h"
 #include "GlobalConstant.h"
 
-class QLabel;
-class QToolBar;
-class QToolButton;
-class QStackedWidget;
-class QRubberBand;
+#include "qcustomplot.h"
+
 class CustomPlotZoom;
-class QTextBrowser;
 
 ///////////////////////////////////////////////////////////////
 /// \brief The QCustomChart class
@@ -69,6 +63,9 @@ private:
 
 	double m_yLower;
 	double m_yUpper;
+
+private:
+	QString iconPath = ICON_PATH;
 };
 ///////////////////////////////////////////////////////////
 /// \brief The CustomPlotZoom class

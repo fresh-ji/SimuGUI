@@ -1,10 +1,4 @@
 
-/*
-* 主题源文件
-* @date : 2018/12/17
-* @author : jihang
-*/
-
 #include "theme.h"
 
 QColor Theme::g_color;
