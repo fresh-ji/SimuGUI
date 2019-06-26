@@ -66,9 +66,37 @@ OverviewDialog::OverviewDialog(
 
 	layout->addWidget(dataColumn, 0, 0);
 	layout->addWidget(modelColumn, 1, 0);
+
+	QDialogButtonBox *result = new QDialogButtonBox();
+	result->addButton("Generate XML File", QDialogButtonBox::AcceptRole);
+	connect(result, SIGNAL(accepted()), this, SLOT(pSlotFinish()));
+	layout->addWidget(result, 2, 0);
+
 	centerWidget->setLayout(layout);
 	setCentralWidget(centerWidget);
 
 	//close后自动析构，防止之前的dialog发信号
 	setAttribute(Qt::WA_DeleteOnClose);
+}
+
+void OverviewDialog::pSlotFinish() {
+	QString uuid = QUuid::createUuid().toString();
+	QString time = QDateTime::currentDateTime().toString("MM-dd-hh-mm-ss");
+	QFile file(".\\Modeling\\result\\my@" + uuid + "@" + time + ".xml");
+	if (file.open(QFile::ReadWrite | QIODevice::Truncate)) {
+
+		QXmlStreamWriter stream(&file);
+		stream.setAutoFormatting(true);
+		stream.writeStartDocument();
+		stream.writeStartElement("SimulationSystem");
+		stream.writeAttribute("name", "my");
+
+
+
+		stream.writeEndElement();//SimulationSystem
+		stream.writeEndDocument();
+		file.close();
+		QMessageBox::information(NULL, "Title",
+			"success-_-", QMessageBox::Yes, QMessageBox::Yes);
+	}
 }

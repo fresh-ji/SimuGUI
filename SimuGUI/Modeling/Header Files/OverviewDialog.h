@@ -24,6 +24,9 @@ public:
 	//Îö¹¹Æ÷
 	~OverviewDialog() {}
 
+private slots:
+	void pSlotFinish();
+
 private:
 	QString iconPath = ICON_PATH;
 };
