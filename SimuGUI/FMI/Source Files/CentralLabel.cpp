@@ -13,7 +13,7 @@ CentralLabel::CentralLabel(QWidget *p) : QLabel(p) {
 
 	//初始文件选择路径
 	//TODO：绝对路径测试使用
-	openPath = QDir::currentPath() + "\\FMI\\examples\\cs\\x64";
+	openPath = QDir::currentPath() + "\\FMI\\examples\\cs\\x64_arch";
 
 	//fmi
 	FMIsupport = new FMISupport();
