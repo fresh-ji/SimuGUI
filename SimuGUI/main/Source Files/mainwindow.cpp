@@ -54,12 +54,12 @@ void MainWindow::createWindow() {
 //创建一个快捷访问栏
 void MainWindow::createQuickAccessBar() {
 
-	QString iconPath;
+	//QString iconPath;
 
 	if (QuickAccessBar* quickAccessBar = fancyBar()->quickAccessBar()) {
 		QAction* action = quickAccessBar->actionCustomizeButton();
 		action->setToolTip(tr("Customize Quick Access Bar"));
-
+		/*
 		QAction* smallButton;
 		smallButton = quickAccessBar->addAction(QIcon(iconPath + "tools/new"), tr("New"));
 		smallButton->setShortcut(QKeySequence::New);
@@ -92,15 +92,16 @@ void MainWindow::createQuickAccessBar() {
 		smallButton = quickAccessBar->addAction(QIcon(iconPath + "tools/redo"), tr("&Redo"));
 		smallButton->setShortcut(QKeySequence::Redo);
 		smallButton->setEnabled(false);
-
-		fancyBar()->showQuickAccess(false);
+		*/
+		fancyBar()->showQuickAccess(true);
 	}
 }
 
 //创建一个菜单栏
-//TODO：在笔记本上会回收，并且使用merge style的时候显示效果不佳
 void MainWindow::createMenuBar() {
 	if (QMenuBar* menuBar = fancyBar()->menuBar()) {
+
+		menuBar->setFixedHeight(200);
 
 		QAction *action;
 		QMenu* menu;
@@ -131,7 +132,7 @@ void MainWindow::createMenuBar() {
 	QFont ft;
 	ft.setPointSize(34);
 	text->setFont(ft);
-	text->append(tr("犹豫什么仿就完事了"));
+	text->append(tr("hahaha"));
 	fancyBar()->setApplicationWidget(tr("Application"), text);
 }
 
@@ -205,10 +206,10 @@ void MainWindow::createModeBar() {
 	m_modeManager->objectAdded(m_pPaintMode);
 	m_modeManager->objectAdded(m_pMenuMode);
 
-	m_modeManager->objectAdded(m_pModeling);
-	m_modeManager->objectAdded(m_pFMISimulator);
+	//m_modeManager->objectAdded(m_pModeling);
+	//m_modeManager->objectAdded(m_pFMISimulator);
 
-	m_modeManager->setCurrentMode(m_pModeling);
+	m_modeManager->setCurrentMode(m_pCustomMode);
 
 	//仿QT组件，没用
 	//QAction *action = new QAction(QIcon("./Icon/tools/start"), tr("Start"), this);
