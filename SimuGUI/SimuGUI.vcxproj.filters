@@ -29,15 +29,6 @@
     <Filter Include="CanPool\Source Files">
       <UniqueIdentifier>{42f31817-fca1-48c6-bab4-ee4c82c48c97}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ExampleMode">
-      <UniqueIdentifier>{c0e79129-b8bf-45e8-8ae4-fc02cfa9ac42}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ExampleMode\Header Files">
-      <UniqueIdentifier>{8897df62-9242-4374-bd75-f5508390e8d2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ExampleMode\Source Files">
-      <UniqueIdentifier>{a855dc62-5860-4726-a86a-bb20c2f381bd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="FMI">
       <UniqueIdentifier>{a6ec8702-dccf-4248-a4b6-8c07fd2207b3}</UniqueIdentifier>
     </Filter>
@@ -121,6 +112,15 @@
     </Filter>
     <Filter Include="Modeling\Common">
       <UniqueIdentifier>{e614a4c5-f91c-4a78-8917-216a7aad8e55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CanPool\ExampleMode">
+      <UniqueIdentifier>{c0e79129-b8bf-45e8-8ae4-fc02cfa9ac42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CanPool\ExampleMode\Header Files">
+      <UniqueIdentifier>{8897df62-9242-4374-bd75-f5508390e8d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CanPool\ExampleMode\Source Files">
+      <UniqueIdentifier>{a855dc62-5860-4726-a86a-bb20c2f381bd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -237,13 +237,13 @@
       <Filter>CanPool\Source Files</Filter>
     </QtMoc>
     <QtMoc Include="ExampleMode\Header Files\custommode.h">
-      <Filter>ExampleMode\Header Files</Filter>
+      <Filter>CanPool\ExampleMode\Header Files</Filter>
     </QtMoc>
     <QtMoc Include="ExampleMode\Header Files\menumode.h">
-      <Filter>ExampleMode\Header Files</Filter>
+      <Filter>CanPool\ExampleMode\Header Files</Filter>
     </QtMoc>
     <QtMoc Include="ExampleMode\Header Files\paintmode.h">
-      <Filter>ExampleMode\Header Files</Filter>
+      <Filter>CanPool\ExampleMode\Header Files</Filter>
     </QtMoc>
     <QtMoc Include="main\Header Files\ctablewidget.h">
       <Filter>main\Header Files</Filter>
@@ -436,13 +436,13 @@
       <Filter>CanPool\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ExampleMode\Source Files\custommode.cpp">
-      <Filter>ExampleMode\Source Files</Filter>
+      <Filter>CanPool\ExampleMode\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ExampleMode\Source Files\menumode.cpp">
-      <Filter>ExampleMode\Source Files</Filter>
+      <Filter>CanPool\ExampleMode\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ExampleMode\Source Files\paintmode.cpp">
-      <Filter>ExampleMode\Source Files</Filter>
+      <Filter>CanPool\ExampleMode\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main\Source Files\ctablewidget.cpp">
       <Filter>main\Source Files</Filter>

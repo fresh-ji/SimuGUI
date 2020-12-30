@@ -206,8 +206,8 @@ void MainWindow::createModeBar() {
 	m_modeManager->objectAdded(m_pPaintMode);
 	m_modeManager->objectAdded(m_pMenuMode);
 
-	//m_modeManager->objectAdded(m_pModeling);
-	//m_modeManager->objectAdded(m_pFMISimulator);
+	m_modeManager->objectAdded(m_pModeling);
+	m_modeManager->objectAdded(m_pFMISimulator);
 
 	m_modeManager->setCurrentMode(m_pCustomMode);
 
